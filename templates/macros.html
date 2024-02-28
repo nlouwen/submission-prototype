@@ -1,0 +1,90 @@
+{% macro simple_form(form) %}
+<form method="post" class="container">
+    <fieldset>
+        <table>
+            <tbody>
+                {% for field in form %}
+
+                <tr>
+
+                    <th>
+                        {% if field.type != "HiddenField" and field.widget.input_type !=
+                        "hidden" and field.type != "SubmitField" %}
+                        {{field.label(class='form-label')}}
+                        {% endif %}
+                    </th>
+                    <td>
+                        {% if field.type == "FieldList" %}
+                        <div>
+                            {% for subfield in field %}
+                            {{simple_subform(subfield)}}
+
+                            {% endfor %}
+                        </div>
+                        {% elif field.type == 'BooleanField' %}
+                        {{ field(class='form-check-input') }}
+                        {% elif field.type == "SelectField" or field.type == "SelectMultipleField" %}
+                        {{ field(class='form-select') }}
+                        {% elif field.type == 'SubmitField' %}
+                        {{ field(class='btn btn-light')}}
+                        {% else %}
+                        {{ field(class='form-control' + (' is-invalid' if field.errors else '')) }}
+                        {% endif %}
+
+                        {% if field.errors %}
+                        {% for error in field.errors %}
+                        <div class="invalid-feedback">{{ error }}</div>
+                        {% endfor %}
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </fieldset>
+</form>
+{% endmacro %}
+
+{% macro simple_subform(form) %}
+<fieldset style="border: 3px solid var(--bs-border-color)">
+    <table>
+        <tbody>
+            {% for field in form %}
+
+            <tr>
+                <th>
+                    {% if field.type != "HiddenField" and field.widget.input_type !=
+                    "hidden" and field.type != "SubmitField" %}
+                    {{field.label(class='form-label')}}
+                    {% endif %}
+                </th>
+                <td>
+                    {% if field.type == "FieldList" %}
+                    <div>
+                        {% for subfield in field %}
+                        {{simple_subform(subfield)}}
+
+                        {% endfor %}
+                    </div>
+                    {% elif field.type == 'BooleanField' %}
+                    {{ field(class='form-check-input') }}
+                    {% elif field.type == "SelectField" or field.type == "SelectMultipleField" %}
+                    {{ field(class='form-select') }}
+                    {% elif field.type == 'SubmitField' %}
+                    {{ field(class='btn btn-light')}}
+                    {% else %}
+                    {{ field(class='form-control' + (' is-invalid' if field.errors else '')) }}
+                    {% endif %}
+
+                    {% if field.errors %}
+                    {% for error in field.errors %}
+                    <div class="invalid-feedback">{{ error }}</div>
+                    {% endfor %}
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</fieldset>
+{% endmacro %}

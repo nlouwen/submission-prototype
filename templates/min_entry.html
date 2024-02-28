@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+
+{% import 'macros.html' as macros %}
+
+{% block body %}
+<div>
+    <h2>Editing {{ bgc_id }}</h2>
+</div>
+<div class="form-wrapper">
+    <h4>Enter minimal information</h4>
+    {{ macros.simple_form(form) }}
+    <!-- <form method="post" class="container">
+        {{ form.csrf_token }}
+        <table>
+            <tbody>
+                <tr>
+                    <th>
+                        {{ form.genome.label }}
+                    </th>
+                    <td>
+                        {{ form.genome }}
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        {{ form.location.label }}
+                    </th>
+                    <td>
+                        <dd>{{ form.location.start.label }} {{ form.location.start }}</dd>
+                        <dd>{{ form.location.end.label }} {{ form.location.end }}</dd>
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        {{ form.b_class.label }}
+                    </th>
+                    <td>
+                        {{ form.b_class }}
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        {{ form.products.label }}
+                    </th>
+                    <td>
+                        {{ form.products }}
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        {{ form.evidence.label }}
+                    </th>
+                    <td>
+                        {{ form.evidence }}
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        {{ form.taxonomy.label }}
+                    </th>
+                    <td>
+                        {{ form.taxonomy }}
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        {{ form.comments.label }}
+                    </th>
+                    <td>
+                        {{ form.comments }}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        {{ form.submit }}
+    </form> -->
+</div>
+
+{% endblock %}

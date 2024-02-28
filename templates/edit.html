@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block body %}
+<div>
+    <h2>Editing {{ bgc_id }}</h2>
+</div>
+<div>
+    <h4>What would you like to edit?</h4>
+    <form method="post">
+        {% for field in form %}
+        {{field}}
+        {% endfor %}
+    </form>
+    <!-- <button href="{{ url_for('edit_minimal', bgc_id=bgc_id)}}">Minimal Entry</button>
+    <button>Structure</button>
+    <button>Biological activity</button>
+    <button>Class-specific information</button>
+    <button>Tailoring reaction information</button> -->
+</div>
+{% endblock %}

@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block body %}
+
+<div class="content">
+    <div class="edit">
+
+        <form method="post">
+            <th> {{ form.accession.label }}</th>
+            <td> {{ form.accession }}</td>
+            {% if form.accession.errors %}
+            <ul class="errors">
+                {% for error in form.accession.errors %}
+                <li> {{error}} </li>
+                {% endfor %}
+            </ul>
+            {%endif%}
+            <input type="submit" value="Edit existing entry">
+        </form>
+    </div>
+    <br>
+    <div class="submit">
+        <a href="{{url_for('work_in_progress')}}">
+            <button>Submit new entry</button>
+        </a>
+    </div>
+</div>
+{% endblock %}

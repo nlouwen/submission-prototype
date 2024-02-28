@@ -1,0 +1,252 @@
+import re
+from wtforms import (
+    Form,
+    Field,
+    StringField,
+    FieldList,
+    FormField,
+    SelectField,
+    HiddenField,
+    IntegerField,
+    SubmitField,
+    validators,
+)
+from forms.common import GeneIdField, LocationForm, TagListField, ValidatTagListRegexp
+
+
+# class BiosyntheticClassesForm(Form):
+#     b_class = SelectField(
+#         "Biosynthetix class",
+#         choices=["NRPS", "PKS", "Ribosomal", "Saccharide", "Terpene", "Other"],
+#         render_kw={
+#             "hx-post": "/get_class",
+#             "hx-target": "next div",
+#             "hx-trigger": "change",
+#             "placeholder": "Select class",
+#         },
+#     )
+
+
+class NRPSForm(Form):
+    class ReleaseTypeForm(Form):
+        name = SelectField(
+            "Release type",
+            choices=[
+                "Claisen condensation",
+                "Hydrolysis",
+                "Macrolactamization",
+                "Macrolactonization",
+                "None",
+                "Other",
+                "Reductive release",
+            ],
+        )
+        details = StringField("Details")
+        references = StringField("Citation")
+
+    class ThioesteraseForm(Form):
+        name = HiddenField(
+            "thioesterase", [validators.InputRequired()], default="thioesterase"
+        )
+        gene = GeneIdField()
+        location = FormField(LocationForm)
+        subtype = SelectField("Sub-type", choices=["Type I", "Type II"])
+
+    subclass = SelectField(
+        "Sub-class",
+        choices=["", "Type I", "Type II", "Type III", "Type IV", "Type V", "Type VI"],
+    )
+    release_types = FieldList(FormField(ReleaseTypeForm), min_entries=1)
+    add_release_type = SubmitField(
+        "Add release-type", render_kw={"formnovalidate": True}
+    )
+    thioesterases = FieldList(FormField(ThioesteraseForm), min_entries=1)
+    add_thioesterase = SubmitField(
+        "Add thioesterase", render_kw={"formnovalidate": True}
+    )
+    submit = SubmitField("Submit")
+
+
+class PKSForm(Form):
+    subclass = SelectField(
+        "Sub-class",
+        choices=[
+            "",
+            "Type I",
+            "Type II aromatic",
+            "Type II highly reducing",
+            "Type II arylpolyene",
+            "Type III",
+        ],
+    )
+    cyclases = TagListField("Cyclase(s)", [ValidatTagListRegexp(r"^[^, ]*$")])
+    starter_unit = None  # TODO: add to schema
+    ketide_length = IntegerField("Ketide length", [validators.NumberRange(min=0)])
+    iterative = None  # TODO: add to schema
+    submit = SubmitField("Submit")
+
+
+class RibosomalForm(Form):
+    class PrecursorForm(Form):
+        class CrosslinkForm(Form):
+            from_loc = IntegerField(
+                "From",
+                validators=[validators.Optional(), validators.NumberRange(min=1)],
+            )
+            to_loc = IntegerField(
+                "To", validators=[validators.Optional(), validators.NumberRange(min=2)]
+            )
+            link_type = SelectField("Type", choices=["ether", "thioether", "other"])
+            details = StringField("Details")
+
+        gene = GeneIdField()
+        core_sequence = StringField("Core sequence")
+        leader_cleavage_location = FormField(LocationForm, "Leader cleavage location")
+        follower_cleavage_location = FormField(
+            LocationForm, "Follower cleavage location"
+        )
+        crosslinks = FieldList(FormField(CrosslinkForm), "Crosslinks", min_entries=1)
+        add_crosslinks = SubmitField(
+            "Add crosslink", render_kw={"formnovalidate": True}
+        )
+        recognition_motif = StringField("Recognition motif")
+
+    subclass = SelectField(
+        "Sub-class",
+        choices=[
+            "",
+            "Unmodified",
+            "Atropopeptide",
+            "Biarylitide",
+            "Bottromycin",
+            "Borosin",
+            "Crocagin",
+            "Cyanobactin",
+            "Cyptide",
+            "Dikaritin",
+            "Epipeptide",
+            "Glycocin",
+            "Guanidinotide",
+            "Head-to-tail cyclized peptide",
+            "Lanthipeptide",
+            "LAP",
+            "Lasso peptide",
+            "Linaridin",
+            "Methanobactin",
+            "Microcin",
+            "Microviridin",
+            "Mycofactocin",
+            "Pearlin",
+            "Proteusin",
+            "Ranthipeptide",
+            "Rotapeptide",
+            "Ryptide",
+            "Sactipeptide",
+            "Spliceotide",
+            "Streptide",
+            "Sulfatyrotide",
+            "Thioamidide",
+            "Thiopeptide",
+            "Other",
+        ],
+    )
+    # Only if not unmodified
+    details = StringField("Details")
+    peptidases = TagListField(
+        "Peptidase(s)", validators=[ValidatTagListRegexp(r"^[^, ]*$")]
+    )
+    precursors = FieldList(FormField(PrecursorForm), "Precursor(s)", min_entries=1)
+    add_precursors = SubmitField("Add precursor", render_kw={"formnovalidate": True})
+    submit = SubmitField("Submit")
+
+
+class SaccharideForm(Form):
+    class GlycosylTranferaseForm(Form):
+        gene = GeneIdField()
+        evidence = SelectField(
+            "Evidence type",
+            choices=[
+                "Sequence-based prediction",
+                "Structure-based inference",
+                "Knock-out construct",
+                "Activity assay",
+            ],
+        )
+        references = StringField("Citation", [validators.DataRequired()])
+        specificity = StringField(
+            "Specificity (SMILES)",
+            [
+                validators.Optional(),
+                validators.Regexp(
+                    regex=re.compile(r"^[\[\]a-zA-Z0-9\@()=\/\\#+.%*-]+$")
+                ),
+            ],
+        )
+
+    class SubclusterForm(Form):
+        genes = TagListField("Gene(s)", [ValidatTagListRegexp(r"^[^, ]*$")])
+        specificity = StringField(
+            "Specificity (SMILES)",
+            [
+                validators.Optional(),
+                validators.Regexp(
+                    regex=re.compile(r"^[\[\]a-zA-Z0-9\@()=\/\\#+.%*-]+$")
+                ),
+            ],
+        )
+        references = StringField("Citation", [validators.DataRequired()])
+
+    subclass = SelectField("Sub-class", choices=[""])  # TODO: sub-class enum
+    glycosyltransferases = FieldList(
+        FormField(GlycosylTranferaseForm), "Glycosyltransferase(s)", min_entries=1
+    )
+    add_glycosyltransferase = SubmitField(
+        "Add glycosyltransferase", render_kw={"formnovalidate": True}
+    )
+    subclusters = FieldList(FormField(SubclusterForm), "Subcluster(s)", min_entries=1)
+    add_subcluster = SubmitField("Add subcluster", render_kw={"formnovalidate": True})
+    submit = SubmitField("Submit")
+
+
+class TerpeneForm(Form):
+    subclass = SelectField(
+        "Sub-class",
+        choices=[
+            "Diterpene",
+            "Hemiterpene",
+            "Monoterpene",
+            "Sesquiterpene",
+            "Triterpene",
+        ],
+    )
+    prenyltransferases = TagListField(
+        "Prenyltransferases",
+        validators=[ValidatTagListRegexp(r"^[^, ]*$")],
+    )
+    synthases_cyclases = TagListField("Synthases/Cyclases")
+    precursor = SelectField(
+        "Precursor", choices=["", "DMAPP", "FPP", "GGPP", "GPP", "IPP"]
+    )
+    submit = SubmitField("Submit")
+
+
+class OtherForm(Form):
+    subclass = SelectField("Sub-class", choices=["aminocoumarin", "cyclitol", "other"])
+    details = StringField("Details")
+    submit = SubmitField("Submit")
+
+
+class BioClassesCollection:
+    NRPS = NRPSForm
+    PKS = PKSForm
+    Ribosomal = RibosomalForm
+    Saccharide = SaccharideForm
+    Terpene = TerpeneForm
+    Other = OtherForm
+
+
+class BiosynthesisForm(Form):
+    classes = None
+    modules = None
+    operons = None
+    paths = None

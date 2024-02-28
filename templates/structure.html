@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% import 'macros.html' as macros %}
+
+{% block body %}
+<div>
+    <h2>Editing {{ bgc_id }}</h2>
+</div>
+<div>
+    <h4>Enter compound information</h4>
+    {{macros.simple_form(form)}}
+    <!-- <form method="post" class="container">
+        {% for structure in form.structures %}
+        <div>
+            <fieldset>
+                <a hx-delete="{{ url_for('delete') }}" hx-target="closest div" hx-swap="outerHTML">Delete</a>
+                <table>
+                    <tbody>
+                        {% for field in structure %}
+                        <tr>
+                            <th>
+                                {{field.label}}
+                            </th>
+                            <td>
+                                {{field}}
+
+                            </td>
+                            {% if field.errors %}
+                            {% for error in field.errors %}
+                            <div class="invalid-feedback">{{ error }}</div>
+                            {% endfor %}
+                            {% endif %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <div class="struct"></div>
+
+            </fieldset>
+            <br>
+        </div>
+        {% endfor %}
+        {{form.add(class="add-btn", formnovalidate=True)}}
+        {{form.submit}}
+    </form> -->
+</div>
+
+
+{% endblock %}
