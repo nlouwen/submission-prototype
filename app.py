@@ -66,7 +66,6 @@ def edit_minimal(bgc_id: str):
                     "genome": "ABG100001.1",
                     "location-start": 1,
                     "location-end": 4,
-                    "b_class": ["NRPS", "PKS"],
                     "products": ["FAKEOMYCIN"],
                 }
             )
@@ -105,8 +104,13 @@ def edit_structure(bgc_id: str):
     # on GET query db for any products already present
     else:
         # if one (or more) is present prefill
-        for c_name in ["FAMEOMYCIN"]:
-            form.structures.append_entry(data={"name": c_name})
+        for c_name, smiles in [
+            (
+                "EXAMPLEMYCIN",
+                "C[C@@H](CCC=C(C)C)[C@@H]1CC[C@]2([C@]1(CC[C@H]3C2=CC[C@@H]4[C@@]3(CC[C@@H](C4(C)C)O)C)C)C",
+            )
+        ]:
+            form.structures.append_entry(data={"name": c_name, "structure": smiles})
     return render_template("structure.html", form=form, bgc_id=bgc_id)
 
 
