@@ -6,7 +6,7 @@
 
 - Install required packages
 
-`conda env create --name submission -r requirements.txt`
+`conda env create --name submission -f requirements.txt`
 
 `conda activate submission`
 
