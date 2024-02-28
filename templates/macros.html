@@ -1,4 +1,4 @@
-{% macro simple_form(form) %}
+{% macro simple_form(form, struct="") %}
 <form method="post" class="container">
     <fieldset>
         <table>
@@ -17,7 +17,7 @@
                         {% if field.type == "FieldList" %}
                         <div>
                             {% for subfield in field %}
-                            {{simple_subform(subfield)}}
+                            {{simple_subform(subfield, struct)}}
 
                             {% endfor %}
                         </div>
@@ -45,7 +45,7 @@
 </form>
 {% endmacro %}
 
-{% macro simple_subform(form) %}
+{% macro simple_subform(form, struct="") %}
 <fieldset style="border: 3px solid var(--bs-border-color)">
     <table>
         <tbody>
@@ -86,5 +86,8 @@
             {% endfor %}
         </tbody>
     </table>
+    {% if struct %}
+    <div class="struct"></div>
+    {% endif %}
 </fieldset>
 {% endmacro %}
