@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% import 'macros.html' as macros %}
+
+{% block body %}
+<h4>
+    Enter tailoring information
+</h4>
+
+{{ macros.simple_form(form) }}
+
+{% endblock %}

@@ -39,7 +39,7 @@ class StructureSingle(Form):
             "hx-target": "next .struct",
         },
     )
-    method = SelectField(
+    method = SelectField(  # TODO: add method+citation to 'evidence' formfield, allow multiple
         "Method",
         choices=[
             "NMR",

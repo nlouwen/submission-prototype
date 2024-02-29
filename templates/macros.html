@@ -21,6 +21,8 @@
 
                             {% endfor %}
                         </div>
+                        {% elif field.type == 'FormField' %}
+                        {{ simple_form(field) }}
                         {% elif field.type == 'BooleanField' %}
                         {{ field(class='form-check-input') }}
                         {% elif field.type == "SelectField" or field.type == "SelectMultipleField" %}

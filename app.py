@@ -14,6 +14,7 @@ from forms.edit_select import EditSelectForm
 from forms.biological_activity import BioActivityMultiple
 from forms.biosynthesis import BioClassesCollection
 from forms.common import is_valid_bgc_id
+from forms.tailoring import TailoringForm
 from rdkit import Chem, rdBase
 from rdkit.Chem import Draw, rdDepictor
 from rdkit.Chem.Draw import rdMolDraw2D
@@ -285,7 +286,13 @@ def edit_tailoring(bgc_id: str):
     if not is_valid_bgc_id(bgc_id):
         return "Invalid existing entry!", 404
 
-    return render_template("WIP.html")
+    form = TailoringForm(request.form)
+
+    if request.method == "POST" and form.validate():
+        flash("Submitted tailoring information!")
+        return redirect(url_for("edit_bgc", bgc_id=bgc_id))
+
+    return render_template("tailoring.html", bgc_id=bgc_id, form=form)
 
 
 ## utils

@@ -245,8 +245,13 @@ class BioClassesCollection:
     Other = OtherForm
 
 
+class OperonForm(Form):
+    genes = TagListField("Gene(s) forming operon")
+
+
+# TODO: separate biosynth components into their own page
 class BiosynthesisForm(Form):
     classes = None
     modules = None
-    operons = None
+    operons = FieldList(FormField(OperonForm))  # add btn
     paths = None

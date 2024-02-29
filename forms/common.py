@@ -9,6 +9,7 @@ from wtforms import (
     validators,
     widgets,
     ValidationError,
+    SelectField,
 )
 import csv
 import re
@@ -60,6 +61,7 @@ class TagListField(Field):
             self.data = []
 
 
+# TODO: convert to factory to customize used validators
 class LocationForm(Form):
     """Subform for location entry, use in combination with FormField"""
 
@@ -95,3 +97,49 @@ def is_valid_bgc_id(bgc_id: str):
     if bgc_id not in valid_ids:
         return False
     return True
+
+
+class SubtrateEvidenceForm(Form):
+    name = SelectField(
+        "Name",
+        choices=[
+            "Activity assay",
+            "ACVS assay",
+            "ATP-PPi exchange assay",
+            "Enzyme-coupled assay",
+            "Feeding study",
+            "Heterologous expression",
+            "Homology",
+            "HPLC",
+            "In-vitro experiments",
+            "Knock-out studies",
+            "Mass spectrometry",
+            "NMR",
+            "Radio labelling",
+            "Sequence-based prediction",
+            "Steady-state kinetics",
+            "Structure-based inference",
+            "X-ray crystallography",
+        ],
+    )
+    references = TagListField("Citation(s)")  # TODO: standardize citations
+
+
+class StructureEvidenceForm(Form):
+    method = SelectField(
+        "Method",
+        choices=[
+            "NMR",
+            "Mass spectrometry",
+            "MS/MS",
+            "X-ray crystallography",
+            "Chemical derivatisation",
+            "Total synthesis",
+        ],
+    )
+    references = TagListField("Citation(s)")  # TODO: standardize citations
+
+
+class TaxonomyForm(Form):
+    name = StringField("Species name")
+    ncbitaxid = IntegerField("NCBI TaxId")
