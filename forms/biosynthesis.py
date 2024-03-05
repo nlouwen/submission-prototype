@@ -46,9 +46,6 @@ class NRPSForm(Form):
         references = StringField("Citation")
 
     class ThioesteraseForm(Form):
-        name = HiddenField(
-            "thioesterase", [validators.InputRequired()], default="thioesterase"
-        )
         gene = GeneIdField()
         location = FormField(LocationForm)
         subtype = SelectField("Sub-type", choices=["", "Type I", "Type II"])
@@ -80,7 +77,11 @@ class PKSForm(Form):
             "Type III",
         ],
     )
-    cyclases = TagListField("Cyclase(s)", [ValidatTagListRegexp(r"^[^, ]*$")])
+    cyclases = TagListField(
+        "Cyclase(s)",
+        [ValidatTagListRegexp(r"^[^, ]*$")],
+        description="Comma separated list of PKS cyclase gene IDs.",
+    )
     starter_unit = None  # TODO: add to schema
     ketide_length = IntegerField("Ketide length", [validators.NumberRange(min=0)])
     iterative = None  # TODO: add to schema
@@ -101,7 +102,9 @@ class RibosomalForm(Form):
             details = StringField("Details")
 
         gene = GeneIdField()
-        core_sequence = StringField("Core sequence")
+        core_sequence = StringField(
+            "Core sequence", description="Core sequence of precursor in amino acids."
+        )
         leader_cleavage_location = FormField(LocationForm, "Leader cleavage location")
         follower_cleavage_location = FormField(
             LocationForm, "Follower cleavage location"
@@ -154,7 +157,9 @@ class RibosomalForm(Form):
     # Only if not unmodified
     details = StringField("Details")
     peptidases = TagListField(
-        "Peptidase(s)", validators=[ValidatTagListRegexp(r"^[^, ]*$")]
+        "Peptidase(s)",
+        validators=[ValidatTagListRegexp(r"^[^, ]*$")],
+        description="Comma separated list of peptidase gene IDs",
     )
     precursors = FieldList(FormField(PrecursorForm), "Precursor(s)", min_entries=1)
     add_precursors = SubmitField("Add precursor", render_kw={"formnovalidate": True})
@@ -186,7 +191,11 @@ class SaccharideForm(Form):
         )
 
     class SubclusterForm(Form):
-        genes = TagListField("Gene(s)", [ValidatTagListRegexp(r"^[^, ]*$")])
+        genes = TagListField(
+            "Gene(s)",
+            [ValidatTagListRegexp(r"^[^, ]*$")],
+            description="Comma separated list of subcluster gene IDs",
+        )
         specificity = StringField(
             "Specificity (SMILES)",
             [
@@ -223,10 +232,14 @@ class TerpeneForm(Form):
         ],
     )
     prenyltransferases = TagListField(
-        "Prenyltransferases",
+        "Prenyltransferase(s)",
         validators=[ValidatTagListRegexp(r"^[^, ]*$")],
+        description="Comma separated list of prenyltransferase gene IDs",
     )
-    synthases_cyclases = TagListField("Synthases/Cyclases")
+    synthases_cyclases = TagListField(
+        "Synthase(s)/Cyclase(s)",
+        description="Comma separated list of synthase/cyclase gene IDs",
+    )
     precursor = SelectField(
         "Precursor", choices=["", "DMAPP", "FPP", "GGPP", "GPP", "IPP"]
     )

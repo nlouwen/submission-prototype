@@ -15,32 +15,40 @@ from forms.min_entry import MinEntryForm
 
 
 class AuxEnzymeForm(Form):
-    name = StringField("Protein name, e.g. 'NisC'.")
-    description = StringField("Brief description of function.")
+    name = StringField("Protein name", description="e.g. 'NisC'.")
+    description = StringField(
+        "Description", description="Brief description of function."
+    )
     databaseIds = TagListField(
-        "Database crosslinks, Uniprot or GenBank"
+        "Database crosslinks", description="Uniprot or GenBank ID of protein"
     )  # TODO: db id regexp
 
 
 class EnzymeForm(Form):
-    name = StringField("Protein name, e.g. 'NisB'.")
-    description = StringField("Brief description of the enzyme function.")
+    name = StringField("Protein name", description="e.g. 'NisB'.")
+    description = StringField(
+        "Description", description="Brief description of the enzyme function."
+    )
     databaseIds = TagListField(
-        "Database crosslinks, Uniprot or GenBank"
+        "Database crosslinks", description="Uniprot or GenBank ID of protein"
     )  # TODO: db id regexp
     auxiliary_enzymes = FieldList(FormField(AuxEnzymeForm), min_entries=1)
-    references = TagListField("Citation(s)")  # TODO: standardize citations
+    references = TagListField(
+        "Citation(s)", description="Comma separated references on the protein"
+    )  # TODO: standardize citations
 
 
 class CompoundForm(Form):
     #  "required": ["name", "evidence"],
     name = StringField(
-        "Customarily used compound name.",
+        "Name",
         validators=[validators.Regexp(r"^[a-zA-Zα-ωΑ-Ω0-9\[\]'()/&,. +-]+$")],
+        description="Customarily used compound name.",
     )
     synonyms = StringField(
-        "Known synonym compound names.",
+        "Synonyms",
         validators=[validators.Regexp(r"^[a-zA-Zα-ωΑ-Ω0-9\[\]'()/&,. +-]+$")],
+        description="Known synonym compound names.",
     )
     classes = SelectField("Class", choices=["", "alkaloid", "nucleoside", "peptide"])
     structure = StringField("Structure (SMILES)")  # TODO: standardize smiles
@@ -128,10 +136,11 @@ class ReactionSmartsEvidenceForm(Form):
 
 class ReactionSmartsForm(Form):
     reactionSMARTS = StringField(
-        "The reaction SMARTS or reaction CXSMARTS string",
+        "SMARTS",
         validators=[validators.Regexp(r"^.+>>.+$")],
+        description="The reaction SMARTS or reaction CXSMARTS string",
     )
-    isIterative = BooleanField("Is iterative? (modifying all possible substructures).")
+    isIterative = BooleanField("Iterative? (modifying all possible substructures)")
     hasLinker = BooleanField(
         "Contains a Link group to represent repeating units of variable length? (e.g. a C-chain of variable length)."
     )
@@ -139,9 +148,12 @@ class ReactionSmartsForm(Form):
         "Contains a position variation bond which indicates positional variation of a substituent over multiple atoms (e.g. variable chlorination on an aromatic ring)."
     )
     explicitHydrogen = FieldList(
-        FormField(HydrogenForm), min_entries=1
+        FormField(HydrogenForm), min_entries=1, description="Explicit hydrogens"
     )  # TODO: add btn
-    databaseIds = TagListField("Cross-reference to other databases. (rhea, MITE, EC)")
+    databaseIds = TagListField(
+        "Cross-reference",
+        description="Cross-reference to other databases. (rhea, MITE, EC), e.g. rhea:16505",
+    )
     evidence = FieldList(
         FormField(ReactionSmartsEvidenceForm), min_entries=1
     )  # TODO: add btn
@@ -164,7 +176,10 @@ class ValidatedReactionForm(Form):
         "Is this validated reaction an intermediate step (i.e. not the final product)?"
     )
     description = StringField("Additional information about reaction example")
-    databaseIds = TagListField("Cross-reference to other databases. (rhea, MITE, EC)")
+    databaseIds = TagListField(
+        "Cross-reference",
+        description="Cross-reference to other databases. (rhea, MITE, EC), e.g. rhea:16505",
+    )
     evidence = FieldList(
         FormField(ReactionSmartsEvidenceForm), min_entries=1
     )  # TODO: add btn
@@ -180,7 +195,7 @@ class ReactionForm(Form):
         "Additional information about tailoring/maturation reaction."
     )
     reactionSMARTS = FieldList(
-        FormField(ReactionSmartsForm), min_entries=1
+        FormField(ReactionSmartsForm), min_entries=1, label="Reaction SMARTS"
     )  # TODO: add btn
     validated_reactions = FieldList(
         FormField(ValidatedReactionForm), min_entries=1

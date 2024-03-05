@@ -171,7 +171,9 @@
             hx-swap='outerHTML'>&#x2715;</button>
         {% endif %}
         {% for field in form %}
-        {{render_field(field)}}
+        <div>
+            {{render_field(field)}}
+        </div>
         {% endfor %}
 
         {% if struct %}

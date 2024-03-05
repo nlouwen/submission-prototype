@@ -10,13 +10,11 @@ from wtforms import (
     FieldList,
     FormField,
     SubmitField,
+    validators,
 )
 
 
 class AssayForm(Form):
-    observed = BooleanField("Observed activity")
-    concentration = FloatField("Concentration")
-
     # TODO: show hierarchy, default None
     target = SelectField(
         "Properties",
@@ -105,11 +103,20 @@ class AssayForm(Form):
             "other": ["other"],
         },
     )
+    concentration = FloatField(
+        "Concentration",
+        validators=[validators.Optional()],
+        description="Concentration at which the activity is/isn't observed",
+    )
+    observed = BooleanField(
+        "Observed activity",
+        description="Leave unticked if the property was not observed at this concentration",
+    )
 
 
 class BioActivityForm(Form):
-    compound = StringField("Compound")  # ideally prefilled
-    assay = FieldList(FormField(AssayForm), min_entries=1)
+    compound = StringField("Compound")
+    assays = FieldList(FormField(AssayForm), min_entries=1)
     add = SubmitField(
         "", render_kw={"value": "Add additional activity", "formnovalidate": True}
     )
