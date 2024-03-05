@@ -8,7 +8,7 @@ from wtforms import (
     BooleanField,
     ValidationError,
     SubmitField,
-    DecimalField,
+    FloatField,
     SelectField,
 )
 from forms.common import TagListField
@@ -23,7 +23,7 @@ class StructureSingle(Form):
     name = StringField("Compound Name", [validators.DataRequired()])
     synonyms = StringField("Synonyms", [validators.Optional()])
     formula = StringField("Molecular Formula")
-    mass = DecimalField(
+    mass = FloatField(
         "Molecular mass", [validators.Optional(), validators.NumberRange(min=0)]
     )
     structure = StringField(
@@ -42,6 +42,7 @@ class StructureSingle(Form):
     method = SelectField(  # TODO: add method+citation to 'evidence' formfield, allow multiple
         "Method",
         choices=[
+            "",
             "NMR",
             "Mass spectrometry",
             "MS/MS",

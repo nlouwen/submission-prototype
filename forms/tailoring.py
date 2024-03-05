@@ -42,7 +42,7 @@ class CompoundForm(Form):
         "Known synonym compound names.",
         validators=[validators.Regexp(r"^[a-zA-Zα-ωΑ-Ω0-9\[\]'()/&,. +-]+$")],
     )
-    classes = SelectField("Class", choices=["alkaloid", "nucleoside", "peptide"])
+    classes = SelectField("Class", choices=["", "alkaloid", "nucleoside", "peptide"])
     structure = StringField("Structure (SMILES)")  # TODO: standardize smiles
     databaseIds = StringField("Database cross-links")  # TODO: validate input
     evidence = FieldList(FormField(StructureEvidenceForm), min_entries=1)
@@ -71,6 +71,7 @@ class TailoringFunctionForm(Form):
     function = SelectField(
         "Function",
         choices=[
+            "",
             "Acetylation",
             "Acylation",
             "Amination",
@@ -113,6 +114,7 @@ class ReactionSmartsEvidenceForm(Form):
     evidenceCode = SelectField(
         "Evidence for enzymatic reaction and substrate specificity",
         choices=[
+            "",
             "Heterologous expression",
             "In vitro assay",
             "Isothermal titration calorimetry",
@@ -187,12 +189,12 @@ class ReactionForm(Form):
 
 class TailoringForm(Form):
     enzyme = FormField(EnzymeForm)
-    compounds = FieldList(
-        FormField(CompoundForm),
-        label="Mature compound(s) (end products) associated with enzyme (were acted on by enzyme).",
-        min_entries=1,
-    )
-    genomic_context = FormField(GenomicContextForm)
+    # compounds = FieldList(
+    #     FormField(CompoundForm),
+    #     label="Mature compound(s) (end products) associated with enzyme (were acted on by enzyme).",
+    #     min_entries=1,
+    # )
+    # genomic_context = FormField(GenomicContextForm)
     reactions = FieldList(FormField(ReactionForm), min_entries=1)  # TODO: add btn
     comment = StringField("Any additional information about this entry")
     submit = SubmitField("Submit")

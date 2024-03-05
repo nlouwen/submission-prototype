@@ -17,7 +17,7 @@ class ProductForm(Form):
 
 
 class StepForm(Form):
-    _type = SelectField("Type", choices=["enzyme", "module"])
+    _type = SelectField("Type", choices=["", "enzyme", "module"])
     name = StringField("Name")  # required if type=module
     gene = GeneIdField("Gene")  # required if type=enzyme
     comment = StringField("Comment")

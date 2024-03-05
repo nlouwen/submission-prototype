@@ -18,6 +18,7 @@ class CondensationDomain(Form):
     subtype = SelectField(
         "Subtype",
         choices=[
+            "",
             "Dual",
             "Starter",
             "LCL",
@@ -49,7 +50,7 @@ class AdenylationDomain(Form):
 class CarrierDomain(Form):
     # "required": ["type", "gene", "location"]
     _type = HiddenField("carrier")
-    subtype = SelectField("Subtype", choices=["ACP", "PCP"])
+    subtype = SelectField("Subtype", choices=["", "ACP", "PCP"])
     gene = GeneIdField("Gene")
     location = FormField(LocationForm)
     inactive = BooleanField("Inactive?")
@@ -101,14 +102,14 @@ class KetoreductaseDomain(Form):
     location = FormField(LocationForm)
     inactive = BooleanField("Inactive?")
     stereochemistry = SelectField(
-        "Stereochemistry", choices=["A1", "A2", "B1", "B2", "C1", "C2"]
+        "Stereochemistry", choices=["", "A1", "A2", "B1", "B2", "C1", "C2"]
     )
     evidence = FieldList(FormField(SubtrateEvidenceForm))
 
 
 class MethyltransferaseDomain(Form):
     _type = HiddenField("methyltransferase")
-    subtype = SelectField("Subtype", choices=["C", "N", "O", "other"])
+    subtype = SelectField("Subtype", choices=["", "C", "N", "O", "other"])
     gene = GeneIdField("Gene")
     location = FormField(LocationForm)
     details = StringField("Details")

@@ -4,7 +4,7 @@ from wtforms import (
     Form,
     StringField,
     BooleanField,
-    DecimalField,
+    FloatField,
     SelectField,
     SelectMultipleField,
     FieldList,
@@ -15,9 +15,9 @@ from wtforms import (
 
 class AssayForm(Form):
     observed = BooleanField("Observed activity")
-    concentration = DecimalField("Concentration")
+    concentration = FloatField("Concentration")
 
-    # TODO: show hierarchy
+    # TODO: show hierarchy, default None
     target = SelectField(
         "Properties",
         choices={

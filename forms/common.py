@@ -13,6 +13,7 @@ from wtforms import (
 )
 import csv
 import re
+from pathlib import Path
 
 
 class GeneIdField(StringField):
@@ -94,15 +95,18 @@ class ValidatTagListRegexp(object):
 
 def is_valid_bgc_id(bgc_id: str):
     valid_ids = [f"BGC{num:0>7}" for num in range(1, 2750)]
-    if bgc_id not in valid_ids:
-        return False
-    return True
+    if bgc_id in valid_ids:
+        return True
+    if Path(f"{bgc_id}_data.json").exists():
+        return True
+    return False
 
 
 class SubtrateEvidenceForm(Form):
     name = SelectField(
         "Name",
         choices=[
+            "",
             "Activity assay",
             "ACVS assay",
             "ATP-PPi exchange assay",
@@ -129,6 +133,7 @@ class StructureEvidenceForm(Form):
     method = SelectField(
         "Method",
         choices=[
+            "",
             "NMR",
             "Mass spectrometry",
             "MS/MS",
