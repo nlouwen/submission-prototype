@@ -2,16 +2,19 @@
 
 {% import 'macros.html' as macros %}
 
+{% block header %}
+<h2>Editing {{ bgc_id }}</h2>
+{% endblock %}
+
 {% block body %}
-<div>
-    <h2>Editing {{ bgc_id }}</h2>
+
+<div class="form-wrapper">
+    <h4>Enter {{ b_class }} Class-specific biosynthesis information</h4>
+
+    {{ macros.simple_divform(form) }}
 </div>
-<h4>Enter {{ b_class }} Class-specific biosynthesis information</h4>
-
-{{ macros.simple_form(form) }}
-
 <div class="container">
-    <a href="{{ url_for('edit_biosynth', bgc_id=bgc_id) }}"><button class="btn-primary">Back to Class
+    <a href="{{ url_for('edit_biosynth', bgc_id=bgc_id) }}"><button class="btn btn-outline-secondary">Back to Class
             selection</button></a>
 </div>
 {% endblock %}

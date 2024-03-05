@@ -15,7 +15,7 @@
                     </th>
                     <td>
                         {% if field.type == "FieldList" %}
-                        <div>
+                        <div class="subform">
                             {% for subfield in field %}
                             {{simple_subform(subfield, struct)}}
 
@@ -31,6 +31,10 @@
                         {{ field(class='btn btn-light')}}
                         {% else %}
                         {{ field(class='form-control' + (' is-invalid' if field.errors else '')) }}
+                        {% endif %}
+
+                        {% if field.description %}
+                        <span class="form-text text-muted">{{field.description}}</span>
                         {% endif %}
 
                         {% if field.errors %}
@@ -62,7 +66,7 @@
                 </th>
                 <td>
                     {% if field.type == "FieldList" %}
-                    <div>
+                    <div class="subform">
                         {% for subfield in field %}
                         {{simple_subform(subfield)}}
 
@@ -91,5 +95,91 @@
     {% if struct %}
     <div class="struct"></div>
     {% endif %}
+</fieldset>
+{% endmacro %}
+
+
+{% macro simple_divform(form, struct="") %}
+<form method="post" class="container">
+    <fieldset>
+        {% for field in form %}
+        <div class="form-group">
+            {{ render_field(field, struct) }}
+        </div>
+
+        {% endfor %}
+
+    </fieldset>
+</form>
+{% endmacro %}
+
+
+{% macro render_field(field, struct="") %}
+{% if field.type == 'SubmitField' %}
+<div>
+    {{ field(class='btn btn-light')}}
+</div>
+{% else %}
+
+{% if field.type == "FieldList" %}
+{{field.label(class='form-label')}}
+<div class="subform" style="padding-left: 25px;">
+    {% for subfield in field %}
+    {{simple_divsubform(subfield, struct)}}
+    {% endfor %}
+</div>
+
+{% elif field.type == 'FormField' %}
+{{field.label(class='form-label')}}
+<div class="subform" style="padding-left: 25px;">
+    {{ simple_divsubform(field, struct) }}
+</div>
+
+{% elif field.type == 'BooleanField' %}
+<div class="form-check">
+    {{field.label(class='form-label')}}
+    {{ field(class='form-check-input') }}
+</div>
+
+{% elif field.type == "SelectField" or field.type == "SelectMultipleField" %}
+{{field.label(class='form-label')}}
+{{ field(class='form-select') }}
+
+{% else %}
+{{field.label(class='form-label')}}
+{{ field(class='form-control' + (' is-invalid' if field.errors else '')) }}
+{% endif %}
+
+{% if field.description %}
+<span class="form-text text-muted">{{field.description}}</span>
+{% endif %}
+
+{% if field.errors %}
+{% for error in field.errors %}
+<div class="invalid-feedback">{{ error }}</div>
+{% endfor %}
+{% endif %}
+
+{% endif %}
+{% endmacro %}
+
+{% macro simple_divsubform(form, struct="", deletebtn="") %}
+<fieldset>
+    <div class="form-group">
+        {% if deletebtn %}
+        <button class='btn btn-sm btn-danger' style='float: right' hx-delete='/delete' hx-target='closest span'
+            hx-swap='outerHTML'>&#x2715;</button>
+        {% endif %}
+        {% for field in form %}
+        {{render_field(field)}}
+        {% endfor %}
+
+        {% if struct %}
+        <div class="struct"></div>
+        {% endif %}
+
+    </div>
+
+
 </fieldset>
 {% endmacro %}

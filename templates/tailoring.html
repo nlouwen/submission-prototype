@@ -2,11 +2,16 @@
 
 {% import 'macros.html' as macros %}
 
-{% block body %}
-<h4>
-    Enter tailoring information
-</h4>
+{% block header %}
+<h2>Editing {{ bgc_id }}</h2>
+{% endblock %}
 
-{{ macros.simple_form(form) }}
+{% block body %}
+
+<div class="form-wrapper">
+    <h4>Enter tailoring information</h4>
+
+    {{ macros.simple_divform(form) }}
+</div>
 
 {% endblock %}
