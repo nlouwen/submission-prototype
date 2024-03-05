@@ -94,7 +94,10 @@ def edit_structure(bgc_id: str):
     if not is_valid_bgc_id(bgc_id):
         return "Invalid existing entry!", 404
 
-    form = StructureMultiple(request.form)
+    if not request.form:
+        form = StructureMultiple(MultiDict(read_data(bgc_id).get("Structure")))
+    else:
+        form = StructureMultiple(request.form)
     if request.method == "POST":
         if form.add.data:
             form.structures.append_entry()
@@ -119,7 +122,8 @@ def edit_structure(bgc_id: str):
             products = [""]
 
         for product in products:
-            form.structures.append_entry(data={"name": product})
+            if product not in [struct.data.get("name") for struct in form.structures]:
+                form.structures.append_entry(data={"name": product})
     return render_template("structure.html", form=form, bgc_id=bgc_id)
 
 
@@ -155,7 +159,10 @@ def edit_activity(bgc_id: str):
     if not is_valid_bgc_id(bgc_id):
         return "Invalid existing entry!", 404
 
-    form = BioActivityMultiple(request.form)
+    if not request.form:
+        form = BioActivityMultiple(MultiDict(read_data(bgc_id).get("Bio_activity")))
+    else:
+        form = BioActivityMultiple(request.form)
     if request.method == "POST":
         for activity in form.activities:
             if activity.add.data:
@@ -181,7 +188,8 @@ def edit_activity(bgc_id: str):
             products = [""]
 
         for product in products:
-            form.activities.append_entry(data={"compound": product})
+            if product not in [act.data.get("compound") for act in form.activities]:
+                form.activities.append_entry(data={"compound": product})
     return render_template("biological_activity.html", bgc_id=bgc_id, form=form)
 
 
