@@ -47,7 +47,7 @@ class NRPSForm(Form):
                 "Reductive release",
             ],
         )
-        details = StringField("Details")
+        details = StringField("Details (Optional)")
         references = StringField("Citation")
 
     class ThioesteraseForm(Form):
@@ -126,7 +126,7 @@ class RibosomalForm(Form):
                 "To", validators=[validators.Optional(), validators.NumberRange(min=2)]
             )
             link_type = SelectField("Type", choices=["", "ether", "thioether", "other"])
-            details = StringField("Details")
+            details = StringField("Details (Optional)")
 
         gene = GeneIdField()
         core_sequence = StringField(
@@ -156,6 +156,7 @@ class RibosomalForm(Form):
 
     subclass = SelectField(
         "Sub-class",
+        description="If unmodified, skip the rest of this form",
         choices=[
             "",
             "Unmodified",
@@ -194,7 +195,7 @@ class RibosomalForm(Form):
         ],
     )
     # Only if not unmodified
-    details = StringField("Details")
+    details = StringField("Details (Optional)")
     peptidases = TagListField(
         "Peptidase(s)",
         validators=[ValidatTagListRegexp(r"^[^, ]*$")],

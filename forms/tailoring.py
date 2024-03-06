@@ -26,7 +26,7 @@ class AuxEnzymeForm(Form):
         "Description", description="Brief description of function."
     )
     databaseIds = TagListField(
-        "Database crosslinks", description="Uniprot or GenBank ID of protein"
+        "Database cross-reference", description="Uniprot or GenBank ID of protein"
     )  # TODO: db id regexp
 
 
@@ -36,11 +36,12 @@ class EnzymeForm(Form):
         "Description", description="Brief description of the enzyme function."
     )
     databaseIds = TagListField(
-        "Database crosslinks", description="Uniprot or GenBank ID of protein"
+        "Database cross-reference", description="Uniprot or GenBank ID of protein"
     )  # TODO: db id regexp
     auxiliary_enzymes = FieldList(
         FormField(AuxEnzymeForm),
         min_entries=0,
+        label="Auxiliary enzymes (Optional)",
         widget=FieldListAddBtn(
             label="Add auxiliary enzyme",
             render_kw={
@@ -179,7 +180,7 @@ class ReactionSmartsForm(Form):
     )
     databaseIds = TagListField(
         "Cross-reference",
-        description="Cross-reference to other databases. (rhea, MITE, EC), e.g. rhea:16505",
+        description='Comma separated cross-references to other databases: Rhea (e.g. "rhea:32647"), MITE (e.g. "MITE0000001"), EC number (e.g. "EC 2.1.1.254")',
     )
     evidence_sm = FieldList(
         FormField(ReactionSmartsEvidenceForm),
@@ -212,10 +213,12 @@ class ValidatedReactionForm(Form):
     isIntermediate = BooleanField(
         "Is this validated reaction an intermediate step (i.e. not the final product)?"
     )
-    description = StringField("Additional information about reaction example")
+    description = StringField(
+        "Additional information about reaction example (Optional)"
+    )
     databaseIds = TagListField(
         "Cross-reference",
-        description="Cross-reference to other databases. (rhea, MITE, EC), e.g. rhea:16505",
+        description='Comma separated cross-references to other databases: Rhea (e.g. "rhea:32647"), MITE (e.g. "MITE0000001"), EC number (e.g. "EC 2.1.1.254")',
     )
     evidence_val = FieldList(
         FormField(ReactionSmartsEvidenceForm),
@@ -247,7 +250,7 @@ class ReactionForm(Form):
         ),
     )
     description = StringField(
-        "Additional information about tailoring/maturation reaction."
+        "Additional information about tailoring/maturation reaction. (Optional)"
     )
     reaction_smarts = FieldList(
         FormField(ReactionSmartsForm),
@@ -287,6 +290,7 @@ class TailoringForm(Form):
     reactions = FieldList(
         FormField(ReactionForm),
         min_entries=0,
+        label="Reactions: One or more substrate (sub)structure -> product (sub)structure pairs that result from application of reaction SMARTS.",
         widget=FieldListAddBtn(
             label="Add reaction",
             render_kw={
@@ -296,7 +300,7 @@ class TailoringForm(Form):
             },
         ),
     )
-    comment = StringField("Any additional information about this entry")
+    comment = StringField("Any additional information about this entry (Optional)")
 
 
 class TailoringMultipleForm(Form):

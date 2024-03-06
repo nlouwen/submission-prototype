@@ -68,10 +68,10 @@ class LocationForm(Form):
     """Subform for location entry, use in combination with FormField"""
 
     start = IntegerField(
-        "Start", validators=[validators.InputRequired(), validators.NumberRange(min=1)]
+        "Start", validators=[validators.Optional(), validators.NumberRange(min=1)]
     )
     end = IntegerField(
-        "End", validators=[validators.InputRequired(), validators.NumberRange(min=2)]
+        "End", validators=[validators.Optional(), validators.NumberRange(min=2)]
     )
 
 
