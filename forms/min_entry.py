@@ -79,6 +79,11 @@ class MinEntryForm(Form):
     # add_evidence = SubmitField(
     #     "Add additional evidence", render_kw={"formnovalidate": True}
     # )
+    completeness = SelectField(
+        "Completeness",
+        choices=["", "Complete", "Incomplete", "Unknown"],
+        description="Are all genes needed for production of compounds present?",
+    )
     taxonomy = StringField(
         "Species name",
         validators=[validators.InputRequired()],
