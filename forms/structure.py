@@ -80,7 +80,66 @@ class StructureSingle(Form):
         description="Technique used to elucidate/verify the structure",
     )
     classes = SelectMultipleField(
-        "Compound class(es)", choices=["alkaloid", "nucleoside", "peptide"]
+        "Compound class(es) (Optional)",
+        description="Hold ctrl or cmd key to select multiple compound classes.",
+        choices={
+            "Alkaloid": [
+                "Amination reaction-derived",
+                "Anthranilic acid-derived",
+                "Guanidine-derived",
+                "Histidine-derived",
+                "Lysine-derived",
+                "Nicotinic acid-derived",
+                "Ornithine-derived",
+                "Peptide alkaloid",
+                "Proline-derived",
+                "Purine alkaloid",
+                "Serine-derived",
+                "Steroidal alkaloid",
+                "Tetramate alkaloid",
+                "Terpenoid-alkaloid",
+                "Tryptophan-derived",
+                "Tyrosine-derived",
+            ],
+            "Shikimic acid-derived": [
+                "Aromatic amino acid/simple benzoic acid",
+                "Aromatic polyketide",
+                "Phenylpropanoid",
+                "Terpenoid quinone",
+            ],
+            "Acetate-derived": [
+                "Alkylresorcinol/phloroglucinol polyketide",
+                "Chromane polyketide",
+                "Cyclic polyketide",
+                "Fatty acid",
+                "Fatty acid derivate",
+                "Linear polyketide",
+                "Macrocyclic polyketide",
+                "Naphthalene polyketide",
+                "Polycyclic polyketide",
+                "Polyether polyketide",
+                "Xanthone polyketide",
+            ],
+            "Isoprene-derived": [
+                "Atypical terpenoid",
+                "Diterpenoid",
+                "Hemiterpenoid",
+                "Higher terpenoid",
+                "Iridoid",
+                "Monoterpenoid",
+                "Sesquiterpenoid",
+                "Steroid",
+            ],
+            "Peptide": [
+                "Beta-lactam",
+                "Depsipeptide",
+                "Glycopeptide",
+                "Glycopeptidolipid",
+                "Linear",
+                "Lipopeptide",
+                "Macrocyclic",
+            ],
+        },
     )
     cyclic = BooleanField("Cyclic Compound?")
     moieties = TagListField(
@@ -90,7 +149,7 @@ class StructureSingle(Form):
         "Citation(s)", description="Comma separated list of references on this compound"
     )  # TODO: standardize
     db_cross = StringField(
-        "Database cross-links",
+        "Database cross-links (Optional)",
         description="Database cross-reference for this compound (pubchem, chebi, chembl, chemspider, npatlas, lotus, gnps, cyanometdb), e.g. pubchem:3081434 or npatlas:NPA004746",
     )  # TODO: validate input
 
