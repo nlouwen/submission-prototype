@@ -12,6 +12,7 @@ from wtforms import (
     SubmitField,
     validators,
 )
+from forms.common import FieldListAddBtn
 
 
 class AssayForm(Form):
@@ -116,12 +117,33 @@ class AssayForm(Form):
 
 class BioActivityForm(Form):
     compound = StringField("Compound")
-    assays = FieldList(FormField(AssayForm), min_entries=1)
-    add = SubmitField(
-        "", render_kw={"value": "Add additional activity", "formnovalidate": True}
+    assays = FieldList(
+        FormField(AssayForm),
+        min_entries=0,
+        widget=FieldListAddBtn(
+            label="Add assay",
+            render_kw={
+                "formnovalidate": True,
+                "hx-post": "/add_assay",
+                "hx-swap": "beforebegin",
+            },
+        ),
     )
+    # add = SubmitField(
+    #     "", render_kw={"value": "Add additional activity", "formnovalidate": True}
+    # )
 
 
 class BioActivityMultiple(Form):
-    activities = FieldList(FormField(BioActivityForm))
+    activities = FieldList(
+        FormField(BioActivityForm),
+        widget=FieldListAddBtn(
+            label="Add compound",
+            render_kw={
+                "formnovalidate": True,
+                "hx-post": "/add_bioact_compound",
+                "hx-swap": "beforebegin",
+            },
+        ),
+    )
     submit = SubmitField("Submit")

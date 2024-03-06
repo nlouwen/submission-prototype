@@ -11,8 +11,13 @@ from wtforms import (
     SubmitField,
     validators,
 )
-from forms.common import GeneIdField, LocationForm, TagListField, ValidatTagListRegexp
-
+from forms.common import (
+    GeneIdField,
+    LocationForm,
+    TagListField,
+    ValidatTagListRegexp,
+    FieldListAddBtn,
+)
 
 # class BiosyntheticClassesForm(Form):
 #     b_class = SelectField(
@@ -54,14 +59,36 @@ class NRPSForm(Form):
         "Sub-class",
         choices=["", "Type I", "Type II", "Type III", "Type IV", "Type V", "Type VI"],
     )
-    release_types = FieldList(FormField(ReleaseTypeForm), min_entries=1)
-    add_release_type = SubmitField(
-        "Add release-type", render_kw={"formnovalidate": True}
+    release_types = FieldList(
+        FormField(ReleaseTypeForm),
+        min_entries=1,
+        widget=FieldListAddBtn(
+            label="Add additional release type",
+            render_kw={
+                "formnovalidate": True,
+                "hx-post": "/add_release",
+                "hx-swap": "beforebegin",
+            },
+        ),
     )
-    thioesterases = FieldList(FormField(ThioesteraseForm), min_entries=1)
-    add_thioesterase = SubmitField(
-        "Add thioesterase", render_kw={"formnovalidate": True}
+    # add_release_type = SubmitField(
+    #     "Add release-type", render_kw={"formnovalidate": True}
+    # )
+    thioesterases = FieldList(
+        FormField(ThioesteraseForm),
+        min_entries=1,
+        widget=FieldListAddBtn(
+            label="Add additional thioesterase",
+            render_kw={
+                "formnovalidate": True,
+                "hx-post": "/add_thioesterase",
+                "hx-swap": "beforebegin",
+            },
+        ),
     )
+    # add_thioesterase = SubmitField(
+    #     "Add thioesterase", render_kw={"formnovalidate": True}
+    # )
     submit = SubmitField("Submit")
 
 
@@ -109,10 +136,22 @@ class RibosomalForm(Form):
         follower_cleavage_location = FormField(
             LocationForm, "Follower cleavage location"
         )
-        crosslinks = FieldList(FormField(CrosslinkForm), "Crosslinks", min_entries=1)
-        add_crosslinks = SubmitField(
-            "Add crosslink", render_kw={"formnovalidate": True}
+        crosslinks = FieldList(
+            FormField(CrosslinkForm),
+            "Crosslinks",
+            min_entries=0,
+            widget=FieldListAddBtn(
+                label="Add additional crosslink",
+                render_kw={
+                    "formnovalidate": True,
+                    "hx-post": "/add_crosslink",
+                    "hx-swap": "beforebegin",
+                },
+            ),
         )
+        # add_crosslinks = SubmitField(
+        #     "Add crosslink", render_kw={"formnovalidate": True}
+        # )
         recognition_motif = StringField("Recognition motif")
 
     subclass = SelectField(
@@ -161,8 +200,20 @@ class RibosomalForm(Form):
         validators=[ValidatTagListRegexp(r"^[^, ]*$")],
         description="Comma separated list of peptidase gene IDs",
     )
-    precursors = FieldList(FormField(PrecursorForm), "Precursor(s)", min_entries=1)
-    add_precursors = SubmitField("Add precursor", render_kw={"formnovalidate": True})
+    precursors = FieldList(
+        FormField(PrecursorForm),
+        "Precursor(s)",
+        min_entries=1,
+        widget=FieldListAddBtn(
+            label="Add additional precursor",
+            render_kw={
+                "formnovalidate": True,
+                "hx-post": "/add_precursor",
+                "hx-swap": "beforebegin",
+            },
+        ),
+    )
+    # add_precursors = SubmitField("Add precursor", render_kw={"formnovalidate": True})
     submit = SubmitField("Submit")
 
 
@@ -209,13 +260,35 @@ class SaccharideForm(Form):
 
     subclass = SelectField("Sub-class", choices=[""])  # TODO: sub-class enum
     glycosyltransferases = FieldList(
-        FormField(GlycosylTranferaseForm), "Glycosyltransferase(s)", min_entries=1
+        FormField(GlycosylTranferaseForm),
+        "Glycosyltransferase(s)",
+        min_entries=0,
+        widget=FieldListAddBtn(
+            label="Add additional glycosyltransferase",
+            render_kw={
+                "formnovalidate": True,
+                "hx-post": "/add_glycosyltransferase",
+                "hx-swap": "beforebegin",
+            },
+        ),
     )
-    add_glycosyltransferase = SubmitField(
-        "Add glycosyltransferase", render_kw={"formnovalidate": True}
+    # add_glycosyltransferase = SubmitField(
+    #     "Add glycosyltransferase", render_kw={"formnovalidate": True}
+    # )
+    subclusters = FieldList(
+        FormField(SubclusterForm),
+        "Subcluster(s)",
+        min_entries=0,
+        widget=FieldListAddBtn(
+            label="Add additional subcluster",
+            render_kw={
+                "formnovalidate": True,
+                "hx-post": "/add_subcluster",
+                "hx-swap": "beforebegin",
+            },
+        ),
     )
-    subclusters = FieldList(FormField(SubclusterForm), "Subcluster(s)", min_entries=1)
-    add_subcluster = SubmitField("Add subcluster", render_kw={"formnovalidate": True})
+    # add_subcluster = SubmitField("Add subcluster", render_kw={"formnovalidate": True})
     submit = SubmitField("Submit")
 
 

@@ -14,7 +14,7 @@ from wtforms import (
     Field,
     widgets,
 )
-from forms.common import TagListField, LocationForm
+from forms.common import TagListField, LocationForm, StringFieldAddBtn, FieldListAddBtn
 
 
 class MinEntryForm(Form):
@@ -57,21 +57,33 @@ class MinEntryForm(Form):
     evidence = FieldList(
         FormField(EvidenceForm),
         min_entries=1,
-        description="Type of evidence that shows that this gene cluster is responsible for the biosynthesis of the designated molecules.",
+        description="Type of evidence that shows this gene cluster is responsible for the biosynthesis of the designated molecules.",
+        widget=FieldListAddBtn(
+            label="Add additional evidence",
+            render_kw={
+                "formnovalidate": True,
+                "hx-post": "/add_evidence",
+                "hx-swap": "beforebegin",
+            },
+        ),
     )
-    add_evidence = SubmitField(
-        "Add additional evidence",
-        render_kw={
-            "formnovalidate": True,
-            "hx-post": "/add_evidence",
-            "hx-swap": "beforeend",
-            "hx-target": "previous .subform",
-        },
-    )
+    # add_evidence = SubmitField(
+    #     "Add additional evidence",
+    #     render_kw={
+    #         "formnovalidate": True,
+    #         "hx-post": "/add_evidence",
+    #         "hx-swap": "beforeend",
+    #         "hx-target": "previous .subform",
+    #     },
+    # )
     # add_evidence = SubmitField(
     #     "Add additional evidence", render_kw={"formnovalidate": True}
     # )
-    taxonomy = StringField("Species name")
-    comments = StringField("Additional comments")
+    taxonomy = StringField(
+        "Species name",
+        validators=[validators.InputRequired()],
+        description="Name of organism including strain identifier, e.g. Streptomyces coelicolor A3(2)",
+    )
+    comments = StringField("Additional comments (Optional)")
 
     submit = SubmitField("Submit")

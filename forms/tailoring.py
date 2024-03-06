@@ -10,7 +10,13 @@ from wtforms import (
     IntegerField,
     validators,
 )
-from forms.common import TagListField, StructureEvidenceForm, LocationForm, TaxonomyForm
+from forms.common import (
+    TagListField,
+    StructureEvidenceForm,
+    LocationForm,
+    TaxonomyForm,
+    FieldListAddBtn,
+)
 from forms.min_entry import MinEntryForm
 
 
@@ -32,7 +38,18 @@ class EnzymeForm(Form):
     databaseIds = TagListField(
         "Database crosslinks", description="Uniprot or GenBank ID of protein"
     )  # TODO: db id regexp
-    auxiliary_enzymes = FieldList(FormField(AuxEnzymeForm), min_entries=1)
+    auxiliary_enzymes = FieldList(
+        FormField(AuxEnzymeForm),
+        min_entries=0,
+        widget=FieldListAddBtn(
+            label="Add auxiliary enzyme",
+            render_kw={
+                "formnovalidate": True,
+                "hx-post": "/add_aux_enzyme",
+                "hx-swap": "beforebegin",
+            },
+        ),
+    )
     references = TagListField(
         "Citation(s)", description="Comma separated references on the protein"
     )  # TODO: standardize citations
@@ -148,15 +165,35 @@ class ReactionSmartsForm(Form):
         "Contains a position variation bond which indicates positional variation of a substituent over multiple atoms (e.g. variable chlorination on an aromatic ring)."
     )
     explicitHydrogen = FieldList(
-        FormField(HydrogenForm), min_entries=1, description="Explicit hydrogens"
-    )  # TODO: add btn
+        FormField(HydrogenForm),
+        min_entries=0,
+        label="Explicit hydrogens",
+        widget=FieldListAddBtn(
+            label="Add explicit hydrogen",
+            render_kw={
+                "formnovalidate": True,
+                "hx-post": "/add_hydrogen",
+                "hx-swap": "beforebegin",
+            },
+        ),
+    )
     databaseIds = TagListField(
         "Cross-reference",
         description="Cross-reference to other databases. (rhea, MITE, EC), e.g. rhea:16505",
     )
-    evidence = FieldList(
-        FormField(ReactionSmartsEvidenceForm), min_entries=1
-    )  # TODO: add btn
+    evidence_sm = FieldList(
+        FormField(ReactionSmartsEvidenceForm),
+        min_entries=1,
+        label="Evidence",
+        widget=FieldListAddBtn(
+            label="Add additional evidence",
+            render_kw={
+                "formnovalidate": True,
+                "hx-post": "/add_tail_reaction_smarts_evidence",
+                "hx-swap": "beforebegin",
+            },
+        ),
+    )
 
 
 class ValidatedReactionForm(Form):
@@ -180,9 +217,19 @@ class ValidatedReactionForm(Form):
         "Cross-reference",
         description="Cross-reference to other databases. (rhea, MITE, EC), e.g. rhea:16505",
     )
-    evidence = FieldList(
-        FormField(ReactionSmartsEvidenceForm), min_entries=1
-    )  # TODO: add btn
+    evidence_val = FieldList(
+        FormField(ReactionSmartsEvidenceForm),
+        min_entries=1,
+        label="Evidence",
+        widget=FieldListAddBtn(
+            label="Add additional evidence",
+            render_kw={
+                "formnovalidate": True,
+                "hx-post": "/add_val_reaction_evidence",
+                "hx-swap": "beforebegin",
+            },
+        ),
+    )
 
 
 class ReactionForm(Form):
@@ -190,16 +237,43 @@ class ReactionForm(Form):
         FormField(TailoringFunctionForm),
         label="Ontology-derived tailoring/maturation reaction term.",
         min_entries=1,
-    )  # TODO: add btn
+        widget=FieldListAddBtn(
+            label="Add additional ontology",
+            render_kw={
+                "formnovalidate": True,
+                "hx-post": "/add_ontology",
+                "hx-swap": "beforebegin",
+            },
+        ),
+    )
     description = StringField(
         "Additional information about tailoring/maturation reaction."
     )
-    reactionSMARTS = FieldList(
-        FormField(ReactionSmartsForm), min_entries=1, label="Reaction SMARTS"
-    )  # TODO: add btn
+    reaction_smarts = FieldList(
+        FormField(ReactionSmartsForm),
+        min_entries=1,
+        label="Reaction SMARTS",
+        widget=FieldListAddBtn(
+            label="Add additional reaction SMARTS",
+            render_kw={
+                "formnovalidate": True,
+                "hx-post": "/add_smarts",
+                "hx-swap": "beforebegin",
+            },
+        ),
+    )
     validated_reactions = FieldList(
-        FormField(ValidatedReactionForm), min_entries=1
-    )  # TODO: add btn
+        FormField(ValidatedReactionForm),
+        min_entries=1,
+        widget=FieldListAddBtn(
+            label="Add additional validated reaction",
+            render_kw={
+                "formnovalidate": True,
+                "hx-post": "/add_val_reaction",
+                "hx-swap": "beforebegin",
+            },
+        ),
+    )
 
 
 class TailoringForm(Form):
@@ -210,6 +284,32 @@ class TailoringForm(Form):
     #     min_entries=1,
     # )
     # genomic_context = FormField(GenomicContextForm)
-    reactions = FieldList(FormField(ReactionForm), min_entries=1)  # TODO: add btn
+    reactions = FieldList(
+        FormField(ReactionForm),
+        min_entries=0,
+        widget=FieldListAddBtn(
+            label="Add reaction",
+            render_kw={
+                "formnovalidate": True,
+                "hx-post": "/add_tailoring_reaction",
+                "hx-swap": "beforebegin",
+            },
+        ),
+    )
     comment = StringField("Any additional information about this entry")
+
+
+class TailoringMultipleForm(Form):
+    enzymes = FieldList(
+        FormField(TailoringForm),
+        min_entries=0,
+        widget=FieldListAddBtn(
+            label="Add enzyme",
+            render_kw={
+                "formnovalidate": True,
+                "hx-post": "/add_tailoring_enzyme",
+                "hx-swap": "beforebegin",
+            },
+        ),
+    )
     submit = SubmitField("Submit")

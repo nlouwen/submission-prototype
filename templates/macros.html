@@ -127,6 +127,7 @@
     {% for subfield in field %}
     {{simple_divsubform(subfield, struct)}}
     {% endfor %}
+    {{field}}
 </div>
 
 {% elif field.type == 'FormField' %}
@@ -167,7 +168,7 @@
 <fieldset>
     <div class="form-group">
         {% if deletebtn %}
-        <button class='btn btn-sm btn-danger' style='float: right' hx-delete='/delete' hx-target='closest span'
+        <button class='btn btn-sm btn-danger' style='float: right' hx-delete='/delete' hx-target='closest fieldset'
             hx-swap='outerHTML'>&#x2715;</button>
         {% endif %}
         {% for field in form %}

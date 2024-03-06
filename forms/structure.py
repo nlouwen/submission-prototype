@@ -11,7 +11,7 @@ from wtforms import (
     FloatField,
     SelectField,
 )
-from forms.common import TagListField
+from forms.common import TagListField, FieldListAddBtn
 import re
 
 
@@ -22,7 +22,7 @@ def validate_db_cross(form, field):
 class StructureSingle(Form):
     name = StringField("Compound Name", [validators.DataRequired()])
     synonyms = StringField(
-        "Synonyms",
+        "Synonyms (Optional)",
         [validators.Optional()],
         description="Synonyms for the compound, separated by commas.",
     )
@@ -84,7 +84,7 @@ class StructureSingle(Form):
     )
     cyclic = BooleanField("Cyclic Compound?")
     moieties = TagListField(
-        "Moieties", description="Chemical moieties found in compound."
+        "Moieties (Optional)", description="Chemical moieties found in compound."
     )
     references = StringField(
         "Citation(s)", description="Comma separated list of references on this compound"
@@ -96,6 +96,17 @@ class StructureSingle(Form):
 
 
 class StructureMultiple(Form):
-    structures = FieldList(FormField(StructureSingle), min_entries=0)
-    add = SubmitField("Add another compound")
+    structures = FieldList(
+        FormField(StructureSingle),
+        min_entries=0,
+        widget=FieldListAddBtn(
+            label="Add additional compound",
+            render_kw={
+                "formnovalidate": True,
+                "hx-post": "/add_compound",
+                "hx-swap": "beforebegin",
+            },
+        ),
+    )
+    # add = SubmitField("Add another compound")
     submit = SubmitField("Submit")

@@ -14,6 +14,7 @@ from wtforms import (
 import csv
 import re
 from pathlib import Path
+from markupsafe import Markup
 
 
 class GeneIdField(StringField):
@@ -148,3 +149,29 @@ class StructureEvidenceForm(Form):
 class TaxonomyForm(Form):
     name = StringField("Species name")
     ncbitaxid = IntegerField("NCBI TaxId")
+
+
+class StringFieldAddBtn(widgets.TextInput):
+    def __init__(self, label="add", render_kw={}) -> None:
+        super(StringFieldAddBtn, self).__init__()
+        self.label = label
+        self.render_kw = render_kw
+
+    def __call__(self, field, **kwargs):
+        orig = super(StringFieldAddBtn, self).__call__(field, **kwargs)
+        add_btn = f"<button class='btn btn-light' {self.html_params(**self.render_kw)}>{self.label}</button>"
+        return orig + Markup(add_btn)
+
+
+class FieldListAddBtn(widgets.SubmitInput):
+    def __init__(self, input_type: str | None = None, label="", render_kw={}) -> None:
+        super().__init__(input_type)
+        self.label = label
+        self.render_kw = render_kw
+
+    def __call__(self, field: Field, **kwargs: object) -> Markup:
+        kwargs.setdefault("id", field.id)
+        kwargs.setdefault("type", self.input_type)
+        return Markup(
+            f"<button class='btn btn-light' {self.html_params(**kwargs, **self.render_kw)}>{self.label}</button>"
+        )
