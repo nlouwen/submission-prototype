@@ -4,8 +4,11 @@ from typing import Any, Self
 from wtforms import (
     Form,
     Field,
+    SelectFieldBase,
     StringField,
     IntegerField,
+    SelectMultipleField,
+    FieldList,
     validators,
     widgets,
     ValidationError,
@@ -15,6 +18,7 @@ import csv
 import re
 from pathlib import Path
 from markupsafe import Markup
+from flask import url_for
 
 
 class GeneIdField(StringField):
@@ -175,3 +179,102 @@ class FieldListAddBtn(widgets.SubmitInput):
         return Markup(
             f"<button class='btn btn-light' {self.html_params(**kwargs, **self.render_kw)}>{self.label}</button>"
         )
+
+
+class MultiTextInput(widgets.TextInput):
+    def __init__(
+        self, input_type: str | None = None, number: int = 1, render_kw: list[dict] = []
+    ) -> None:
+        super().__init__(input_type)
+        self.number = number
+        self.render_kw = render_kw
+
+    def __call__(self, field: Field, **kwargs: object) -> Markup:
+        kwargs.setdefault("id", field.id)
+        kwargs.setdefault("type", self.input_type)
+
+        inputs = Markup("<div>")
+        for field_idx in range(self.number):
+            render_kw = self.render_kw[field_idx]
+            inputs += Markup("<input %s>" % self.html_params(**render_kw, **kwargs))
+        inputs += Markup("</div>")
+        return inputs
+
+
+class MultiStringField(StringField):
+    def __init__(
+        self,
+        label=None,
+        validators=None,
+        description="",
+        widget=None,
+        render_kw=None,
+        field_number: int = 1,
+    ) -> None:
+        super().__init__(
+            label=label,
+            validators=validators,
+            description=description,
+            widget=widget,
+            render_kw=render_kw,
+        )
+        self.number = field_number
+
+    def _value(self):
+        if self.data:
+            return self.data.split("_")
+        else:
+            return ""
+
+    def process_formdata(self, valuelist):
+        if valuelist:
+            self.data = "_".join(valuelist)
+        else:
+            self.data = []
+
+
+class MultiCheckboxField(SelectMultipleField):
+    """
+    A multiple-select, except displays a list of checkboxes.
+
+    Iterating the field will produce subfields, allowing custom rendering of
+    the enclosed checkbox fields.
+    """
+
+    widget = widgets.ListWidget(prefix_label=False)
+    option_widget = widgets.CheckboxInput()
+
+
+class SelectDefault(widgets.Select):
+    def __init__(
+        self,
+        multiple: bool = False,
+        default: tuple[str, str] | None = ("", " --- Select --- "),
+        **kwargs,
+    ) -> None:
+        super().__init__(multiple)
+        self.default = default
+        self.kwargs = kwargs
+
+    def __call__(self, field: SelectFieldBase, **kwargs: object) -> Markup:
+        select = super().__call__(field, **kwargs)
+        if self.default:
+            val, label = self.default
+            insert_idx = select.find(">") + 1
+            default_option = Markup(
+                f"<option hidden selected disabled {widgets.html_params(value=val, **kwargs, **self.kwargs)}>{label}</option>"
+            )
+            select = select[:insert_idx] + default_option + select[insert_idx:]
+        return select
+
+
+class TextInputIndicator(widgets.TextInput):
+    def __init__(self, input_type: str | None = None) -> None:
+        super().__init__(input_type)
+
+    def __call__(self, field: Field, **kwargs: object) -> Markup:
+        spinner = Markup(
+            f'<img id="spinner" class="htmx-indicator" style="display:inline-block;margin:5px" src="{url_for("static", filename="img/wifi-fade.svg")}" />'
+        )
+        kwargs.setdefault("style", "width:95%;display:inline-block")
+        return super().__call__(field, **kwargs) + spinner
