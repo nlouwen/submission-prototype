@@ -12,12 +12,12 @@ from wtforms import (
 )
 from forms.common import (
     TagListField,
+    EvidenceForm,
     StructureEvidenceForm,
     LocationForm,
     TaxonomyForm,
     FieldListAddBtn,
 )
-from forms.min_entry import MinEntryForm
 
 
 class AuxEnzymeForm(Form):
@@ -89,7 +89,7 @@ class GenomicContextForm(Form):
         "MIBiG crosslink", validators=[validators.Regexp(r"^BGC(\d{7,7})$")]
     )
     evidence = FieldList(
-        FormField(MinEntryForm.EvidenceForm), min_entries=1
+        FormField(EvidenceForm), min_entries=1
     )  # TODO: move evidenceform to common
 
 

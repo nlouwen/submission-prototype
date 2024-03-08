@@ -387,15 +387,29 @@ def query_ncbi():
 
 
 # minimal
-@app.route("/add_evidence", methods=["POST"])
-def add_evidence():
+@app.route("/add_locus", methods=["POST"])
+def add_locus():
     form = MinEntryForm(request.form)
-    form.evidence.append_entry()
+    form.loci.append_entry()
 
     return render_template_string(
         """{% import 'macros.html' as m %}
         {{m.simple_divsubform(field, deletebtn=True)}}""",
-        field=form.evidence[-1],
+        field=form.loci[-1],
+    )
+
+
+@app.route("/add_evidence", methods=["POST"])
+def add_evidence():
+    form = MinEntryForm(request.form)
+    _, locus_idx, _ = request.headers.get("Hx-Trigger").split("-")
+    locus = form.loci[int(locus_idx)]
+    locus.evidence.append_entry()
+
+    return render_template_string(
+        """{% import 'macros.html' as m %}
+        {{m.simple_divsubform(field, deletebtn=True)}}""",
+        field=locus.evidence[-1],
     )
 
 

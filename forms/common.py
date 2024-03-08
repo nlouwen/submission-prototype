@@ -107,6 +107,28 @@ def is_valid_bgc_id(bgc_id: str):
     return False
 
 
+class EvidenceForm(Form):
+    method = SelectField(
+        "Method",
+        choices=[
+            "",
+            "Homology-based prediction",
+            "Correlation of genomic and metabolomic data",
+            "Gene expression correlated with compound production",
+            "Knock-out studies",
+            "Enzymatic assays",
+            "Heterologous expression",
+            "In vitro expression",
+        ],
+        validators=[validators.InputRequired()],
+    )
+    references = TagListField(
+        "Citation(s)",
+        [validators.InputRequired()],
+        description="Comma separated list of references",
+    )
+
+
 class SubtrateEvidenceForm(Form):
     name = SelectField(
         "Name",
