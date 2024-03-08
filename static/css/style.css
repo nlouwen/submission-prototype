@@ -1,9 +1,14 @@
+body {
+  --mibig-light: hsl(200, 60%, 90%);
+  --mibig-blue: hsl(200, 100%, 32%);
+  background-color: var(--bs-gray-400);
+}
+
 .subform {
   padding-left: 25px;
 }
 
 .form-wrapper {
-  --mibig-light: hsl(200, 60%, 90%);
 
   width: 1024px;
   padding: 20px 50px 20px 50px;
@@ -11,18 +16,20 @@
   min-height: 500px;
   height: auto !important;
   background-color: var(--mibig-light);
+  border-radius: var(--bs-border-radius-2xl);
+  border: 15px inset var(--mibig-blue);
 }
 
 .form-group {
-  --mibig-blue: hsl(200, 100%, 32%);
-  /* --mibig-light: hsl(200, 100%, 32%, 15%); */
-  --mibig-light: hsl(200, 60%, 90%);
-  /* background-color: var(--mibig-light); */
   background-color: white;
   border-radius: 10px;
   padding: 10px;
   border: 2px solid var(--mibig-blue);
-  margin: 5px auto
+  margin: 5px auto;
+}
+
+.form-field {
+  margin: 3px;
 }
 
 /* start colour definitions for secondary metabolite types */
