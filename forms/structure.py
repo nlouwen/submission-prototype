@@ -30,27 +30,7 @@ class StructureSingle(Form):
     mass = FloatField(
         "Molecular mass",
         [validators.Optional(), validators.NumberRange(min=0)],
-        description="Monoisotopic m/z of the molecule for the below specified ion type. Use a dot as a decimal point, not a comma.",
-    )
-    ionType = SelectField(
-        "Ion type",
-        choices=[
-            "",
-            "[M+H]+",
-            "[M-H]-",
-            "[M+Na]+",
-            "[2M+Na]+",
-            "[2M+H]+",
-            "[M+2H]2+",
-            "[M+3H]3+",
-            "[M+56Fe-2H]+",
-            "[M+NH4]+",
-            "[M+K]+",
-            "[M+H2O+H]+",
-            "other",
-        ],
-        validators=[validators.Optional()],
-        description="Ion type for reported mass.",
+        description="Monoisotopic mass (Dalton) of the molecule. Use a dot as a decimal point, not a comma.",
     )
     structure = StringField(  # TODO: crossreference chemical database, only if not in one enter SMILES, mass, formula manually
         "SMILES representation",

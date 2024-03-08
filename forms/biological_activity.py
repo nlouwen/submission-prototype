@@ -12,13 +12,27 @@ from wtforms import (
     SubmitField,
     validators,
 )
-from forms.common import FieldListAddBtn
+from forms.common import FieldListAddBtn, SelectDefault, TagListField
 
 
 class AssayForm(Form):
+    class ConcentrationForm(Form):
+        concentration = FloatField(
+            "Concentration",
+            validators=[validators.Optional()],
+        )
+        # TODO: expand units
+        concentration_unit = SelectField(
+            "Unit",
+            widget=SelectDefault(),
+            choices=["mg/mL", "ng/mL", "ng/nL", "milimolar", "nanomolar"],
+            description="Concentration at which the activity is observed",
+        )
+
     # TODO: show hierarchy, default None
     target = SelectField(
-        "Properties",
+        "Property",
+        widget=SelectDefault(),
         choices={
             "chemical properties": [
                 "denitrificative",
@@ -104,15 +118,16 @@ class AssayForm(Form):
             "other": ["other"],
         },
     )
-    concentration = FloatField(
-        "Concentration",
-        validators=[validators.Optional()],
-        description="Concentration at which the activity is/isn't observed",
+    concentration = FormField(ConcentrationForm, label="Concentration (Optional)")
+    references = TagListField(
+        "Citation(s)",
+        description="Comma separated list of references highlighted this activity. If references show different concentration, add them separately.",
     )
-    observed = BooleanField(
-        "Observed activity",
-        description="Leave unticked if the property was not observed at this concentration",
-    )
+    # TODO: remove if no negative data is tracked
+    # observed = BooleanField(
+    #     "Observed activity",
+    #     # description="Leave unticked if the property was not observed at this concentration",
+    # )
 
 
 class BioActivityForm(Form):
