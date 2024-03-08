@@ -14,10 +14,26 @@ from wtforms import (
     Field,
     widgets,
 )
-from forms.common import TagListField, LocationForm, StringFieldAddBtn, FieldListAddBtn
+from forms.common import (
+    TagListField,
+    LocationForm,
+    StringFieldAddBtn,
+    FieldListAddBtn,
+    MultiTextInput,
+    MultiCheckboxField,
+    MultiStringField,
+    TextInputIndicator,
+)
 
 
 class MinEntryForm(Form):
+
+    class TaxonomyForm(Form):
+        ncbi_tax_id = IntegerField("NCBI Taxonomy ID")
+        genus = StringField("Genus")
+        species = StringField("Species")
+        strain = StringField("Strain")
+
     class EvidenceForm(Form):
         method = SelectField(
             "Method",
@@ -33,12 +49,24 @@ class MinEntryForm(Form):
             ],
             validators=[validators.InputRequired()],
         )
-        references = StringField("Citation", [validators.InputRequired()])
+        references = TagListField(
+            "Citation(s)",
+            [validators.InputRequired()],
+            description="Comma separated list of references",
+        )
 
     genome = StringField(
         "Genome identifier",
         [validators.InputRequired()],
+        widget=TextInputIndicator(),
         description="E.g., AL645882. Only use GenBank accessions, not RefSeq accessions or GI numbers.",
+        render_kw={
+            "hx-post": "/query_ncbi",
+            "hx-trigger": "change",
+            "hx-swap": "innerHTML",
+            "hx-target": ".subform#taxonomy",
+            "hx-indicator": "#spinner",
+        },
     )
     location = FormField(
         LocationForm,
@@ -57,7 +85,7 @@ class MinEntryForm(Form):
     evidence = FieldList(
         FormField(EvidenceForm),
         min_entries=1,
-        description="Type of evidence that shows this gene cluster is responsible for the biosynthesis of the designated molecules.",
+        description="Type of evidence that shows this gene cluster is responsible for the biosynthesis of the designated molecule. Papers highlighting multiple methods can be added under each applicable method using the 'Add additional evidence' button.",
         widget=FieldListAddBtn(
             label="Add additional evidence",
             render_kw={
@@ -67,28 +95,12 @@ class MinEntryForm(Form):
             },
         ),
     )
-    # add_evidence = SubmitField(
-    #     "Add additional evidence",
-    #     render_kw={
-    #         "formnovalidate": True,
-    #         "hx-post": "/add_evidence",
-    #         "hx-swap": "beforeend",
-    #         "hx-target": "previous .subform",
-    #     },
-    # )
-    # add_evidence = SubmitField(
-    #     "Add additional evidence", render_kw={"formnovalidate": True}
-    # )
     completeness = SelectField(
         "Completeness",
         choices=["", "Complete", "Incomplete", "Unknown"],
         description="Are all genes needed for production of compounds present?",
     )
-    taxonomy = StringField(
-        "Species name",
-        validators=[validators.InputRequired()],
-        description="Name of organism including strain identifier, e.g. Streptomyces coelicolor A3(2)",
-    )
+    taxonomy = FormField(TaxonomyForm)
     comments = StringField("Additional comments (Optional)")
 
     submit = SubmitField("Submit")

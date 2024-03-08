@@ -23,6 +23,7 @@ from werkzeug.datastructures import MultiDict
 from pathlib import Path
 import json
 import csv
+import time
 
 app = Flask(__name__)
 app.secret_key = "IYKYK"
@@ -181,7 +182,7 @@ def edit_activity(bgc_id: str):
     else:
         # prefill compounds
         try:
-            products = products = next(
+            products = next(
                 csv.reader(
                     [MultiDict(read_data(bgc_id).get("Minimal")).get("products")],
                     skipinitialspace=True,
@@ -314,7 +315,7 @@ def class_buttons(bgc_id: str):
     class_btns = ""
     for cls in classes:
         # class_btns += f"<a href='/edit/{bgc_id}/biosynth/{cls}'><button class='btn btn-light'>{cls}</button><a>"
-        class_btns += f"<a class='btn btn-light' style='margin: 5px' role='button' href='/edit/{bgc_id}/biosynth/{cls}'>{cls}<a>"
+        class_btns += f"<a class='btn btn-light' style='margin: 5px' role='button' href='/edit/{bgc_id}/biosynth/{cls}'>{cls}</a>"
     return class_btns
 
 
@@ -338,6 +339,51 @@ def edit_tailoring(bgc_id: str):
 
 
 ## utils
+# TODO: generalize to obtain present genes etc.
+@app.route("/query_ncbi", methods=["POST"])
+def query_ncbi():
+    """Very rough outline of ncbi query to obtain taxonomy info"""
+    # mock flow
+    time.sleep(5)
+
+    try:
+        # accession = request.form.get("genome")
+        # query ncbi
+        # ncbi_record = Entrez.read(
+        #                 Entrez.efetch(db="nuccore", id=accession, retmode="xml")
+        #             )
+        # organism = ncbi_record[0][
+        #                 "GBSeq_source"
+        #             ]
+        organism = "Streptomyces coelicolor A3(2)"
+
+        # naively parse
+        genus, species, *strain = organism.split()
+
+        # look up organism in ncbi names.dmp for tax id
+        tax_id = 100226
+        message = "Autofilled based on accession, please doublecheck that all data was filled correctly."
+    except:
+        # upon error encountered
+        tax_id, genus, species, strain = ("", "", "", [])
+        message = "Unable to find taxonomy information based on accession, please enter manually."
+
+    formdata = MultiDict(
+        [
+            ("ncbi_tax_id", tax_id),
+            ("genus", genus),
+            ("species", species),
+            ("strain", " ".join(strain)),
+        ]
+    )
+    form = MinEntryForm.TaxonomyForm(formdata)
+    return render_template_string(
+        """{% import 'macros.html' as m %}
+        <span class="form-text text-muted fst-italic">{{message}}</span>
+        {{m.simple_divsubform(field)}}""",
+        field=form,
+        message=message,
+    )
 
 
 # minimal
@@ -487,13 +533,13 @@ def add_tailoring_enzyme():
 def add_tailoring_reaction():
     form = TailoringMultipleForm(request.form)
     _, origin_idx, _ = request.headers.get("Hx-Trigger").split("-")
-    origin_precursor = form.enzymes[int(origin_idx)]
-    origin_precursor.reactions.append_entry()
+    origin_enzyme = form.enzymes[int(origin_idx)]
+    origin_enzyme.reactions.append_entry()
 
     return render_template_string(
         """{% import 'macros.html' as m %}
         {{m.simple_divsubform(field, deletebtn=True)}}""",
-        field=origin_precursor.reactions[-1],
+        field=origin_enzyme.reactions[-1],
     )
 
 
@@ -501,13 +547,13 @@ def add_tailoring_reaction():
 def add_aux_enzyme():
     form = TailoringMultipleForm(request.form)
     _, origin_idx, _ = request.headers.get("Hx-Trigger").split("-", 2)
-    origin_precursor = form.enzymes[int(origin_idx)]
-    origin_precursor.enzyme.auxiliary_enzymes.append_entry()
+    origin_enzyme = form.enzymes[int(origin_idx)]
+    origin_enzyme.enzyme.auxiliary_enzymes.append_entry()
 
     return render_template_string(
         """{% import 'macros.html' as m %}
         {{m.simple_divsubform(field, deletebtn=True)}}""",
-        field=origin_precursor.enzyme.auxiliary_enzymes[-1],
+        field=origin_enzyme.enzyme.auxiliary_enzymes[-1],
     )
 
 
@@ -610,12 +656,6 @@ def add_val_reaction_evidence():
     )
 
 
-@app.route("/addtst", methods=["POST"])
-def addtest():
-    r = request
-    return ""
-
-
 @app.route("/delete", methods=["DELETE"])
 def delete():
     return ""
@@ -626,6 +666,7 @@ def submit():
     return render_template("base.html")
 
 
+## Temp save data to file
 def save_data(bgc_id: str, section_key: str, req_data: MultiDict):
     """Append data to file containing all answers for one BGC"""
     data = {section_key: [(k, v) for k in req_data for v in req_data.getlist(k)]}
@@ -647,7 +688,7 @@ def read_data(bgc_id: str):
 
 def create_new_entry():
     max_entry_id = 0
-    for filepath in Path(".").glob("new*"):
+    for filepath in Path(".").glob("new*_data.json"):
         if (nr := int(filepath.stem[3:6])) > max_entry_id:
             max_entry_id = nr
     bgc_id = f"new{max_entry_id+1:0>3}"
