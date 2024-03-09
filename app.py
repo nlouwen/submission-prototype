@@ -8,6 +8,7 @@ from flask import (
     make_response,
     flash,
 )
+from flask_login import login_required, current_user
 from forms.existing_bgc import SelectExisting
 from forms.structure import StructureMultiple
 from forms.min_entry import MinEntryForm
@@ -25,9 +26,24 @@ import json
 import csv
 import time
 
+from extensions import db, migrate, login_manager
+from auth import auth_blueprint, auth_role
+from models import User
+
 app = Flask(__name__)
 app.secret_key = "IYKYK"
+app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///auth.sqlite3"
 
+db.init_app(app)
+migrate.init_app(app, db)
+login_manager.init_app(app)
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
+
+app.register_blueprint(auth_blueprint)
 
 ### Landing page
 @app.route("/", methods=["GET", "POST"])
@@ -679,6 +695,23 @@ def delete():
 def submit():
     return render_template("base.html")
 
+@app.route("/profile")
+@login_required
+def profile():
+    roles = [role.slug for role in current_user.roles]
+    return render_template("profile.html.j2", name=current_user.name, roles=roles)
+
+@app.route("/submitter")
+@login_required
+@auth_role("submitter")
+def submitter():
+    return render_template("submitter.html.j2", name=current_user.name)
+
+@app.route("/reviewer")
+@login_required
+@auth_role("reviewer")
+def reviewer():
+    return render_template("reviewer.html.j2", name=current_user.name)
 
 ## Temp save data to file
 def save_data(bgc_id: str, section_key: str, req_data: MultiDict):

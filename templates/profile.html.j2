@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block body %}
+
+<div class="content">
+    Hello {{ name }}.
+    {% if "submitter" in roles %}
+    <a href="/submitter">Got to submitter page</a>
+    {% endif %}
+    {% if "reviewer" in roles %}
+    <a href="/reviewer">Got to reviewer page</a>
+    {% endif %}
+    <a href="/auth/logout">Log out</a>
+</div>
+{% endblock %}
