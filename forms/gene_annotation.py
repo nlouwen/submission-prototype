@@ -18,20 +18,31 @@ from forms.common import (
     SelectDefault,
     FunctionEvidenceForm,
     SubtrateEvidenceForm,
+    StructureInput,
 )
 
 
 class AddGeneForm(Form):
-    gene_id = StringField("Gene identifier")
+    gene_id = StringField(
+        "Gene identifier", description="The commonly used gene name (e.g. nisA)"
+    )
     location = FieldList(
         FormField(LocationForm),
-        description="Locations of exons",
+        description="Location of coding sequences (CDS). Please also include the stop codon in the coordinates",
         widget=FieldListAddBtn(
-            label="Add exon location",
+            label="Add CDS location",
         ),
     )
-    strand = SelectField("Strand", choices=[1, -1], widget=SelectDefault())
-    translation = StringField("Translation")
+    strand = SelectField(
+        "Strand",
+        choices=[1, -1],
+        widget=SelectDefault(),
+        description="The directionality of the CDS. '1' indicates forward directionality, '-1' indicates reverse diretionality",
+    )
+    translation = StringField(
+        "Translation",
+        description="The encoded amino acid sequence in one-letter code. Please omit the stop codon",
+    )
 
 
 class DeleteGeneForm(Form):
@@ -96,10 +107,12 @@ class DomainForm(Form):
                 label="Add additional evidence",
             ),
         )
-        structure = StringField("Structure SMILES")  # TODO: standardize smiles
+        structure = StringField(
+            "Substrate structure SMILES", widget=StructureInput()
+        )  # TODO: standardize smiles
 
-    location = FormField(LocationForm)
-    name = StringField()
+    location = FormField(LocationForm, label="Domain location")
+    name = StringField("Domain name")
     substrates = FieldList(
         FormField(SubtrateForm),
         widget=FieldListAddBtn(
@@ -132,5 +145,6 @@ class GeneAnnotationForm(Form):
         widget=FieldListAddBtn(
             label="Add additional domain",
         ),
+        description="Supply location and substrate specificity for NRPS and PKS domains",  # TODO: only NRPS/PKS?
     )
     submit = SubmitField("Submit")

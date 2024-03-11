@@ -173,11 +173,20 @@
         <button class='btn btn-sm btn-danger' style='float: right' hx-delete='/delete' hx-target='closest fieldset'
             hx-swap='outerHTML'>&#x2715;</button>
         {% endif %}
+
+        {% if form.type != "FormField" %}
+        <div class="form-field">
+            {{render_field(form)}}
+        </div>
+        {% else %}
+
         {% for field in form %}
         <div class="form-field">
             {{render_field(field)}}
         </div>
         {% endfor %}
+
+        {% endif %}
 
     </div>
 

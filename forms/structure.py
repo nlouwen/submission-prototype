@@ -39,12 +39,6 @@ class StructureSingle(Form):
             validators.Regexp(regex=re.compile(r"^[\[\]a-zA-Z0-9\@()=\/\\#+.%*-]+$")),
         ],
         widget=StructureInput(),
-        render_kw={
-            "hx-post": "/render-smiles",
-            "hx-trigger": "change, load",
-            "hx-swap": "innerHTML",
-            "hx-target": "next .struct",
-        },
         description="Mandatory for all structurally characterized compounds except for large ones such as most RiPPs and polysaccharides. Chemical structure entered as SMILES string, preferentially isomeric. This can be easily acquired with standard software such as ChemDraw, by, e.g., choosing 'Copy as SMILES'.",
     )
     method = SelectField(  # TODO: add method+citation to 'evidence' formfield, allow multiple

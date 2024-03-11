@@ -131,7 +131,7 @@ class EvidenceForm(Form):
 
 class SubtrateEvidenceForm(Form):
     name = SelectField(
-        "Name",
+        "Method",
         choices=[
             "",
             "Activity assay",
@@ -321,8 +321,21 @@ class TextInputIndicator(widgets.TextInput):
 
 
 class StructureInput(widgets.TextInput):
-    def __init__(self, input_type: str | None = None) -> None:
+    def __init__(
+        self,
+        input_type: str | None = None,
+        render_kw={
+            "hx-post": "/render-smiles",
+            "hx-trigger": "change, load",
+            "hx-swap": "innerHTML",
+            "hx-target": "next .struct",
+        },
+    ) -> None:
         super().__init__(input_type)
+        self.render_kw = render_kw
 
     def __call__(self, field: Field, **kwargs: object) -> Markup:
-        return super().__call__(field, **kwargs) + Markup("<div class='struct'></div>")
+
+        return super().__call__(field, **kwargs, **self.render_kw) + Markup(
+            "<div class='struct'></div>"
+        )

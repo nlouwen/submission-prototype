@@ -17,6 +17,7 @@ from forms.common import (
     StructureEvidenceForm,
     LocationForm,
     FieldListAddBtn,
+    StructureInput,
 )
 
 
@@ -185,10 +186,13 @@ class ReactionSmartsForm(Form):
 
 class ValidatedReactionForm(Form):
     substrate_substructure = StringField(
-        "Substrate (sub)structure (SMILES)"
+        "Substrate (sub)structure (SMILES)", widget=StructureInput()
     )  # TODO: standardize smiles
-    product_substructure = TagListField(
-        "Product (sub)structure(s) (SMILES)"
+    product_substructure = FieldList(
+        StringField(label="Product (sub)structure SMILES", widget=StructureInput()),
+        label="Product (sub)structure(s)",
+        min_entries=1,
+        widget=FieldListAddBtn(label="Add product (sub)structure"),
     )  # TODO: standardize smiles
     isBalanced = BooleanField(
         "Is the validated reaction balanced (i.e. stoichiometric complete)?"
@@ -231,10 +235,9 @@ class ReactionForm(Form):
     reaction_smarts = FieldList(
         FormField(ReactionSmartsForm),
         min_entries=1,
+        max_entries=1,
         label="Reaction SMARTS",
-        widget=FieldListAddBtn(
-            label="Add additional reaction SMARTS",
-        ),
+        widget=FieldListAddBtn(render_kw={"style": "display:none"}),
     )
     validated_reactions = FieldList(
         FormField(ValidatedReactionForm),

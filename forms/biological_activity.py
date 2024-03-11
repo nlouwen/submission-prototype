@@ -25,7 +25,16 @@ class AssayForm(Form):
         concentration_unit = SelectField(
             "Unit",
             widget=SelectDefault(),
-            choices=["mg/mL", "ng/mL", "ng/nL", "milimolar", "nanomolar"],
+            choices=[
+                "mg/mL",
+                "µg/mL",
+                "ng/mL",
+                "pg/mL",
+                "milimolar",
+                "micromolar",
+                "nanomolar",
+                "picomolar",
+            ],
             description="Concentration at which the activity is observed",
         )
 

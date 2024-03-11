@@ -74,7 +74,10 @@ class MinEntryForm(Form):
     b_class = SelectMultipleField(
         "Biosynthetic class(es)",
         choices=["NRPS", "PKS", "Ribosomal", "Saccharide", "Terpene", "Other"],
-        description="Hold ctrl or cmd key to select multiple classes in the case of a hybrid gene cluster. Select all categories that apply: e.g., a polyketide with sugar monomers attached should be both 'Polyketide' and 'Saccharide'.",
+        description="Hold ctrl or cmd key to select multiple classes in the case of a hybrid gene cluster. "
+        "Select all categories that apply: e.g. a compound resulting from a BGC with both non-ribosomal "
+        "and polyketide synthases should be both 'NRPS' and 'PKS', while a BGC with both a polyketide "
+        "synthase and a glycosyltransferase would be 'PKS' and 'Saccharide'.",
     )
     products = TagListField(
         "Product(s)",
@@ -85,7 +88,7 @@ class MinEntryForm(Form):
     completeness = SelectField(
         "Completeness",
         choices=["", "Complete", "Incomplete", "Unknown"],
-        description="Are all genes needed for production of compounds present?",
+        description="Are all genes needed for production of compounds present in the specified locus/loci?",
     )
     taxonomy = FormField(TaxonomyForm)
     comments = StringField("Additional comments (Optional)")

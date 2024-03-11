@@ -122,13 +122,15 @@ class RibosomalForm(Form):
         core_sequence = StringField(
             "Core sequence", description="Core sequence of precursor in amino acids."
         )
-        leader_cleavage_location = FormField(LocationForm, "Leader cleavage location")
+        leader_cleavage_location = FormField(
+            LocationForm, "Leader cleavage location (Optional)"
+        )
         follower_cleavage_location = FormField(
-            LocationForm, "Follower cleavage location"
+            LocationForm, "Follower cleavage location (Optional)"
         )
         crosslinks = FieldList(
             FormField(CrosslinkForm),
-            "Crosslinks",
+            "Crosslinks (Optional)",
             min_entries=0,
             widget=FieldListAddBtn(
                 label="Add additional crosslink",
@@ -137,7 +139,7 @@ class RibosomalForm(Form):
         # add_crosslinks = SubmitField(
         #     "Add crosslink", render_kw={"formnovalidate": True}
         # )
-        recognition_motif = StringField("Recognition motif")
+        recognition_motif = StringField("Recognition motif (Optional)")
 
     subclass = SelectField(
         "Sub-class",
@@ -182,7 +184,7 @@ class RibosomalForm(Form):
     # Only if not unmodified
     details = StringField("Details (Optional)")
     peptidases = TagListField(
-        "Peptidase(s)",
+        "Peptidase(s) (Optional)",
         validators=[ValidatTagListRegexp(r"^[^, ]*$")],
         description="Comma separated list of peptidase gene IDs",
     )
