@@ -339,9 +339,8 @@ def add_general():
             final.append_entry()
             return render_template_string(
                 """{% import 'macros.html' as m %}
-                {{m.simple_divsubform(field, struct=is_struct, deletebtn=True)}}""",
+                {{m.simple_divsubform(field, deletebtn=True)}}""",
                 field=final[-1],
-                is_struct=bool(formname == "structure"),
             )
 
         else:

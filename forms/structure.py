@@ -11,7 +11,7 @@ from wtforms import (
     FloatField,
     SelectField,
 )
-from forms.common import TagListField, FieldListAddBtn
+from forms.common import TagListField, FieldListAddBtn, StructureInput
 import re
 
 
@@ -38,6 +38,7 @@ class StructureSingle(Form):
             validators.Optional(),
             validators.Regexp(regex=re.compile(r"^[\[\]a-zA-Z0-9\@()=\/\\#+.%*-]+$")),
         ],
+        widget=StructureInput(),
         render_kw={
             "hx-post": "/render-smiles",
             "hx-trigger": "change, load",
@@ -123,14 +124,16 @@ class StructureSingle(Form):
     )
     cyclic = BooleanField("Cyclic Compound?")
     moieties = TagListField(
-        "Moieties (Optional)", description="Chemical moieties found in compound."
+        "Moieties (Optional)",
+        description="Characteristic and/or noteworthy chemical moieties found in compound.",
     )
     references = StringField(
         "Citation(s)", description="Comma separated list of references on this compound"
     )  # TODO: standardize
     db_cross = StringField(
         "Database cross-links (Optional)",
-        description="Database cross-reference for this compound (pubchem, chebi, chembl, chemspider, npatlas, lotus, gnps, cyanometdb), e.g. pubchem:3081434 or npatlas:NPA004746",
+        description="Database cross-reference for this compound (pubchem, chebi, chembl, chemspider, npatlas, lotus, gnps, cyanometdb), "
+        "e.g. pubchem:3081434 or chebi:29016 or chembl:CHEMBL414130 or chemspider:6082 or npatlas:NPA004746 or lotus:Q27102265 or gnps:MSV000087858 or cyanometdb:CyanoMetDB_0002",
     )  # TODO: validate input
 
 

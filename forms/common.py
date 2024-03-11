@@ -125,7 +125,7 @@ class EvidenceForm(Form):
     references = TagListField(
         "Citation(s)",
         [validators.InputRequired()],
-        description="Comma separated list of references",
+        description="Comma separated list of references. Accepted formats are: 'doi:10.1016/j.chembiol.2020.11.009', 'PMID:33321099'",
     )
 
 
@@ -318,3 +318,11 @@ class TextInputIndicator(widgets.TextInput):
         )
         kwargs.setdefault("style", "width:95%;display:inline-block")
         return super().__call__(field, **kwargs) + spinner
+
+
+class StructureInput(widgets.TextInput):
+    def __init__(self, input_type: str | None = None) -> None:
+        super().__init__(input_type)
+
+    def __call__(self, field: Field, **kwargs: object) -> Markup:
+        return super().__call__(field, **kwargs) + Markup("<div class='struct'></div>")
