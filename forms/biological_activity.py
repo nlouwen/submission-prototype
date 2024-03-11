@@ -38,7 +38,7 @@ class AssayForm(Form):
             description="Concentration at which the activity is observed",
         )
 
-    # TODO: show hierarchy, default None
+    # TODO: show hierarchy, e.g. ionophore has deeper level: chalcophore etc.
     target = SelectField(
         "Property",
         widget=SelectDefault(),
@@ -127,16 +127,11 @@ class AssayForm(Form):
             "other": ["other"],
         },
     )
-    concentration = FormField(ConcentrationForm, label="Concentration (Optional)")
     references = TagListField(
         "Citation(s)",
         description="Comma separated list of references highlighted this activity. If references show different concentration, add them separately.",
     )
-    # TODO: remove if no negative data is tracked
-    # observed = BooleanField(
-    #     "Observed activity",
-    #     # description="Leave unticked if the property was not observed at this concentration",
-    # )
+    concentration = FormField(ConcentrationForm, label="Concentration (Optional)")
 
 
 class BioActivityForm(Form):

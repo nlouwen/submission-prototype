@@ -19,18 +19,6 @@ from forms.common import (
     FieldListAddBtn,
 )
 
-# class BiosyntheticClassesForm(Form):
-#     b_class = SelectField(
-#         "Biosynthetix class",
-#         choices=["NRPS", "PKS", "Ribosomal", "Saccharide", "Terpene", "Other"],
-#         render_kw={
-#             "hx-post": "/get_class",
-#             "hx-target": "next div",
-#             "hx-trigger": "change",
-#             "placeholder": "Select class",
-#         },
-#     )
-
 
 class NRPSForm(Form):
     class ReleaseTypeForm(Form):
@@ -66,9 +54,6 @@ class NRPSForm(Form):
             label="Add additional release type",
         ),
     )
-    # add_release_type = SubmitField(
-    #     "Add release-type", render_kw={"formnovalidate": True}
-    # )
     thioesterases = FieldList(
         FormField(ThioesteraseForm),
         min_entries=1,
@@ -76,9 +61,6 @@ class NRPSForm(Form):
             label="Add additional thioesterase",
         ),
     )
-    # add_thioesterase = SubmitField(
-    #     "Add thioesterase", render_kw={"formnovalidate": True}
-    # )
     submit = SubmitField("Submit")
 
 
@@ -136,9 +118,6 @@ class RibosomalForm(Form):
                 label="Add additional crosslink",
             ),
         )
-        # add_crosslinks = SubmitField(
-        #     "Add crosslink", render_kw={"formnovalidate": True}
-        # )
         recognition_motif = StringField("Recognition motif (Optional)")
 
     subclass = SelectField(
@@ -196,7 +175,6 @@ class RibosomalForm(Form):
             label="Add additional precursor",
         ),
     )
-    # add_precursors = SubmitField("Add precursor", render_kw={"formnovalidate": True})
     submit = SubmitField("Submit")
 
 
@@ -250,9 +228,6 @@ class SaccharideForm(Form):
             label="Add additional glycosyltransferase",
         ),
     )
-    # add_glycosyltransferase = SubmitField(
-    #     "Add glycosyltransferase", render_kw={"formnovalidate": True}
-    # )
     subclusters = FieldList(
         FormField(SubclusterForm),
         "Subcluster(s)",
@@ -261,7 +236,6 @@ class SaccharideForm(Form):
             label="Add additional subcluster",
         ),
     )
-    # add_subcluster = SubmitField("Add subcluster", render_kw={"formnovalidate": True})
     submit = SubmitField("Submit")
 
 

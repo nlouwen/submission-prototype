@@ -7,6 +7,7 @@ from flask import (
     url_for,
     make_response,
     flash,
+    Response,
 )
 from forms.existing_bgc import SelectExisting
 from forms.edit_select import EditSelectForm
@@ -46,7 +47,6 @@ def index():
     return render_template("index.html", form=form)
 
 
-## TODO: Submit new
 @app.route("/WIP")
 def work_in_progress():
     return render_template("WIP.html")
@@ -285,44 +285,45 @@ def edit_annotation(bgc_id: str):
 def query_ncbi():
     """Very rough outline of ncbi query to obtain taxonomy info"""
     # mock flow
-    time.sleep(5)
+    if request.headers.get("Hx-Trigger") != "loci-0-genome":
+        return Response(status=204)
+    else:
+        time.sleep(3)
 
-    try:
-        # accession = request.form.get("genome")
-        # query ncbi
-        # ncbi_record = Entrez.read(
-        #                 Entrez.efetch(db="nuccore", id=accession, retmode="xml")
-        #             )
-        # organism = ncbi_record[0][
-        #                 "GBSeq_source"
-        #             ]
-        organism = "Streptomyces coelicolor A3(2)"
+        try:
+            # accession = request.form.get("loci-0-genome")
+            # query ncbi
+            # ncbi_record = Entrez.read(
+            #     Entrez.efetch(db="nuccore", id=accession, retmode="xml")
+            # )
+            # organism = ncbi_record[0]["GBSeq_source"]
+            organism = "Streptomyces coelicolor A3(2)"
 
-        # naively parse
-        genus, species, *strain = organism.split()
+            # naively parse
+            genus, species, *strain = organism.split()
 
-        # look up organism in ncbi names.dmp for tax id
-        tax_id = 100226
-        message = "Autofilled based on accession, please doublecheck that all data was filled correctly."
-    except:
-        # upon error encountered
-        tax_id, genus, species, strain = ("", "", "", [])
-        message = "Unable to find taxonomy information based on accession, please enter manually."
+            # look up organism in ncbi names.dmp for tax id
+            tax_id = 100226
+            message = "Autofilled based on accession, please doublecheck that all data was filled correctly."
+        except:
+            # upon error encountered
+            tax_id, genus, species, strain = ("", "", "", [])
+            message = "Unable to find taxonomy information based on accession, please enter manually."
 
-    formdata = MultiDict(
-        [
-            ("ncbi_tax_id", tax_id),
-            ("genus", genus),
-            ("species", species),
-            ("strain", " ".join(strain)),
-        ]
-    )
-    form = FormCollection.minimal.TaxonomyForm(formdata)
+        formdata = MultiDict(
+            [
+                ("taxonomy-ncbi_tax_id", tax_id),
+                ("taxonomy-genus", genus),
+                ("taxonomy-species", species),
+                ("taxonomy-strain", " ".join(strain)),
+            ]
+        )
+    form = FormCollection.minimal(formdata)
     return render_template_string(
         """{% import 'macros.html' as m %}
         <span class="form-text text-muted fst-italic">{{message}}</span>
         {{m.simple_divsubform(field)}}""",
-        field=form,
+        field=form.taxonomy,
         message=message,
     )
 

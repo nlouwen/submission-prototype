@@ -251,6 +251,7 @@ class ReactionForm(Form):
 class TailoringForm(Form):
     enzyme = FieldList(
         FormField(EnzymeForm),
+        label="About the enzyme",
         min_entries=1,
         max_entries=1,
         widget=FieldListAddBtn(render_kw={"style": "display:none"}),

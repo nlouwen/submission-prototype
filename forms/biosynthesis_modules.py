@@ -34,7 +34,7 @@ class NRPS_I_Form(Form):
     genes = TagListField("Gene(s)")
     integrated_monomers = FieldList(FormField(MonomerForm))  # TODO: add btn
     modification_domains = (
-        None  # TODO: array with oneOf 10 domain types, with their own schema... how?
+        None  # TODO: array with oneOf 10 domain types, with their own schema
     )
     name = StringField("Name")
 
