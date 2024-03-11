@@ -137,16 +137,8 @@ class BioActivityForm(Form):
         min_entries=0,
         widget=FieldListAddBtn(
             label="Add assay",
-            render_kw={
-                "formnovalidate": True,
-                "hx-post": "/add_assay",
-                "hx-swap": "beforebegin",
-            },
         ),
     )
-    # add = SubmitField(
-    #     "", render_kw={"value": "Add additional activity", "formnovalidate": True}
-    # )
 
 
 class BioActivityMultiple(Form):
@@ -154,11 +146,6 @@ class BioActivityMultiple(Form):
         FormField(BioActivityForm),
         widget=FieldListAddBtn(
             label="Add compound",
-            render_kw={
-                "formnovalidate": True,
-                "hx-post": "/add_bioact_compound",
-                "hx-swap": "beforebegin",
-            },
         ),
     )
     submit = SubmitField("Submit")

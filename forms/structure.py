@@ -140,11 +140,6 @@ class StructureMultiple(Form):
         min_entries=0,
         widget=FieldListAddBtn(
             label="Add additional compound",
-            render_kw={
-                "formnovalidate": True,
-                "hx-post": "/add_compound",
-                "hx-swap": "beforebegin",
-            },
         ),
     )
     # add = SubmitField("Add another compound")

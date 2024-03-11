@@ -103,7 +103,7 @@ def edit_structure(bgc_id: str):
             form.structures.append_entry()
             return render_template("structure.html", form=form, bgc_id=bgc_id)
         elif form.submit.data and form.validate():
-            # return form.data  # TODO: save to db
+            # TODO: save to db
             save_data(bgc_id, "Structure", request.form)
             flash("Submitted structure information!")
             return redirect(url_for("edit_bgc", bgc_id=bgc_id))
@@ -163,18 +163,12 @@ def edit_activity(bgc_id: str):
         form = FormCollection.bioact(MultiDict(read_data(bgc_id).get("Bio_activity")))
     else:
         form = FormCollection.bioact(request.form)
-    if request.method == "POST":
-        # for activity in form.activities:
-        #     if activity.add.data:
-        #         activity.assay.append_entry()
-        #         return render_template(
-        #             "biological_activity.html", bgc_id=bgc_id, form=form
-        #         )
-        if form.submit.data and form.validate():
-            # return form.data # TODO: save to db
-            save_data(bgc_id, "Bio_activity", request.form)
-            flash("Submitted activity information!")
-            return redirect(url_for("edit_bgc", bgc_id=bgc_id))
+    if request.method == "POST" and form.validate():
+        # TODO: save to db
+        save_data(bgc_id, "Bio_activity", request.form)
+        flash("Submitted activity information!")
+        return redirect(url_for("edit_bgc", bgc_id=bgc_id))
+
     else:
         # prefill compounds
         try:
@@ -199,14 +193,6 @@ def edit_biosynth(bgc_id: str):
     if not is_valid_bgc_id(bgc_id):
         return "Invalid existing entry!", 404
 
-    # if request.method == "POST":
-    #     b_class = request.form.get("b_class")
-    #     form = getattr(FormCollection, b_class)(request.form)
-
-    #     return form.data
-    # return request.form
-
-    # form = BiosyntheticClassesForm(request.form)
     return render_template("biosynthesis.html", bgc_id=bgc_id)
 
 
@@ -222,70 +208,11 @@ def edit_biosynth_class(bgc_id: str, b_class: str):
     else:
         form = getattr(FormCollection, b_class)(request.form)
 
-    if request.method == "POST":
-
-        # Add extra NRPS fields
-        # if form.data.get("add_release_type"):
-        #     form.release_types.append_entry()
-        #     return render_template(
-        #         "biosynth_class_specific.html",
-        #         form=form,
-        #         b_class=b_class,
-        #         bgc_id=bgc_id,
-        #     )
-        # if form.data.get("add_thioesterase"):
-        #     form.thioesterases.append_entry()
-        #     return render_template(
-        #         "biosynth_class_specific.html",
-        #         form=form,
-        #         b_class=b_class,
-        #         bgc_id=bgc_id,
-        #     )
-
-        # Add extra Ribosomal fields
-        # if form.data.get("precursors"):
-        #     if form.data.get("add_precursors"):
-        #         form.precursors.append_entry()
-        #         return render_template(
-        #             "biosynth_class_specific.html",
-        #             form=form,
-        #             b_class=b_class,
-        #             bgc_id=bgc_id,
-        #         )
-        #     for precursor in form.precursors:
-        #         if precursor.data.get("add_crosslinks"):
-        #             precursor.crosslinks.append_entry()
-        #             return render_template(
-        #                 "biosynth_class_specific.html",
-        #                 form=form,
-        #                 b_class=b_class,
-        #                 bgc_id=bgc_id,
-        #             )
-
-        # # Add extra Saccharide fields
-        # if form.data.get("add_glycosyltransferase"):
-        #     form.glycosyltransferases.append_entry()
-        #     return render_template(
-        #         "biosynth_class_specific.html",
-        #         form=form,
-        #         b_class=b_class,
-        #         bgc_id=bgc_id,
-        #     )
-        # if form.data.get("add_subcluster"):
-        #     form.subclusters.append_entry()
-        #     return render_template(
-        #         "biosynth_class_specific.html",
-        #         form=form,
-        #         b_class=b_class,
-        #         bgc_id=bgc_id,
-        #     )
-
-        # if no adds were triggered, validate and process data
-        if form.validate():
-            save_data(bgc_id, f"BioSynth_{b_class}", request.form)
-            flash(f"Submitted {b_class} biosynthesis information!")
-            return redirect(url_for("edit_bgc", bgc_id=bgc_id))
-            # return form.data
+    if request.method == "POST" and form.validate():
+        # TODO: save to db
+        save_data(bgc_id, f"BioSynth_{b_class}", request.form)
+        flash(f"Submitted {b_class} biosynthesis information!")
+        return redirect(url_for("edit_bgc", bgc_id=bgc_id))
 
     return render_template(
         "biosynth_class_specific.html", form=form, b_class=b_class, bgc_id=bgc_id
@@ -400,290 +327,6 @@ def query_ncbi():
     )
 
 
-# minimal
-@app.route("/add_locus", methods=["POST"])
-def add_locus():
-    form = FormCollection.minimal(request.form)
-    form.loci.append_entry()
-
-    return render_template_string(
-        """{% import 'macros.html' as m %}
-        {{m.simple_divsubform(field, deletebtn=True)}}""",
-        field=form.loci[-1],
-    )
-
-
-@app.route("/add_evidence", methods=["POST"])
-def add_evidence():
-    form = FormCollection.minimal(request.form)
-    _, locus_idx, _ = request.headers.get("Hx-Trigger").split("-")
-    locus = form.loci[int(locus_idx)]
-    locus.evidence.append_entry()
-
-    return render_template_string(
-        """{% import 'macros.html' as m %}
-        {{m.simple_divsubform(field, deletebtn=True)}}""",
-        field=locus.evidence[-1],
-    )
-
-
-# structures
-@app.route("/add_compound", methods=["POST"])
-def add_compound():
-    form = FormCollection.structure(request.form)
-    form.structures.append_entry()
-
-    return render_template_string(
-        """{% import 'macros.html' as m %}
-        {{m.simple_divsubform(field, struct=True, deletebtn=True)}}""",
-        field=form.structures[-1],
-    )
-
-
-# Bio activities
-@app.route("/add_assay", methods=["POST"])
-def add_assay():
-    form = FormCollection.bioact(request.form)
-    _, origin_idx, _ = request.headers.get("Hx-Trigger").split("-")
-    origin_activity = form.activities[int(origin_idx)]
-    origin_activity.assays.append_entry()
-
-    return render_template_string(
-        """{% import 'macros.html' as m %}
-        {{m.simple_divsubform(field, deletebtn=True)}}""",
-        field=origin_activity.assays[-1],
-    )
-
-
-@app.route("/add_bioact_compound", methods=["POST"])
-def add_bioact_compound():
-    form = FormCollection.bioact(request.form)
-    form.activities.append_entry()
-
-    return render_template_string(
-        """{% import 'macros.html' as m %}
-        {{m.simple_divsubform(field, deletebtn=True)}}""",
-        field=form.activities[-1],
-    )
-
-
-# NRPS
-@app.route("/add_release", methods=["POST"])
-def add_release():
-    form = FormCollection.NRPS(request.form)
-    form.release_types.append_entry()
-
-    return render_template_string(
-        """{% import 'macros.html' as m %}
-        {{m.simple_divsubform(field, deletebtn=True)}}""",
-        field=form.release_types[-1],
-    )
-
-
-@app.route("/add_thioesterase", methods=["POST"])
-def add_thioesterase():
-    form = FormCollection.NRPS(request.form)
-    form.thioesterases.append_entry()
-
-    return render_template_string(
-        """{% import 'macros.html' as m %}
-        {{m.simple_divsubform(field, deletebtn=True)}}""",
-        field=form.thioesterases[-1],
-    )
-
-
-# ribosomal
-@app.route("/add_precursor", methods=["POST"])
-def add_precursor():
-    form = FormCollection.Ribosomal(request.form)
-    form.precursors.append_entry()
-
-    return render_template_string(
-        """{% import 'macros.html' as m %}
-        {{m.simple_divsubform(field, deletebtn=True)}}""",
-        field=form.precursors[-1],
-    )
-
-
-@app.route("/add_crosslink", methods=["POST"])
-def add_crosslink():
-    form = FormCollection.Ribosomal(request.form)
-    _, origin_idx, _ = request.headers.get("Hx-Trigger").split("-")
-    origin_precursor = form.precursors[int(origin_idx)]
-    origin_precursor.crosslinks.append_entry()
-
-    return render_template_string(
-        """{% import 'macros.html' as m %}
-        {{m.simple_divsubform(field, deletebtn=True)}}""",
-        field=origin_precursor.crosslinks[-1],
-    )
-
-
-# saccharide
-@app.route("/add_glycosyltransferase", methods=["POST"])
-def add_glycosyltransferase():
-    form = FormCollection.Saccharide(request.form)
-    form.glycosyltransferases.append_entry()
-
-    return render_template_string(
-        """{% import 'macros.html' as m %}
-        {{m.simple_divsubform(field, deletebtn=True)}}""",
-        field=form.glycosyltransferases[-1],
-    )
-
-
-@app.route("/add_subcluster", methods=["POST"])
-def add_subcluster():
-    form = FormCollection.Saccharide(request.form)
-    form.subclusters.append_entry()
-
-    return render_template_string(
-        """{% import 'macros.html' as m %}
-        {{m.simple_divsubform(field, deletebtn=True)}}""",
-        field=form.subclusters[-1],
-    )
-
-
-# tailoring
-@app.route("/add_tailoring_enzyme", methods=["POST"])
-def add_tailoring_enzyme():
-    form = FormCollection.tailoring(request.form)
-    form.enzymes.append_entry()
-
-    return render_template_string(
-        """{% import 'macros.html' as m %}
-        {{m.simple_divsubform(field, deletebtn=True)}}""",
-        field=form.enzymes[-1],
-    )
-
-
-@app.route("/add_tailoring_reaction", methods=["POST"])
-def add_tailoring_reaction():
-    form = FormCollection.tailoring(request.form)
-    _, origin_idx, _ = request.headers.get("Hx-Trigger").split("-")
-    origin_enzyme = form.enzymes[int(origin_idx)]
-    origin_enzyme.reactions.append_entry()
-
-    return render_template_string(
-        """{% import 'macros.html' as m %}
-        {{m.simple_divsubform(field, deletebtn=True)}}""",
-        field=origin_enzyme.reactions[-1],
-    )
-
-
-@app.route("/add_aux_enzyme", methods=["POST"])
-def add_aux_enzyme():
-    form = FormCollection.tailoring(request.form)
-    _, origin_idx, _ = request.headers.get("Hx-Trigger").split("-", 2)
-    origin_enzyme = form.enzymes[int(origin_idx)]
-    origin_enzyme.enzyme.auxiliary_enzymes.append_entry()
-
-    return render_template_string(
-        """{% import 'macros.html' as m %}
-        {{m.simple_divsubform(field, deletebtn=True)}}""",
-        field=origin_enzyme.enzyme.auxiliary_enzymes[-1],
-    )
-
-
-@app.route("/add_ontology", methods=["POST"])
-def add_ontology():
-    form = FormCollection.tailoring(request.form)
-    _, enzyme_idx, _, reaction_idx, _ = request.headers.get("Hx-Trigger").split("-")
-    enzyme = form.enzymes[int(enzyme_idx)]
-    reaction = enzyme.reactions[int(reaction_idx)]
-    reaction.tailoring.append_entry()
-
-    return render_template_string(
-        """{% import 'macros.html' as m %}
-        {{m.simple_divsubform(field, deletebtn=True)}}""",
-        field=reaction.tailoring[-1],
-    )
-
-
-@app.route("/add_smarts", methods=["POST"])
-def add_smarts():
-    form = FormCollection.tailoring(request.form)
-    _, enzyme_idx, _, reaction_idx, _ = request.headers.get("Hx-Trigger").split("-")
-    enzyme = form.enzymes[int(enzyme_idx)]
-    reaction = enzyme.reactions[int(reaction_idx)]
-    reaction.reaction_smarts.append_entry()
-
-    return render_template_string(
-        """{% import 'macros.html' as m %}
-        {{m.simple_divsubform(field, deletebtn=True)}}""",
-        field=reaction.reaction_smarts[-1],
-    )
-
-
-@app.route("/add_val_reaction", methods=["POST"])
-def add_val_reaction():
-    form = FormCollection.tailoring(request.form)
-    _, enzyme_idx, _, reaction_idx, _ = request.headers.get("Hx-Trigger").split("-")
-    enzyme = form.enzymes[int(enzyme_idx)]
-    reaction = enzyme.reactions[int(reaction_idx)]
-    reaction.validated_reactions.append_entry()
-
-    return render_template_string(
-        """{% import 'macros.html' as m %}
-        {{m.simple_divsubform(field, deletebtn=True)}}""",
-        field=reaction.validated_reactions[-1],
-    )
-
-
-@app.route("/add_hydrogen", methods=["POST"])
-def add_hydrogen():
-    form = FormCollection.tailoring(request.form)
-    _, enzyme_idx, _, reaction_idx, _, smarts_idx, _ = request.headers.get(
-        "Hx-Trigger"
-    ).split("-")
-    enzyme = form.enzymes[int(enzyme_idx)]
-    reaction = enzyme.reactions[int(reaction_idx)]
-    smarts = reaction.reaction_smarts[int(smarts_idx)]
-    smarts.explicitHydrogen.append_entry()
-
-    return render_template_string(
-        """{% import 'macros.html' as m %}
-        {{m.simple_divsubform(field, deletebtn=True)}}""",
-        field=smarts.explicitHydrogen[-1],
-    )
-
-
-@app.route("/add_tail_reaction_smarts_evidence", methods=["POST"])
-def add_tail_reaction_smarts_evidence():
-    form = FormCollection.tailoring(request.form)
-    _, enzyme_idx, _, reaction_idx, _, smarts_idx, _ = request.headers.get(
-        "Hx-Trigger"
-    ).split("-")
-    enzyme = form.enzymes[int(enzyme_idx)]
-    reaction = enzyme.reactions[int(reaction_idx)]
-    smarts = reaction.reaction_smarts[int(smarts_idx)]
-    smarts.evidence_sm.append_entry()
-
-    return render_template_string(
-        """{% import 'macros.html' as m %}
-        {{m.simple_divsubform(field, deletebtn=True)}}""",
-        field=smarts.evidence_sm[-1],
-    )
-
-
-@app.route("/add_val_reaction_evidence", methods=["POST"])
-def add_val_reaction_evidence():
-    form = FormCollection.tailoring(request.form)
-    _, enzyme_idx, _, reaction_idx, _, val_idx, _ = request.headers.get(
-        "Hx-Trigger"
-    ).split("-")
-    enzyme = form.enzymes[int(enzyme_idx)]
-    reaction = enzyme.reactions[int(reaction_idx)]
-    val = reaction.reaction_smarts[int(val_idx)]
-    val.evidence_val.append_entry()
-
-    return render_template_string(
-        """{% import 'macros.html' as m %}
-        {{m.simple_divsubform(field, deletebtn=True)}}""",
-        field=val.evidence_val[-1],
-    )
-
-
 @app.route("/add_general", methods=["POST"])
 def add_general():
     directions = request.headers["Hx-Trigger"].split("-")
@@ -696,8 +339,9 @@ def add_general():
             final.append_entry()
             return render_template_string(
                 """{% import 'macros.html' as m %}
-                {{m.simple_divsubform(field, deletebtn=True)}}""",
+                {{m.simple_divsubform(field, struct=is_struct, deletebtn=True)}}""",
                 field=final[-1],
+                is_struct=bool(formname == "structure"),
             )
 
         else:

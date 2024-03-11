@@ -64,11 +64,6 @@ class NRPSForm(Form):
         min_entries=1,
         widget=FieldListAddBtn(
             label="Add additional release type",
-            render_kw={
-                "formnovalidate": True,
-                "hx-post": "/add_release",
-                "hx-swap": "beforebegin",
-            },
         ),
     )
     # add_release_type = SubmitField(
@@ -79,11 +74,6 @@ class NRPSForm(Form):
         min_entries=1,
         widget=FieldListAddBtn(
             label="Add additional thioesterase",
-            render_kw={
-                "formnovalidate": True,
-                "hx-post": "/add_thioesterase",
-                "hx-swap": "beforebegin",
-            },
         ),
     )
     # add_thioesterase = SubmitField(
@@ -142,11 +132,6 @@ class RibosomalForm(Form):
             min_entries=0,
             widget=FieldListAddBtn(
                 label="Add additional crosslink",
-                render_kw={
-                    "formnovalidate": True,
-                    "hx-post": "/add_crosslink",
-                    "hx-swap": "beforebegin",
-                },
             ),
         )
         # add_crosslinks = SubmitField(
@@ -207,11 +192,6 @@ class RibosomalForm(Form):
         min_entries=1,
         widget=FieldListAddBtn(
             label="Add additional precursor",
-            render_kw={
-                "formnovalidate": True,
-                "hx-post": "/add_precursor",
-                "hx-swap": "beforebegin",
-            },
         ),
     )
     # add_precursors = SubmitField("Add precursor", render_kw={"formnovalidate": True})
@@ -266,11 +246,6 @@ class SaccharideForm(Form):
         min_entries=0,
         widget=FieldListAddBtn(
             label="Add additional glycosyltransferase",
-            render_kw={
-                "formnovalidate": True,
-                "hx-post": "/add_glycosyltransferase",
-                "hx-swap": "beforebegin",
-            },
         ),
     )
     # add_glycosyltransferase = SubmitField(
@@ -282,11 +257,6 @@ class SaccharideForm(Form):
         min_entries=0,
         widget=FieldListAddBtn(
             label="Add additional subcluster",
-            render_kw={
-                "formnovalidate": True,
-                "hx-post": "/add_subcluster",
-                "hx-swap": "beforebegin",
-            },
         ),
     )
     # add_subcluster = SubmitField("Add subcluster", render_kw={"formnovalidate": True})

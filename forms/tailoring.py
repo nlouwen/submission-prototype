@@ -9,6 +9,7 @@ from wtforms import (
     FormField,
     IntegerField,
     validators,
+    widgets,
 )
 from forms.common import (
     TagListField,
@@ -43,11 +44,6 @@ class EnzymeForm(Form):
         label="Auxiliary enzymes (Optional)",
         widget=FieldListAddBtn(
             label="Add auxiliary enzyme",
-            render_kw={
-                "formnovalidate": True,
-                "hx-post": "/add_aux_enzyme",
-                "hx-swap": "beforebegin",
-            },
         ),
     )
     references = TagListField(
@@ -171,11 +167,6 @@ class ReactionSmartsForm(Form):
         label="Explicit hydrogens",
         widget=FieldListAddBtn(
             label="Add explicit hydrogen",
-            render_kw={
-                "formnovalidate": True,
-                "hx-post": "/add_hydrogen",
-                "hx-swap": "beforebegin",
-            },
         ),
     )
     databaseIds = TagListField(
@@ -188,11 +179,6 @@ class ReactionSmartsForm(Form):
         label="Evidence",
         widget=FieldListAddBtn(
             label="Add additional evidence",
-            render_kw={
-                "formnovalidate": True,
-                "hx-post": "/add_tail_reaction_smarts_evidence",
-                "hx-swap": "beforebegin",
-            },
         ),
     )
 
@@ -226,11 +212,6 @@ class ValidatedReactionForm(Form):
         label="Evidence",
         widget=FieldListAddBtn(
             label="Add additional evidence",
-            render_kw={
-                "formnovalidate": True,
-                "hx-post": "/add_val_reaction_evidence",
-                "hx-swap": "beforebegin",
-            },
         ),
     )
 
@@ -242,11 +223,6 @@ class ReactionForm(Form):
         min_entries=1,
         widget=FieldListAddBtn(
             label="Add additional ontology",
-            render_kw={
-                "formnovalidate": True,
-                "hx-post": "/add_ontology",
-                "hx-swap": "beforebegin",
-            },
         ),
     )
     description = StringField(
@@ -258,11 +234,6 @@ class ReactionForm(Form):
         label="Reaction SMARTS",
         widget=FieldListAddBtn(
             label="Add additional reaction SMARTS",
-            render_kw={
-                "formnovalidate": True,
-                "hx-post": "/add_smarts",
-                "hx-swap": "beforebegin",
-            },
         ),
     )
     validated_reactions = FieldList(
@@ -270,28 +241,23 @@ class ReactionForm(Form):
         min_entries=1,
         widget=FieldListAddBtn(
             label="Add additional validated reaction",
-            render_kw={
-                "formnovalidate": True,
-                "hx-post": "/add_val_reaction",
-                "hx-swap": "beforebegin",
-            },
         ),
     )
 
 
 class TailoringForm(Form):
-    enzyme = FormField(EnzymeForm)
+    enzyme = FieldList(
+        FormField(EnzymeForm),
+        min_entries=1,
+        max_entries=1,
+        widget=FieldListAddBtn(render_kw={"style": "display:none"}),
+    )
     reactions = FieldList(
         FormField(ReactionForm),
         min_entries=0,
         label="Reactions: One or more substrate (sub)structure -> product (sub)structure pairs that result from application of reaction SMARTS.",
         widget=FieldListAddBtn(
             label="Add reaction",
-            render_kw={
-                "formnovalidate": True,
-                "hx-post": "/add_tailoring_reaction",
-                "hx-swap": "beforebegin",
-            },
         ),
     )
     comment = StringField("Any additional information about this entry (Optional)")
@@ -303,11 +269,6 @@ class TailoringMultipleForm(Form):
         min_entries=0,
         widget=FieldListAddBtn(
             label="Add enzyme",
-            render_kw={
-                "formnovalidate": True,
-                "hx-post": "/add_tailoring_enzyme",
-                "hx-swap": "beforebegin",
-            },
         ),
     )
     submit = SubmitField("Submit")

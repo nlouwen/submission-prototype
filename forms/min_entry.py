@@ -60,11 +60,6 @@ class MinEntryForm(Form):
             description="Type of evidence that shows this gene cluster is responsible for the biosynthesis of the designated molecule. Papers highlighting multiple methods can be added under each applicable method using the 'Add additional evidence' button.",
             widget=FieldListAddBtn(
                 label="Add additional evidence",
-                render_kw={
-                    "formnovalidate": True,
-                    "hx-post": "/add_evidence",
-                    "hx-swap": "beforebegin",
-                },
             ),
         )
 
@@ -74,11 +69,6 @@ class MinEntryForm(Form):
         description="Locus or loci where the gene cluster is located",
         widget=FieldListAddBtn(
             label="Add additional locus",
-            render_kw={
-                "formnovalidate": True,
-                "hx-post": "/add_locus",
-                "hx-swap": "beforebegin",
-            },
         ),
     )
     b_class = SelectMultipleField(
