@@ -7,3 +7,4 @@ class EditSelectForm(Form):
     activity = SubmitField("Biological activity")
     biosynth = SubmitField("Class-specific information")
     tailoring = SubmitField("Tailoring reaction information")
+    annotation = SubmitField("Gene annotation")

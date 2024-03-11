@@ -172,9 +172,18 @@ class StructureEvidenceForm(Form):
     references = TagListField("Citation(s)")  # TODO: standardize citations
 
 
-class TaxonomyForm(Form):
-    name = StringField("Species name")
-    ncbitaxid = IntegerField("NCBI TaxId")
+class FunctionEvidenceForm(Form):
+    method = SelectField(
+        "Method",
+        choices=[
+            "",
+            "Other in vivo study",
+            "Heterologous expression",
+            "Knock-out",
+            "Activity assay",
+        ],
+    )
+    references = TagListField("Citation(s)")
 
 
 class StringFieldAddBtn(widgets.TextInput):
@@ -190,7 +199,16 @@ class StringFieldAddBtn(widgets.TextInput):
 
 
 class FieldListAddBtn(widgets.SubmitInput):
-    def __init__(self, input_type: str | None = None, label="", render_kw={}) -> None:
+    def __init__(
+        self,
+        input_type: str | None = None,
+        label="",
+        render_kw={
+            "formnovalidate": True,
+            "hx-post": "/add_general",
+            "hx-swap": "beforebegin",
+        },
+    ) -> None:
         super().__init__(input_type)
         self.label = label
         self.render_kw = render_kw

@@ -25,7 +25,12 @@ class SelectExisting(Form):
         description="Unique MIBiG identifier starting with 'BGC' or a unique temporary identifier",
         widget=StringFieldAddBtn(
             label="Edit existing entry",
-            render_kw={"name": "edit", "value": "edit", "type": "submit"},
+            render_kw={
+                "name": "edit",
+                "value": "edit",
+                "type": "submit",
+                "style": "margin-top:5px",
+            },
         ),
     )
     # edit = SubmitField("Edit existing entry")

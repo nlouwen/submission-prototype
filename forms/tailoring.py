@@ -15,7 +15,6 @@ from forms.common import (
     EvidenceForm,
     StructureEvidenceForm,
     LocationForm,
-    TaxonomyForm,
     FieldListAddBtn,
 )
 
@@ -56,41 +55,42 @@ class EnzymeForm(Form):
     )  # TODO: standardize citations
 
 
-class CompoundForm(Form):
-    #  "required": ["name", "evidence"],
-    name = StringField(
-        "Name",
-        validators=[validators.Regexp(r"^[a-zA-Zα-ωΑ-Ω0-9\[\]'()/&,. +-]+$")],
-        description="Customarily used compound name.",
-    )
-    synonyms = StringField(
-        "Synonyms",
-        validators=[validators.Regexp(r"^[a-zA-Zα-ωΑ-Ω0-9\[\]'()/&,. +-]+$")],
-        description="Known synonym compound names.",
-    )
-    classes = SelectField("Class", choices=["", "alkaloid", "nucleoside", "peptide"])
-    structure = StringField("Structure (SMILES)")  # TODO: standardize smiles
-    databaseIds = StringField("Database cross-links")  # TODO: validate input
-    evidence = FieldList(FormField(StructureEvidenceForm), min_entries=1)
+# TODO: clean up, redundant wrt mibig submission
+# class CompoundForm(Form):
+#     #  "required": ["name", "evidence"],
+#     name = StringField(
+#         "Name",
+#         validators=[validators.Regexp(r"^[a-zA-Zα-ωΑ-Ω0-9\[\]'()/&,. +-]+$")],
+#         description="Customarily used compound name.",
+#     )
+#     synonyms = StringField(
+#         "Synonyms",
+#         validators=[validators.Regexp(r"^[a-zA-Zα-ωΑ-Ω0-9\[\]'()/&,. +-]+$")],
+#         description="Known synonym compound names.",
+#     )
+#     classes = SelectField("Class", choices=["", "alkaloid", "nucleoside", "peptide"])
+#     structure = StringField("Structure (SMILES)")  # TODO: standardize smiles
+#     databaseIds = StringField("Database cross-links")  # TODO: validate input
+#     evidence = FieldList(FormField(StructureEvidenceForm), min_entries=1)
 
 
-class GenomicContextForm(Form):
-    classes = SelectMultipleField(
-        "Biosynthetic class of biosynthetic gene cluster enzyme is associated with, if applicable.",
-        choices=["NRPS", "PKS", "Other", "Ribosomal", "Saccharide", "Terpene"],
-    )
-    accession_genome = StringField(
-        "NCBI GenBank genome accession number/ID. RefSeq genomes are prohibited."
-    )
-    location = FormField(LocationForm)
-    taxonomy = FormField(TaxonomyForm)
-    # TODO: Auto-fill form based on MIBiG crosslink (if mibig + minimal information is available)
-    databaseIds = StringField(
-        "MIBiG crosslink", validators=[validators.Regexp(r"^BGC(\d{7,7})$")]
-    )
-    evidence = FieldList(
-        FormField(EvidenceForm), min_entries=1
-    )  # TODO: move evidenceform to common
+# class GenomicContextForm(Form):
+#     classes = SelectMultipleField(
+#         "Biosynthetic class of biosynthetic gene cluster enzyme is associated with, if applicable.",
+#         choices=["NRPS", "PKS", "Other", "Ribosomal", "Saccharide", "Terpene"],
+#     )
+#     accession_genome = StringField(
+#         "NCBI GenBank genome accession number/ID. RefSeq genomes are prohibited."
+#     )
+#     location = FormField(LocationForm)
+#     taxonomy = FormField(TaxonomyForm)
+#     # TODO: Auto-fill form based on MIBiG crosslink (if mibig + minimal information is available)
+#     databaseIds = StringField(
+#         "MIBiG crosslink", validators=[validators.Regexp(r"^BGC(\d{7,7})$")]
+#     )
+#     evidence = FieldList(
+#         FormField(EvidenceForm), min_entries=1
+#     )  # TODO: move evidenceform to common
 
 
 class TailoringFunctionForm(Form):
@@ -159,8 +159,8 @@ class ReactionSmartsForm(Form):
         description="The reaction SMARTS or reaction CXSMARTS string",
     )
     isIterative = BooleanField("Iterative? (modifying all possible substructures)")
-    hasLinker = BooleanField(
-        "Contains a Link group to represent repeating units of variable length? (e.g. a C-chain of variable length)."
+    hasFrequencyVariation = BooleanField(
+        "Contains a frequency variation to represent repeating units of variable length? (e.g. a C-chain of variable length)."
     )
     hasPositionVariationBond = BooleanField(
         "Contains a position variation bond which indicates positional variation of a substituent over multiple atoms (e.g. variable chlorination on an aromatic ring)."
@@ -281,12 +281,6 @@ class ReactionForm(Form):
 
 class TailoringForm(Form):
     enzyme = FormField(EnzymeForm)
-    # compounds = FieldList(
-    #     FormField(CompoundForm),
-    #     label="Mature compound(s) (end products) associated with enzyme (were acted on by enzyme).",
-    #     min_entries=1,
-    # )
-    # genomic_context = FormField(GenomicContextForm)
     reactions = FieldList(
         FormField(ReactionForm),
         min_entries=0,

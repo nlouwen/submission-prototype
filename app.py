@@ -9,13 +9,9 @@ from flask import (
     flash,
 )
 from forms.existing_bgc import SelectExisting
-from forms.structure import StructureMultiple
-from forms.min_entry import MinEntryForm
 from forms.edit_select import EditSelectForm
-from forms.biological_activity import BioActivityMultiple, BioActivityForm
-from forms.biosynthesis import BioClassesCollection
 from forms.common import is_valid_bgc_id
-from forms.tailoring import TailoringForm, TailoringMultipleForm
+from forms.form_collection import FormCollection
 from rdkit import Chem, rdBase
 from rdkit.Chem import Draw, rdDepictor
 from rdkit.Chem.Draw import rdMolDraw2D
@@ -79,9 +75,9 @@ def edit_minimal(bgc_id: str):
 
     # try to fill data from existing entry
     if not request.form:
-        form = MinEntryForm(MultiDict(read_data(bgc_id).get("Minimal")))
+        form = FormCollection.minimal(MultiDict(read_data(bgc_id).get("Minimal")))
     else:
-        form = MinEntryForm(request.form)
+        form = FormCollection.minimal(request.form)
 
     if request.method == "POST" and form.validate():
         # TODO: save to database
@@ -99,9 +95,9 @@ def edit_structure(bgc_id: str):
         return "Invalid existing entry!", 404
 
     if not request.form:
-        form = StructureMultiple(MultiDict(read_data(bgc_id).get("Structure")))
+        form = FormCollection.structure(MultiDict(read_data(bgc_id).get("Structure")))
     else:
-        form = StructureMultiple(request.form)
+        form = FormCollection.structure(request.form)
     if request.method == "POST":
         if form.add.data:
             form.structures.append_entry()
@@ -164,9 +160,9 @@ def edit_activity(bgc_id: str):
         return "Invalid existing entry!", 404
 
     if not request.form:
-        form = BioActivityMultiple(MultiDict(read_data(bgc_id).get("Bio_activity")))
+        form = FormCollection.bioact(MultiDict(read_data(bgc_id).get("Bio_activity")))
     else:
-        form = BioActivityMultiple(request.form)
+        form = FormCollection.bioact(request.form)
     if request.method == "POST":
         # for activity in form.activities:
         #     if activity.add.data:
@@ -205,7 +201,7 @@ def edit_biosynth(bgc_id: str):
 
     # if request.method == "POST":
     #     b_class = request.form.get("b_class")
-    #     form = getattr(BioClassesCollection, b_class)(request.form)
+    #     form = getattr(FormCollection, b_class)(request.form)
 
     #     return form.data
     # return request.form
@@ -220,11 +216,11 @@ def edit_biosynth_class(bgc_id: str, b_class: str):
         return "Invalid existing entry!", 404
 
     if not request.form:
-        form = getattr(BioClassesCollection, b_class)(
+        form = getattr(FormCollection, b_class)(
             MultiDict(read_data(bgc_id).get(f"BioSynth_{b_class}"))
         )
     else:
-        form = getattr(BioClassesCollection, b_class)(request.form)
+        form = getattr(FormCollection, b_class)(request.form)
 
     if request.method == "POST":
 
@@ -326,9 +322,9 @@ def edit_tailoring(bgc_id: str):
         return "Invalid existing entry!", 404
 
     if not request.form:
-        form = TailoringMultipleForm(MultiDict(read_data(bgc_id).get("Tailoring")))
+        form = FormCollection.tailoring(MultiDict(read_data(bgc_id).get("Tailoring")))
     else:
-        form = TailoringMultipleForm(request.form)
+        form = FormCollection.tailoring(request.form)
 
     if request.method == "POST" and form.validate():
         save_data(bgc_id, "Tailoring", request.form)
@@ -336,6 +332,24 @@ def edit_tailoring(bgc_id: str):
         return redirect(url_for("edit_bgc", bgc_id=bgc_id))
 
     return render_template("tailoring.html", bgc_id=bgc_id, form=form)
+
+
+@app.route("/edit/<bgc_id>/annotation", methods=["GET", "POST"])
+def edit_annotation(bgc_id: str):
+    if not is_valid_bgc_id(bgc_id):
+        return "Invalid existing entry!", 404
+
+    if not request.form:
+        form = FormCollection.annotation(MultiDict(read_data(bgc_id).get("Annotation")))
+    else:
+        form = FormCollection.annotation(request.form)
+
+    if request.method == "POST" and form.validate():
+        save_data(bgc_id, "Annotation", request.form)
+        flash("Submitted annotation information!")
+        return redirect(url_for("edit_bgc", bgc_id=bgc_id))
+
+    return render_template("annotation.html", bgc_id=bgc_id, form=form)
 
 
 ## utils
@@ -376,7 +390,7 @@ def query_ncbi():
             ("strain", " ".join(strain)),
         ]
     )
-    form = MinEntryForm.TaxonomyForm(formdata)
+    form = FormCollection.minimal.TaxonomyForm(formdata)
     return render_template_string(
         """{% import 'macros.html' as m %}
         <span class="form-text text-muted fst-italic">{{message}}</span>
@@ -389,7 +403,7 @@ def query_ncbi():
 # minimal
 @app.route("/add_locus", methods=["POST"])
 def add_locus():
-    form = MinEntryForm(request.form)
+    form = FormCollection.minimal(request.form)
     form.loci.append_entry()
 
     return render_template_string(
@@ -401,7 +415,7 @@ def add_locus():
 
 @app.route("/add_evidence", methods=["POST"])
 def add_evidence():
-    form = MinEntryForm(request.form)
+    form = FormCollection.minimal(request.form)
     _, locus_idx, _ = request.headers.get("Hx-Trigger").split("-")
     locus = form.loci[int(locus_idx)]
     locus.evidence.append_entry()
@@ -416,7 +430,7 @@ def add_evidence():
 # structures
 @app.route("/add_compound", methods=["POST"])
 def add_compound():
-    form = StructureMultiple(request.form)
+    form = FormCollection.structure(request.form)
     form.structures.append_entry()
 
     return render_template_string(
@@ -429,7 +443,7 @@ def add_compound():
 # Bio activities
 @app.route("/add_assay", methods=["POST"])
 def add_assay():
-    form = BioActivityMultiple(request.form)
+    form = FormCollection.bioact(request.form)
     _, origin_idx, _ = request.headers.get("Hx-Trigger").split("-")
     origin_activity = form.activities[int(origin_idx)]
     origin_activity.assays.append_entry()
@@ -443,7 +457,7 @@ def add_assay():
 
 @app.route("/add_bioact_compound", methods=["POST"])
 def add_bioact_compound():
-    form = BioActivityMultiple(request.form)
+    form = FormCollection.bioact(request.form)
     form.activities.append_entry()
 
     return render_template_string(
@@ -456,7 +470,7 @@ def add_bioact_compound():
 # NRPS
 @app.route("/add_release", methods=["POST"])
 def add_release():
-    form = BioClassesCollection.NRPS(request.form)
+    form = FormCollection.NRPS(request.form)
     form.release_types.append_entry()
 
     return render_template_string(
@@ -468,7 +482,7 @@ def add_release():
 
 @app.route("/add_thioesterase", methods=["POST"])
 def add_thioesterase():
-    form = BioClassesCollection.NRPS(request.form)
+    form = FormCollection.NRPS(request.form)
     form.thioesterases.append_entry()
 
     return render_template_string(
@@ -481,7 +495,7 @@ def add_thioesterase():
 # ribosomal
 @app.route("/add_precursor", methods=["POST"])
 def add_precursor():
-    form = BioClassesCollection.Ribosomal(request.form)
+    form = FormCollection.Ribosomal(request.form)
     form.precursors.append_entry()
 
     return render_template_string(
@@ -493,7 +507,7 @@ def add_precursor():
 
 @app.route("/add_crosslink", methods=["POST"])
 def add_crosslink():
-    form = BioClassesCollection.Ribosomal(request.form)
+    form = FormCollection.Ribosomal(request.form)
     _, origin_idx, _ = request.headers.get("Hx-Trigger").split("-")
     origin_precursor = form.precursors[int(origin_idx)]
     origin_precursor.crosslinks.append_entry()
@@ -508,7 +522,7 @@ def add_crosslink():
 # saccharide
 @app.route("/add_glycosyltransferase", methods=["POST"])
 def add_glycosyltransferase():
-    form = BioClassesCollection.Saccharide(request.form)
+    form = FormCollection.Saccharide(request.form)
     form.glycosyltransferases.append_entry()
 
     return render_template_string(
@@ -520,7 +534,7 @@ def add_glycosyltransferase():
 
 @app.route("/add_subcluster", methods=["POST"])
 def add_subcluster():
-    form = BioClassesCollection.Saccharide(request.form)
+    form = FormCollection.Saccharide(request.form)
     form.subclusters.append_entry()
 
     return render_template_string(
@@ -533,7 +547,7 @@ def add_subcluster():
 # tailoring
 @app.route("/add_tailoring_enzyme", methods=["POST"])
 def add_tailoring_enzyme():
-    form = TailoringMultipleForm(request.form)
+    form = FormCollection.tailoring(request.form)
     form.enzymes.append_entry()
 
     return render_template_string(
@@ -545,7 +559,7 @@ def add_tailoring_enzyme():
 
 @app.route("/add_tailoring_reaction", methods=["POST"])
 def add_tailoring_reaction():
-    form = TailoringMultipleForm(request.form)
+    form = FormCollection.tailoring(request.form)
     _, origin_idx, _ = request.headers.get("Hx-Trigger").split("-")
     origin_enzyme = form.enzymes[int(origin_idx)]
     origin_enzyme.reactions.append_entry()
@@ -559,7 +573,7 @@ def add_tailoring_reaction():
 
 @app.route("/add_aux_enzyme", methods=["POST"])
 def add_aux_enzyme():
-    form = TailoringMultipleForm(request.form)
+    form = FormCollection.tailoring(request.form)
     _, origin_idx, _ = request.headers.get("Hx-Trigger").split("-", 2)
     origin_enzyme = form.enzymes[int(origin_idx)]
     origin_enzyme.enzyme.auxiliary_enzymes.append_entry()
@@ -573,7 +587,7 @@ def add_aux_enzyme():
 
 @app.route("/add_ontology", methods=["POST"])
 def add_ontology():
-    form = TailoringMultipleForm(request.form)
+    form = FormCollection.tailoring(request.form)
     _, enzyme_idx, _, reaction_idx, _ = request.headers.get("Hx-Trigger").split("-")
     enzyme = form.enzymes[int(enzyme_idx)]
     reaction = enzyme.reactions[int(reaction_idx)]
@@ -588,7 +602,7 @@ def add_ontology():
 
 @app.route("/add_smarts", methods=["POST"])
 def add_smarts():
-    form = TailoringMultipleForm(request.form)
+    form = FormCollection.tailoring(request.form)
     _, enzyme_idx, _, reaction_idx, _ = request.headers.get("Hx-Trigger").split("-")
     enzyme = form.enzymes[int(enzyme_idx)]
     reaction = enzyme.reactions[int(reaction_idx)]
@@ -603,7 +617,7 @@ def add_smarts():
 
 @app.route("/add_val_reaction", methods=["POST"])
 def add_val_reaction():
-    form = TailoringMultipleForm(request.form)
+    form = FormCollection.tailoring(request.form)
     _, enzyme_idx, _, reaction_idx, _ = request.headers.get("Hx-Trigger").split("-")
     enzyme = form.enzymes[int(enzyme_idx)]
     reaction = enzyme.reactions[int(reaction_idx)]
@@ -618,7 +632,7 @@ def add_val_reaction():
 
 @app.route("/add_hydrogen", methods=["POST"])
 def add_hydrogen():
-    form = TailoringMultipleForm(request.form)
+    form = FormCollection.tailoring(request.form)
     _, enzyme_idx, _, reaction_idx, _, smarts_idx, _ = request.headers.get(
         "Hx-Trigger"
     ).split("-")
@@ -636,7 +650,7 @@ def add_hydrogen():
 
 @app.route("/add_tail_reaction_smarts_evidence", methods=["POST"])
 def add_tail_reaction_smarts_evidence():
-    form = TailoringMultipleForm(request.form)
+    form = FormCollection.tailoring(request.form)
     _, enzyme_idx, _, reaction_idx, _, smarts_idx, _ = request.headers.get(
         "Hx-Trigger"
     ).split("-")
@@ -654,7 +668,7 @@ def add_tail_reaction_smarts_evidence():
 
 @app.route("/add_val_reaction_evidence", methods=["POST"])
 def add_val_reaction_evidence():
-    form = TailoringMultipleForm(request.form)
+    form = FormCollection.tailoring(request.form)
     _, enzyme_idx, _, reaction_idx, _, val_idx, _ = request.headers.get(
         "Hx-Trigger"
     ).split("-")
@@ -668,6 +682,27 @@ def add_val_reaction_evidence():
         {{m.simple_divsubform(field, deletebtn=True)}}""",
         field=val.evidence_val[-1],
     )
+
+
+@app.route("/add_general", methods=["POST"])
+def add_general():
+    directions = request.headers["Hx-Trigger"].split("-")
+    formname = Path(request.referrer).name
+
+    curr = getattr(FormCollection, formname)(request.form)
+    for i in range(0, len(directions), 2):
+        if i + 2 > len(directions):
+            final = getattr(curr, directions[i])
+            final.append_entry()
+            return render_template_string(
+                """{% import 'macros.html' as m %}
+                {{m.simple_divsubform(field, deletebtn=True)}}""",
+                field=final[-1],
+            )
+
+        else:
+            subform, subform_idx = directions[i : i + 2]
+            curr = getattr(curr, subform)[int(subform_idx)]
 
 
 @app.route("/delete", methods=["DELETE"])
