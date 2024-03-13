@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block header %}
+<h2>Editing {{ bgc_id }}</h2>
+{% endblock %}
+
+{% block body %}
+
+<div class="form-wrapper">
+    <h4>Select relevant biosynthetic class</h4>
+
+    <div class="tab-container" hx-post="{{ url_for('class_buttons', bgc_id=bgc_id) }}" hx-trigger="load"
+        hx-swap="innerHTML">
+    </div>
+</div>
+{% endblock %}

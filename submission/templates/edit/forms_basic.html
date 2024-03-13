@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% import 'bootstrap_wtf.html' as wtf %}
+
+{% block body %}
+<div>
+    <h2>Editing {{ bgc_id }}</h2>
+</div>
+<h4>Enter {{ b_class }} Class-specific biosynthesis information</h4>
+<!-- <form method="post" class="container">
+    <fieldset>
+        <table>
+            <tbody>
+                {% for field in form %}
+                {% if field.type != "SubmitField" and field.type != "HiddenField" %}
+                <tr>
+                    <th>
+                        {{field.label}}
+                    </th>
+                    <td>
+                        {{field}}
+
+                    </td>
+                    {% if field.errors %}
+                    {% for error in field.errors %}
+                    <li class="invalid-feedback">{{ error }}</li>
+                    {% endfor %}
+                    {% endif %}
+                </tr>
+                {% elif field.type == 'HiddenField' %}
+                {{field}}
+                {% endif %}
+                {% endfor %}
+            </tbody>
+        </table>
+    </fieldset>
+    {% for field in form %}
+    {% if field.type == "SubmitField" %}
+    {{field}}
+    {% endif %}
+    {% endfor %}
+</form> -->
+
+{{wtf.simple_form(form)}}
+
+<div class="container">
+    <a href="{{ url_for('edit_biosynth', bgc_id=bgc_id) }}"><button class="btn-primary">Back to Class
+            selection</button></a>
+</div>
+{% endblock %}

@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% import 'macros.html' as macros %}
+
+{% block body %}
+
+<div class="content">
+    <div class="form-wrapper">
+        <span>Either enter an existing entry ID or create a new entry.</span>
+        {{ macros.simple_divform(form) }}
+    </div>
+</div>
+{% endblock %}

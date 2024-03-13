@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% import 'macros.html' as macros%}
+
+{% block header %}
+<h2>Editing {{ bgc_id }}</h2>
+{% endblock %}
+
+{% block body %}
+
+
+<div class="form-wrapper">
+    <h4>Enter biological activities</h4>
+
+    {{ macros.simple_divform(form) }}
+</div>
+
+{% endblock %}
