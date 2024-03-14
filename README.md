@@ -4,11 +4,15 @@
 
 `git clone git@github.com:nlouwen/submission-prototype.git`
 
-- Install required packages
+- Create a virtual python (>v3.11) environment (e.g. with `micromamba` or `conda`:)
 
-`conda env create --name submission -f requirements.txt`
+`conda create --name submission python==3.11`
 
 `conda activate submission`
+
+- Install the submission app prototype
+
+`pip install -e .`
 
 - Set up the database
 
