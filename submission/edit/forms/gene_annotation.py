@@ -3,22 +3,19 @@ from wtforms import (
     StringField,
     FieldList,
     FormField,
-    SelectMultipleField,
-    validators,
-    BooleanField,
-    ValidationError,
     SubmitField,
-    FloatField,
     SelectField,
 )
-from submission.utils.common import (
-    TagListField,
+from submission.utils.custom_fields import TagListField
+from submission.utils.custom_widgets import (
     FieldListAddBtn,
-    LocationForm,
     SelectDefault,
-    FunctionEvidenceForm,
-    SubtrateEvidenceForm,
     StructureInput,
+)
+from submission.utils.custom_forms import (
+    SubtrateEvidenceForm,
+    FunctionEvidenceForm,
+    LocationForm,
 )
 
 

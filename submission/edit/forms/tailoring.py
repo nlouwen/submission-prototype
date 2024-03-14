@@ -4,21 +4,13 @@ from wtforms import (
     StringField,
     SelectField,
     BooleanField,
-    SelectMultipleField,
     FieldList,
     FormField,
     IntegerField,
     validators,
-    widgets,
 )
-from submission.utils.common import (
-    TagListField,
-    EvidenceForm,
-    StructureEvidenceForm,
-    LocationForm,
-    FieldListAddBtn,
-    StructureInput,
-)
+from submission.utils.custom_fields import TagListField
+from submission.utils.custom_widgets import FieldListAddBtn, StructureInput
 
 
 class AuxEnzymeForm(Form):
@@ -50,44 +42,6 @@ class EnzymeForm(Form):
     references = TagListField(
         "Citation(s)", description="Comma separated references on the protein"
     )  # TODO: standardize citations
-
-
-# TODO: clean up, redundant wrt mibig submission
-# class CompoundForm(Form):
-#     #  "required": ["name", "evidence"],
-#     name = StringField(
-#         "Name",
-#         validators=[validators.Regexp(r"^[a-zA-Zα-ωΑ-Ω0-9\[\]'()/&,. +-]+$")],
-#         description="Customarily used compound name.",
-#     )
-#     synonyms = StringField(
-#         "Synonyms",
-#         validators=[validators.Regexp(r"^[a-zA-Zα-ωΑ-Ω0-9\[\]'()/&,. +-]+$")],
-#         description="Known synonym compound names.",
-#     )
-#     classes = SelectField("Class", choices=["", "alkaloid", "nucleoside", "peptide"])
-#     structure = StringField("Structure (SMILES)")  # TODO: standardize smiles
-#     databaseIds = StringField("Database cross-links")  # TODO: validate input
-#     evidence = FieldList(FormField(StructureEvidenceForm), min_entries=1)
-
-
-# class GenomicContextForm(Form):
-#     classes = SelectMultipleField(
-#         "Biosynthetic class of biosynthetic gene cluster enzyme is associated with, if applicable.",
-#         choices=["NRPS", "PKS", "Other", "Ribosomal", "Saccharide", "Terpene"],
-#     )
-#     accession_genome = StringField(
-#         "NCBI GenBank genome accession number/ID. RefSeq genomes are prohibited."
-#     )
-#     location = FormField(LocationForm)
-#     taxonomy = FormField(TaxonomyForm)
-#     # TODO: Auto-fill form based on MIBiG crosslink (if mibig + minimal information is available)
-#     databaseIds = StringField(
-#         "MIBiG crosslink", validators=[validators.Regexp(r"^BGC(\d{7,7})$")]
-#     )
-#     evidence = FieldList(
-#         FormField(EvidenceForm), min_entries=1
-#     )  # TODO: move evidenceform to common
 
 
 class TailoringFunctionForm(Form):

@@ -7,7 +7,7 @@ from wtforms import (
     FieldList,
     SelectField,
 )
-from submission.utils.common import TagListField, GeneIdField
+from submission.utils.custom_fields import TagListField, GeneIdField
 
 
 class ProductForm(Form):

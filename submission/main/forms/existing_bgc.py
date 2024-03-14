@@ -4,13 +4,10 @@ from wtforms import (
     SubmitField,
     validators,
     ValidationError,
-    FormField,
-    HiddenField,
 )
-from wtforms.widgets import SubmitInput
-from markupsafe import Markup
 
-from submission.utils.common import is_valid_bgc_id, StringFieldAddBtn
+from submission.utils.custom_validators import is_valid_bgc_id
+from submission.utils.custom_widgets import StringFieldAddBtn
 
 
 def valid_id(form, field):

@@ -1,30 +1,17 @@
 from wtforms import (
     Form,
     StringField,
-    IntegerRangeField,
     IntegerField,
     FieldList,
     SelectField,
     SelectMultipleField,
-    RadioField,
     FormField,
     validators,
-    ValidationError,
     SubmitField,
-    Field,
-    widgets,
 )
-from submission.utils.common import (
-    TagListField,
-    LocationForm,
-    EvidenceForm,
-    StringFieldAddBtn,
-    FieldListAddBtn,
-    MultiTextInput,
-    MultiCheckboxField,
-    MultiStringField,
-    TextInputIndicator,
-)
+from submission.utils.custom_fields import TagListField, MultiCheckboxField
+from submission.utils.custom_forms import LocationForm, EvidenceForm
+from submission.utils.custom_widgets import FieldListAddBtn, TextInputIndicator
 
 
 class MinEntryForm(Form):

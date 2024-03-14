@@ -8,17 +8,13 @@ from wtforms import (
     SelectMultipleField,
     validators,
     BooleanField,
-    ValidationError,
     SubmitField,
     FloatField,
     SelectField,
 )
 
-from submission.utils.common import TagListField, FieldListAddBtn, StructureInput
-
-
-def validate_db_cross(form, field):
-    pass
+from submission.utils.custom_fields import TagListField
+from submission.utils.custom_widgets import FieldListAddBtn, StructureInput
 
 
 class StructureSingle(Form):

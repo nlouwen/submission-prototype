@@ -7,12 +7,8 @@ from wtforms import (
     SelectField,
     FieldList,
 )
-from submission.utils.common import (
-    TagListField,
-    GeneIdField,
-    LocationForm,
-    SubtrateEvidenceForm,
-)
+from submission.utils.custom_fields import TagListField, GeneIdField
+from submission.utils.custom_forms import LocationForm, SubtrateEvidenceForm
 
 
 class CondensationDomain(Form):

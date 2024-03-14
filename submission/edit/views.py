@@ -17,7 +17,7 @@ from submission.edit import bp_edit
 from submission.edit.forms.form_collection import FormCollection
 from submission.edit.forms.edit_select import EditSelectForm
 from submission.utils import Storage, draw_smiles_svg
-from submission.utils.common import is_valid_bgc_id
+from submission.utils.custom_validators import is_valid_bgc_id
 
 
 @bp_edit.route("/<bgc_id>", methods=["GET", "POST"])

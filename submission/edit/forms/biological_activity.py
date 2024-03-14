@@ -12,7 +12,8 @@ from wtforms import (
     SubmitField,
     validators,
 )
-from submission.utils.common import FieldListAddBtn, SelectDefault, TagListField
+from submission.utils.custom_widgets import FieldListAddBtn, SelectDefault
+from submission.utils.custom_fields import TagListField
 
 
 class AssayForm(Form):

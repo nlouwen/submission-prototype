@@ -1,6 +1,6 @@
 from wtforms import Form, StringField, HiddenField, BooleanField, FormField, FieldList
-from submission.utils.common import TagListField
-from forms.biosynthesis_domains import (
+from submission.utils.custom_fields import TagListField
+from submission.edit.forms.biosynthesis_domains import (
     CondensationDomain,
     AdenylationDomain,
     CarrierDomain,
