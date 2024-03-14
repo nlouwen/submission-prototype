@@ -18,7 +18,7 @@ import csv
 import re
 from pathlib import Path
 from markupsafe import Markup
-from flask import url_for, current_app
+from flask import url_for
 
 
 class GeneIdField(StringField):

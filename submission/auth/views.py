@@ -2,7 +2,7 @@ from flask import render_template, request, redirect, url_for, flash
 from flask_login import login_user, logout_user, login_required
 
 from submission.auth import bp_auth
-from models import User
+from submission.models import User
 
 
 @bp_auth.route("/login", methods=["GET"])
@@ -24,7 +24,7 @@ def login_post():
 
     login_user(user, remember)
 
-    return redirect(url_for("profile"))
+    return redirect(url_for("main.profile"))
 
 
 @bp_auth.route("/logout")
