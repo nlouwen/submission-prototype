@@ -1,3 +1,4 @@
+import re
 import csv
 from pathlib import Path
 
@@ -12,11 +13,13 @@ from flask import (
 )
 from werkzeug.datastructures import MultiDict
 from werkzeug.wrappers import response
+from wtforms.widgets import html_params
+from markupsafe import Markup
 
 from submission.edit import bp_edit
 from submission.edit.forms.form_collection import FormCollection
 from submission.edit.forms.edit_select import EditSelectForm
-from submission.utils import Storage, draw_smiles_svg
+from submission.utils import Storage, draw_smiles_svg, ReferenceUtils
 from submission.utils.custom_validators import is_valid_bgc_id
 
 
@@ -340,4 +343,34 @@ def add_field() -> str:
         """{% import 'macros.html' as m %}
         {{m.simple_divsubform(field, deletebtn=True)}}""",
         field=final[-1],
+    )
+
+
+@bp_edit.route("/get_references", methods=["POST"])
+def get_references() -> str:
+    bgc_id_match = re.search("edit/(.*)/", request.referrer)
+    if bgc_id_match is not None:
+        bgc_id = bgc_id_match.group(1)
+
+    li = (
+        lambda val: f"<li id={val} hx-post='/edit/append_reference' hx-target='previous input' hx-swap='outerHTML' hx-trigger='mousedown'>{val}</li>"
+    )
+    options = (
+        "<span class='text-muted form-text'>Known references for this entry:</span>"
+    )
+    for ref in ReferenceUtils.collect_references(bgc_id):
+        options += li(ref)
+    return Markup(options)
+
+
+@bp_edit.route("/append_reference", methods=["POST"])
+def append_reference():
+
+    target = request.headers.get("Hx-Target")
+    current_val = request.values.get(target)
+    new_ref = request.headers.get("Hx-Trigger")
+
+    new_value = ReferenceUtils.append_ref(current_val, new_ref)
+    return Markup(
+        f"<input class='form-control' {html_params(value=new_value, id=target, name=target)}>"
     )

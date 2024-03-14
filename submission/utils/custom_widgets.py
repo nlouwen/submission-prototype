@@ -114,3 +114,22 @@ class StructureInput(widgets.TextInput):
         return super().__call__(field, **kwargs, **self.render_kw) + Markup(
             "<div class='struct'></div>"
         )
+
+
+class TextInputWithSuggestions(widgets.TextInput):
+    def __init__(
+        self, input_type: str | None = None, post_url: str | None = None
+    ) -> None:
+        super().__init__(input_type)
+        self.render_kw = {
+            "hx-post": post_url,
+            "hx-trigger": "load",
+            "hx-target": "next ul",
+            "hx-swap": "innerHTML",
+        }
+
+    def __call__(self, field: Field, **kwargs: object) -> Markup:
+        obj = Markup("<div class='suggestions'>")
+        obj += super().__call__(field, **kwargs, **self.render_kw)
+        obj += Markup("<ul class='form-control'></ul></div>")
+        return obj
