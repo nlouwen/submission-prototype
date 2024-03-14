@@ -11,13 +11,14 @@ from wtforms import (
     SubmitField,
     validators,
 )
-from submission.utils.common import (
+from submission.utils.custom_fields import (
     GeneIdField,
-    LocationForm,
     TagListField,
-    ValidatTagListRegexp,
-    FieldListAddBtn,
 )
+
+from submission.utils.custom_forms import LocationForm
+from submission.utils.custom_widgets import FieldListAddBtn
+from submission.utils.custom_validators import ValidateTagListRegexp
 
 
 class NRPSForm(Form):
@@ -78,7 +79,7 @@ class PKSForm(Form):
     )
     cyclases = TagListField(
         "Cyclase(s)",
-        [ValidatTagListRegexp(r"^[^, ]*$")],
+        [ValidateTagListRegexp(r"^[^, ]*$")],
         description="Comma separated list of PKS cyclase gene IDs.",
     )
     starter_unit = None  # TODO: add to schema
@@ -164,7 +165,7 @@ class RibosomalForm(Form):
     details = StringField("Details (Optional)")
     peptidases = TagListField(
         "Peptidase(s) (Optional)",
-        validators=[ValidatTagListRegexp(r"^[^, ]*$")],
+        validators=[ValidateTagListRegexp(r"^[^, ]*$")],
         description="Comma separated list of peptidase gene IDs",
     )
     precursors = FieldList(
@@ -205,7 +206,7 @@ class SaccharideForm(Form):
     class SubclusterForm(Form):
         genes = TagListField(
             "Gene(s)",
-            [ValidatTagListRegexp(r"^[^, ]*$")],
+            [ValidateTagListRegexp(r"^[^, ]*$")],
             description="Comma separated list of subcluster gene IDs",
         )
         specificity = StringField(
@@ -253,7 +254,7 @@ class TerpeneForm(Form):
     )
     prenyltransferases = TagListField(
         "Prenyltransferase(s)",
-        validators=[ValidatTagListRegexp(r"^[^, ]*$")],
+        validators=[ValidateTagListRegexp(r"^[^, ]*$")],
         description="Comma separated list of prenyltransferase gene IDs",
     )
     synthases_cyclases = TagListField(

@@ -194,6 +194,28 @@ def edit_biosynth(bgc_id: str) -> str:
     return render_template("edit/biosynthesis.html", bgc_id=bgc_id)
 
 
+@bp_edit.route("/class_buttons/<bgc_id>", methods=["POST"])
+def class_buttons(bgc_id: str) -> str:
+    """Obtain buttons linking to relevant biosynthetic classes for this BGC
+
+    Args:
+        bgc_id (str): BGC identifier
+
+    Returns:
+        str: html buttons linking to class-specific form templates
+    """
+
+    # grab classes for current bgc_id
+    classes = MultiDict(Storage.read_data(bgc_id).get("Minimal")).getlist("b_class")
+
+    if not classes:
+        classes = ["NRPS", "PKS", "Ribosomal", "Saccharide", "Terpene", "Other"]
+    class_btns = ""
+    for cls in classes:
+        class_btns += f"<a class='btn btn-light' style='margin: 5px' role='button' href='/edit/{bgc_id}/biosynth/{cls}'>{cls}</a>"
+    return class_btns
+
+
 @bp_edit.route("/<bgc_id>/biosynth/<b_class>", methods=["GET", "POST"])
 def edit_biosynth_class(bgc_id: str, b_class: str) -> str | response.Response:
     """Form to enter class-specific biosynthesis information
