@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% import 'macros.html' as macros %}
+
+{% block body %}
+
+<div class="content">
+    <div class="form-wrapper">
+        <h3>Please set your password</h3>
+        {{ macros.simple_divform(form) }}
+    </div>
+</div>
+{% endblock %}

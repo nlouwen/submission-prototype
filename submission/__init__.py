@@ -2,8 +2,9 @@ import os
 from typing import Optional
 
 from flask import Flask
+from dotenv import load_dotenv
 
-from submission.extensions import db, migrate, login_manager
+from submission.extensions import db, migrate, login_manager, mail
 from submission.main import bp_main
 from submission.edit import bp_edit
 from submission.auth import bp_auth
@@ -27,6 +28,7 @@ def create_app(test_config: Optional[dict] = None) -> Flask:
 
     db.init_app(app)
     migrate.init_app(app, db)
+    mail.init_app(app)
     login_manager.init_app(app)
 
     @login_manager.user_loader
@@ -46,8 +48,17 @@ def configure_app(app: Flask, test_config: Optional[dict] = None) -> Flask:
     Returns:
         Flask: Configures Flask app instance
     """
+    load_dotenv()
     app.config["SECRET_KEY"] = "IYKYK"
     app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///auth.sqlite3"
+
+    app.config["MAIL_SERVER"] = os.getenv("MAIL_SERVER")
+    app.config["MAIL_PORT"] = os.getenv("MAIL_PORT")
+    app.config["MAIL_USERNAME"] = os.getenv("MAIL_USERNAME")
+    app.config["MAIL_PASSWORD"] = os.getenv("MAIL_PASSWORD")
+    app.config["MAIL_DEFAULT_SENDER"] = os.getenv("MAIL_DEFAULT_SENDER")
+    app.config["MAIL_USE_TLS"] = True
+    app.config["MAIL_USE_SSL"] = False
 
     if test_config:
         app.config.from_mapping(test_config)
