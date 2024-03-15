@@ -81,6 +81,9 @@ def reset_password(token_id: str) -> str | response.Response:
     if not token or token.purpose != "password_reset":
         abort(403, "Invalid link for password reset")
 
+    if not token.is_created_within(hours=2):
+        abort(403, "Token has expired")
+
     form = PasswordResetForm(request.form)
     if request.method == "POST" and form.validate():
         user = User.query.filter_by(id=token.user_id).first()
