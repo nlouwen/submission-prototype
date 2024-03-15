@@ -11,13 +11,15 @@ class User(UserMixin, db.Model):
     # __table_args__ = {"schema": "auth"}
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    name: Mapped[str] = mapped_column(nullable=False)
     email: Mapped[str] = mapped_column(unique=True, nullable=False)
+    active: Mapped[bool] = mapped_column(nullable=False, default=False)
     _password: Mapped[str] = mapped_column(nullable=False)
 
     roles: Mapped[list["Role"]] = db.relationship(
         "Role", secondary="user_roles", back_populates="users", lazy="selectin"
     )
+
+    info: Mapped["UserInfo"] = db.relationship("UserInfo")
 
     @hybrid_property
     def password(self):
@@ -65,3 +67,16 @@ class UserRole(db.Model):
 
     user_id: Mapped[int] = mapped_column(db.ForeignKey("users.id"), primary_key=True)
     role_id: Mapped[int] = mapped_column(db.ForeignKey("roles.id"), primary_key=True)
+
+
+class UserInfo(db.Model):
+    __tablename__ = "user_info"
+    # __table_args = {"schema": "auth"}
+
+    id: Mapped[int] = mapped_column(db.ForeignKey("users.id"), primary_key=True)
+    alias: Mapped[str] = mapped_column(nullable=False, unique=True)
+    name: Mapped[str] = mapped_column(nullable=False)
+    call_name: Mapped[str] = mapped_column(nullable=False)
+    organisation: Mapped[str] = mapped_column(nullable=False)
+    orcid: Mapped[str] = mapped_column(nullable=True)
+    public: Mapped[bool] = mapped_column(nullable=False, default=False)

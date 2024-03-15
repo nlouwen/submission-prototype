@@ -1,2 +1,2 @@
-from .users import User, Role, UserRole
+from .users import User, Role, UserRole, UserInfo
 from .tokens import Token
