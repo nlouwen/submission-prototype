@@ -16,7 +16,7 @@ class LoginForm(Form):
 
 
 class UserEmailForm(Form):
-    username = EmailField(
+    email = EmailField(
         "Email",
         validators=[
             validators.InputRequired(message="Please provide an email address")
