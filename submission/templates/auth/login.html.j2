@@ -1,13 +1,18 @@
 {% extends 'base.html' %}
 
+{% import 'macros.html' as macros %}
+
 {% block body %}
 
 <div class="content">
-    <form action="/auth/login" method="POST">
-        <label>Username: <input type="email" name="email" id="email" placeholder="alice@example.edu"></label>
-        <label>Password: <input type="password" name="password" id="password"></label>
-        <label>Remember me: <input type="checkbox"></label>
-        <input type="submit" value="Log in">
-    </form>
+    <div class="form-wrapper">
+        <h3>Please login to the MIBiG Submission system</h3>
+        {{ macros.simple_divform(form) }}
+
+        <div style="margin: 15px">
+            <a class="btn btn-light" href="/auth/reset-my-password">Reset my password</a>
+        </div>
+
+    </div>
 </div>
 {% endblock %}
