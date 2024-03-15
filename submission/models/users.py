@@ -78,4 +78,5 @@ class UserInfo(db.Model):
     name: Mapped[str] = mapped_column(nullable=False)
     call_name: Mapped[str] = mapped_column(nullable=False)
     organisation: Mapped[str] = mapped_column(nullable=False)
+    orcid: Mapped[str] = mapped_column(nullable=True)
     public: Mapped[bool] = mapped_column(nullable=False, default=False)
