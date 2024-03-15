@@ -60,7 +60,6 @@ def configure_app(app: Flask, test_config: Optional[dict] = None) -> Flask:
     app.config["MAIL_USE_TLS"] = True
     app.config["MAIL_USE_SSL"] = False
 
-    print(app.config)
     if test_config:
         app.config.from_mapping(test_config)
     else:
