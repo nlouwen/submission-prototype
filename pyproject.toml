@@ -8,6 +8,7 @@ dependencies = [
     "rdkit==2023.09.5",
     "WTForms==3.1.2",
     "Flask-Login==0.6.3",
+    "Flask-Mail==0.9.1",
     "Flask-Migrate==4.0.5",
     "Flask-SQLAlchemy==3.1.1",
     "python-dotenv==1.0.1",
