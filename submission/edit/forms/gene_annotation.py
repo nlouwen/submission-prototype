@@ -11,6 +11,7 @@ from submission.utils.custom_widgets import (
     FieldListAddBtn,
     SelectDefault,
     StructureInput,
+    TextInputWithSuggestions,
 )
 from submission.utils.custom_forms import (
     SubtrateEvidenceForm,
@@ -57,7 +58,10 @@ class AnnotationForm(Form):
                 "Phenotype", description="Observed phenotype upon mutation."
             )
             details = StringField("Details")
-            references = TagListField("Citation(s)")
+            references = TagListField(
+                "Citation(s)",
+                widget=TextInputWithSuggestions(post_url="/edit/get_references"),
+            )
 
         function = SelectField(
             "Function",
@@ -85,7 +89,7 @@ class AnnotationForm(Form):
         mutation_phenotype = FormField(MutationPhenotype)
 
     gene_id = StringField("Gene identifier")
-    name = StringField("Gene name")  # TODO: duplicated in schema?
+    name = StringField("Gene name")
     product = StringField("Gene product name")
     functions = FieldList(
         FormField(FunctionForm),

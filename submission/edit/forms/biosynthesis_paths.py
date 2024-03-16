@@ -8,6 +8,7 @@ from wtforms import (
     SelectField,
 )
 from submission.utils.custom_fields import TagListField, GeneIdField
+from submission.utils.custom_widgets import TextInputWithSuggestions
 
 
 class ProductForm(Form):
@@ -26,6 +27,8 @@ class StepForm(Form):
 class PathForm(Form):
     products = FieldList(FormField(ProductForm))  # TODO: add btn
     steps = FieldList(FormField(StepForm))  # TODO: add btn
-    references = StringField("Citation(s)")  # TODO: standardize
+    references = TagListField(
+        "Citation(s)", widget=TextInputWithSuggestions(post_url="/edit/get_references")
+    )
     isSubcluster = BooleanField("Subcluster?")
     producesPrecursor = BooleanField("Produces precursor?")

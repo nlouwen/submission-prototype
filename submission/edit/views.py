@@ -348,7 +348,7 @@ def add_field() -> str:
 
 @bp_edit.route("/get_references", methods=["POST"])
 def get_references() -> str:
-    bgc_id_match = re.search("edit/(.*)/", request.referrer)
+    bgc_id_match = re.search("edit/([^/]+)/", request.referrer)
     if bgc_id_match is not None:
         bgc_id = bgc_id_match.group(1)
 

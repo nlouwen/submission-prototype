@@ -14,7 +14,11 @@ from wtforms import (
 )
 
 from submission.utils.custom_fields import TagListField
-from submission.utils.custom_widgets import FieldListAddBtn, StructureInput
+from submission.utils.custom_widgets import (
+    FieldListAddBtn,
+    StructureInput,
+    TextInputWithSuggestions,
+)
 
 
 class StructureSingle(Form):
@@ -119,9 +123,11 @@ class StructureSingle(Form):
         "Moieties (Optional)",
         description="Characteristic and/or noteworthy chemical moieties found in compound.",
     )
-    references = StringField(
-        "Citation(s)", description="Comma separated list of references on this compound"
-    )  # TODO: standardize
+    references = TagListField(
+        "Citation(s)",
+        description="Comma separated list of references on this compound",
+        widget=TextInputWithSuggestions(post_url="/edit/get_references"),
+    )
     db_cross = StringField(
         "Database cross-links (Optional)",
         description="Database cross-reference for this compound (pubchem, chebi, chembl, chemspider, npatlas, lotus, gnps, cyanometdb), "
@@ -137,5 +143,4 @@ class StructureMultiple(Form):
             label="Add additional compound",
         ),
     )
-    # add = SubmitField("Add another compound")
     submit = SubmitField("Submit")

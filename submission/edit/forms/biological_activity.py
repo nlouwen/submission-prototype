@@ -12,7 +12,11 @@ from wtforms import (
     SubmitField,
     validators,
 )
-from submission.utils.custom_widgets import FieldListAddBtn, SelectDefault
+from submission.utils.custom_widgets import (
+    FieldListAddBtn,
+    SelectDefault,
+    TextInputWithSuggestions,
+)
 from submission.utils.custom_fields import TagListField
 
 
@@ -131,6 +135,7 @@ class AssayForm(Form):
     references = TagListField(
         "Citation(s)",
         description="Comma separated list of references highlighted this activity. If references show different concentration, add them separately.",
+        widget=TextInputWithSuggestions(post_url="/edit/get_references"),
     )
     concentration = FormField(ConcentrationForm, label="Concentration (Optional)")
 

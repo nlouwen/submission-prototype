@@ -74,7 +74,7 @@ class MinEntryForm(Form):
 
     completeness = SelectField(
         "Completeness",
-        choices=["", "Complete", "Incomplete", "Unknown"],
+        choices=["", "complete", "incomplete", "unknown"],
         description="Are all genes needed for production of compounds present in the specified locus/loci?",
     )
     taxonomy = FormField(TaxonomyForm)

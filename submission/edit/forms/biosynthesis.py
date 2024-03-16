@@ -17,7 +17,7 @@ from submission.utils.custom_fields import (
 )
 
 from submission.utils.custom_forms import LocationForm
-from submission.utils.custom_widgets import FieldListAddBtn
+from submission.utils.custom_widgets import FieldListAddBtn, TextInputWithSuggestions
 from submission.utils.custom_validators import ValidateTagListRegexp
 
 
@@ -37,7 +37,10 @@ class NRPSForm(Form):
             ],
         )
         details = StringField("Details (Optional)")
-        references = StringField("Citation")
+        references = TagListField(
+            "Citation(s)",
+            widget=TextInputWithSuggestions(post_url="/edit/get_references"),
+        )
 
     class ThioesteraseForm(Form):
         gene = GeneIdField()
@@ -192,7 +195,10 @@ class SaccharideForm(Form):
                 "Activity assay",
             ],
         )
-        references = StringField("Citation", [validators.DataRequired()])
+        references = TagListField(
+            "Citation(s)",
+            widget=TextInputWithSuggestions(post_url="/edit/get_references"),
+        )
         specificity = StringField(
             "Specificity (SMILES)",
             [
@@ -218,9 +224,13 @@ class SaccharideForm(Form):
                 ),
             ],
         )
-        references = StringField("Citation", [validators.DataRequired()])
+        references = TagListField(
+            "Citation(s)",
+            widget=TextInputWithSuggestions(post_url="/edit/get_references"),
+        )
 
-    subclass = SelectField("Sub-class", choices=[""])  # TODO: sub-class enum
+    # TODO: sub-class enum
+    # subclass = SelectField("Sub-class", choices=[""])
     glycosyltransferases = FieldList(
         FormField(GlycosylTranferaseForm),
         "Glycosyltransferase(s)",

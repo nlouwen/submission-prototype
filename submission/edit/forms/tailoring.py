@@ -10,7 +10,12 @@ from wtforms import (
     validators,
 )
 from submission.utils.custom_fields import TagListField
-from submission.utils.custom_widgets import FieldListAddBtn, StructureInput
+from submission.utils.custom_widgets import (
+    FieldListAddBtn,
+    StructureInput,
+    SelectDefault,
+    TextInputWithSuggestions,
+)
 
 
 class AuxEnzymeForm(Form):
@@ -40,8 +45,10 @@ class EnzymeForm(Form):
         ),
     )
     references = TagListField(
-        "Citation(s)", description="Comma separated references on the protein"
-    )  # TODO: standardize citations
+        "Citation(s)",
+        description="Comma separated references on the protein",
+        widget=TextInputWithSuggestions(post_url="/edit/get_references"),
+    )
 
 
 class TailoringFunctionForm(Form):
@@ -91,16 +98,19 @@ class ReactionSmartsEvidenceForm(Form):
     evidenceCode = SelectField(
         "Evidence for enzymatic reaction and substrate specificity",
         choices=[
-            "",
             "Heterologous expression",
+            "Inference from genomic data and chemical structure",
             "In vitro assay",
             "Isothermal titration calorimetry",
             "Knock-out studies",
             "Site-directed mutagenesis",
             "Surface plasmon resonance",
         ],
+        widget=SelectDefault(),
     )
-    references = StringField("Citation(s)")  # TODO: standardize citations
+    references = TagListField(
+        "Citation(s)", widget=TextInputWithSuggestions(post_url="/edit/get_references")
+    )
 
 
 class ReactionSmartsForm(Form):

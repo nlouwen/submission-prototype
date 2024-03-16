@@ -67,7 +67,7 @@ class SubtrateEvidenceForm(Form):
     )
     references = TagListField(
         "Citation(s)", widget=TextInputWithSuggestions(post_url="/edit/get_references")
-    )  # TODO: standardize citations
+    )
 
 
 class StructureEvidenceForm(Form):
@@ -85,7 +85,7 @@ class StructureEvidenceForm(Form):
     )
     references = TagListField(
         "Citation(s)", widget=TextInputWithSuggestions(post_url="/edit/get_references")
-    )  # TODO: standardize citations
+    )
 
 
 class FunctionEvidenceForm(Form):

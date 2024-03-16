@@ -9,6 +9,7 @@ from wtforms import (
 )
 from submission.utils.custom_fields import TagListField, GeneIdField
 from submission.utils.custom_forms import LocationForm, SubtrateEvidenceForm
+from submission.utils.custom_widgets import TextInputWithSuggestions
 
 
 class CondensationDomain(Form):
@@ -28,7 +29,9 @@ class CondensationDomain(Form):
             "Heterocyclization",
         ],
     )
-    references = StringField("Citation(s)")  # TODO: standardize
+    references = TagListField(
+        "Citation(s)", widget=TextInputWithSuggestions(post_url="/edit/get_references")
+    )
 
 
 class AdenylationDomain(Form):
@@ -70,7 +73,9 @@ class CyclaseDomain(Form):
     _type = HiddenField("cyclase")
     gene = GeneIdField("Gene")
     location = FormField(LocationForm)
-    references = StringField("Citation(s)")  # TODO: standardize
+    references = TagListField(
+        "Citation(s)", widget=TextInputWithSuggestions(post_url="/edit/get_references")
+    )
 
 
 class DehydrataseDomain(Form):
