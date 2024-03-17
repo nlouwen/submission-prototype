@@ -9,7 +9,7 @@ from typing import Self, TextIO
 from sqlalchemy import or_
 
 from submission import create_app, db
-from submission.models import User, Role, UserInfo
+from submission.models import User, Role, UserInfo, UserRole
 
 @dataclass
 class LegacyUser:
@@ -107,6 +107,7 @@ def parse_users(handle: TextIO, mode: str) -> list[LegacyUser]:
 def load_users(users: list[LegacyUser]):
     app = create_app()
     with app.app_context():
+        reviewers = Role.query.filter_by(slug="reviewer").one()
         for user in users:
 
             if user.orcid is not None:
@@ -136,6 +137,13 @@ def load_users(users: list[LegacyUser]):
                 print("updated", existing.info.name)
             else:
                 load_user(user)
+
+            if user.reviewer:
+                existing = User.query.filter_by(email=user.email).first()
+                if not existing:
+                    continue
+                db.session.add(UserRole(user_id=existing.id, role_id=reviewers.id))
+                db.session.commit()
 
 
 def load_user(legacy: LegacyUser):
