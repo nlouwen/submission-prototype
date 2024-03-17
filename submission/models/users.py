@@ -78,5 +78,15 @@ class UserInfo(db.Model):
     name: Mapped[str] = mapped_column(nullable=False)
     call_name: Mapped[str] = mapped_column(nullable=False)
     organisation: Mapped[str] = mapped_column(nullable=False)
-    orcid: Mapped[str] = mapped_column(nullable=True)
+    organisation_2: Mapped[str] = mapped_column(nullable=True)
+    organisation_3: Mapped[str] = mapped_column(nullable=True)
+    orcid: Mapped[str] = mapped_column(nullable=True, unique=True)
     public: Mapped[bool] = mapped_column(nullable=False, default=False)
+
+    @staticmethod
+    def generate_alias(length: int = 15) -> str:
+        import base64
+        from random import randbytes
+        token_bytes = randbytes(length)
+
+        return base64.b32encode(token_bytes).decode("utf-8")
