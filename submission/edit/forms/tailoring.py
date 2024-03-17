@@ -85,6 +85,7 @@ class TailoringFunctionForm(Form):
             "Other",
         ],
         widget=SelectDefault(),
+        validate_choice=False,
     )
     details = StringField("Details")
 
@@ -107,6 +108,7 @@ class ReactionSmartsEvidenceForm(Form):
             "Surface plasmon resonance",
         ],
         widget=SelectDefault(),
+        validate_choice=False,
     )
     references = TagListField(
         "Citation(s)", widget=TextInputWithSuggestions(post_url="/edit/get_references")

@@ -142,13 +142,13 @@
 <div class="form-check">
     {{field.label(class='form-label'~is_required)}}
     {{descr(field)}}
-    {{ field(class='form-check-input') }}
+    {{ field(class='form-check-input' + (' is-invalid' if field.errors else '')) }}
 </div>
 
 {% elif field.type == "SelectField" or field.type == "SelectMultipleField" %}
 {{field.label(class='form-label'~is_required)}}
 {{descr(field)}}
-{{ field(class='form-select') }}
+{{ field(class='form-select' + (' is-invalid' if field.errors else '')) }}
 
 {% else %}
 {{field.label(class='form-label'~is_required)}}

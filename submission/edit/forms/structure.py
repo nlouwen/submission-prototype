@@ -56,6 +56,7 @@ class StructureSingle(Form):
         ],
         description="Technique used to elucidate/verify the structure",
         widget=SelectDefault(),
+        validate_choice=False,
     )
     classes = SelectMultipleField(
         "Compound class(es) (Optional)",

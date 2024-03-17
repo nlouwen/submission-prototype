@@ -2,6 +2,8 @@
 
 import json
 from pathlib import Path
+
+from flask import current_app
 from werkzeug.datastructures import MultiDict
 
 
@@ -17,11 +19,13 @@ class Storage:
             section_key (str): Section which form was filled in
             req_data (MultiDict): Submitted data coming from the request
         """
+        data_dir = Path(current_app.root_path).parent / "data"
+
         data = {section_key: [(k, v) for k in req_data for v in req_data.getlist(k)]}
         existing_data = Storage.read_data(bgc_id)
 
         existing_data.update(data)
-        with open(f"{bgc_id}_data.json", "w") as outf:
+        with open(data_dir / f"{bgc_id}_data.json", "w") as outf:
             json.dump(existing_data, outf, sort_keys=True, indent=4)
 
     @staticmethod
@@ -34,7 +38,9 @@ class Storage:
         Returns:
             dict: mapping of attributes to values
         """
-        with open(f"{bgc_id}_data.json", "r") as inf:
+        data_dir = Path(current_app.root_path).parent / "data"
+
+        with open(data_dir / f"{bgc_id}_data.json", "r") as inf:
             if content := inf.read():
                 existing_data = json.loads(content)
             else:
@@ -48,11 +54,14 @@ class Storage:
         Returns:
             str: new BGC identifier
         """
+        data_dir = Path(current_app.root_path).parent / "data"
+
         max_entry_id = 0
-        for filepath in Path(".").glob("new*_data.json"):
+        # TODO: create temp IDs
+        for filepath in data_dir.glob("new*_data.json"):
             if (nr := int(filepath.stem[3:6])) > max_entry_id:
                 max_entry_id = nr
         bgc_id = f"new{max_entry_id+1:0>3}"
-        Path(f"{bgc_id}_data.json").touch()
+        Path(data_dir / f"{bgc_id}_data.json").touch()
 
         return bgc_id

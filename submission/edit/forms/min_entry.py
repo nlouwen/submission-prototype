@@ -33,13 +33,13 @@ class MinEntryForm(Form):
             [validators.InputRequired()],
             widget=TextInputIndicator(),
             description="E.g., AL645882. Only use GenBank accessions, not RefSeq accessions or GI numbers.",
-            render_kw={
-                "hx-post": "/query_ncbi",
-                "hx-trigger": "change",
-                "hx-swap": "innerHTML",
-                "hx-target": ".subform#taxonomy",
-                "hx-indicator": "#spinner",
-            },
+            # render_kw={
+            #     "hx-post": "/query_ncbi",
+            #     "hx-trigger": "change",
+            #     "hx-swap": "innerHTML",
+            #     "hx-target": ".subform#taxonomy",
+            #     "hx-indicator": "#spinner",
+            # },
         )
         location = FormField(
             LocationForm,
@@ -81,6 +81,7 @@ class MinEntryForm(Form):
         choices=["complete", "incomplete", "unknown"],
         description="Are all genes needed for production of compounds present in the specified locus/loci?",
         widget=SelectDefault(),
+        validate_choice=False,
     )
     taxonomy = FormField(TaxonomyForm)
     comments = StringField("Additional comments (Optional)")

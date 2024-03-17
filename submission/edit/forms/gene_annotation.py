@@ -6,7 +6,7 @@ from wtforms import (
     SubmitField,
     SelectField,
 )
-from submission.utils.custom_fields import TagListField
+from submission.utils.custom_fields import TagListField, GeneIdField
 from submission.utils.custom_widgets import (
     FieldListAddBtn,
     SelectDefault,
@@ -36,6 +36,7 @@ class AddGeneForm(Form):
         choices=[1, -1],
         widget=SelectDefault(),
         description="The directionality of the CDS. '1' indicates forward directionality, '-1' indicates reverse diretionality",
+        validate_choice=False,
     )
     translation = StringField(
         "Translation",
@@ -44,7 +45,7 @@ class AddGeneForm(Form):
 
 
 class DeleteGeneForm(Form):
-    gene_id = StringField("Gene identifier")
+    gene_id = GeneIdField("Gene")
     reason = StringField(
         "Reason",
         description="Rationale why this gene is not a part of this gene cluster",
@@ -78,6 +79,7 @@ class AnnotationForm(Form):
                 "Other",
             ],
             widget=SelectDefault(),
+            validate_choice=False,
         )
         evidence = FieldList(
             FormField(FunctionEvidenceForm),
@@ -88,7 +90,7 @@ class AnnotationForm(Form):
         )
         mutation_phenotype = FormField(MutationPhenotype)
 
-    gene_id = StringField("Gene identifier")
+    gene_id = GeneIdField("Gene")
     name = StringField("Gene name")
     product = StringField("Gene product name")
     functions = FieldList(

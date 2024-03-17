@@ -18,12 +18,14 @@ from submission.utils.custom_widgets import (
     TextInputWithSuggestions,
 )
 from submission.utils.custom_fields import TagListField
+from submission.utils.custom_validators import RequiredIf
 
 
 class AssayForm(Form):
     class ConcentrationForm(Form):
         concentration = FloatField(
             "Concentration",
+            description="Concentration at which the activity is observed",
             validators=[validators.Optional()],
         )
         # TODO: expand units
@@ -40,7 +42,13 @@ class AssayForm(Form):
                 "nanomolar",
                 "picomolar",
             ],
-            description="Concentration at which the activity is observed",
+            validate_choice=False,
+            validators=[
+                RequiredIf(
+                    "concentration",
+                    message="This field is required when concentration is filled.",
+                )
+            ],
         )
 
     # TODO: show hierarchy, e.g. ionophore has deeper level: chalcophore etc.
@@ -131,6 +139,7 @@ class AssayForm(Form):
             ],
             "other": ["other"],
         },
+        validate_choice=False,
     )
     references = TagListField(
         "Citation(s)",

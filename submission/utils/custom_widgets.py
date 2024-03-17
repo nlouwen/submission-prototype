@@ -77,7 +77,7 @@ class SelectDefault(widgets.Select):
             val, label = self.default
             insert_idx = select.find(">") + 1
             default_option = Markup(
-                f"<option hidden selected disabled {widgets.html_params(value=val, **kwargs, **self.kwargs)}>{label}</option>"
+                f"<option selected {widgets.html_params(value=val, **kwargs, **self.kwargs)}>{label}</option>"
             )
             select = select[:insert_idx] + default_option + select[insert_idx:]
         return select

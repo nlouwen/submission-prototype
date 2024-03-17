@@ -26,7 +26,9 @@ from submission.edit.forms.biosynthesis_domains import (
 class CalForm(Form):
     _type = HiddenField("cal")
     name = StringField("Name")
-    genes = TagListField("Gene(s)")
+    genes = TagListField(
+        "Gene(s)", description="Comma separated list of genes in this module"
+    )
     active = BooleanField("Active?")
     integrated_monomers = FieldList(
         FormField(MonomerForm), widget=FieldListAddBtn(label="Add addional monomer")
@@ -44,7 +46,9 @@ class NRPS_I_Form(Form):
     # required _type, name, genes, active
     _type = HiddenField("nrps-type1")
     name = StringField("Name")
-    genes = TagListField("Gene(s)")
+    genes = TagListField(
+        "Gene(s)", description="Comma separated list of genes in this module"
+    )
     active = BooleanField("Active?")
     c_domain = FieldList(
         FormField(CondensationDomain),
@@ -76,7 +80,9 @@ class NRPS_I_Form(Form):
 class NRPS_VI_Form(Form):
     _type = HiddenField("nrps-type6")
     name = StringField("Name")
-    genes = TagListField("Gene(s)")
+    genes = TagListField(
+        "Gene(s)", description="Comma separated list of genes in this module"
+    )
     active = BooleanField("Active?")
     a_domain = FieldList(
         FormField(AdenylationDomain),
@@ -103,7 +109,9 @@ class OtherForm(Form):
     _type = HiddenField("other")
     name = StringField("Name")
     subtype = StringField("Subtype")
-    genes = TagListField("Gene(s)")
+    genes = TagListField(
+        "Gene(s)", description="Comma separated list of genes in this module"
+    )
     active = BooleanField("Active?")
     integrated_monomers = FieldList(
         FormField(MonomerForm), widget=FieldListAddBtn(label="Add addional monomer")
@@ -120,7 +128,9 @@ class OtherForm(Form):
 class PKSIterativeForm(Form):
     _type = HiddenField("pks-iterative")
     name = StringField("Name")
-    genes = TagListField("Gene(s)")
+    genes = TagListField(
+        "Gene(s)", description="Comma separated list of genes in this module"
+    )
     iterations = IntegerField("Number of iterations")
     active = BooleanField("Active?")
     ks_domain = None  # TODO: add ketosynthase
@@ -148,7 +158,9 @@ class PKSIterativeForm(Form):
 class PKSModularForm(Form):
     _type = HiddenField("pks-modular")
     name = StringField("Name")
-    genes = TagListField("Gene(s)")
+    genes = TagListField(
+        "Gene(s)", description="Comma separated list of genes in this module"
+    )
     active = BooleanField("Active?")
     ks_domain = None  # TODO: add ketosynthase
     at_domain = FieldList(
@@ -175,7 +187,9 @@ class PKSModularForm(Form):
 class PKSTransForm(Form):
     _type = HiddenField("pks-trans")
     name = StringField("Name")
-    genes = TagListField("Gene(s)")
+    genes = TagListField(
+        "Gene(s)", description="Comma separated list of genes in this module"
+    )
     active = BooleanField("Active?")
     ks_domain = None  # TODO: add ketosynthase
     carriers = FieldList(

@@ -1,8 +1,9 @@
 """ Collection of custom validators used throughout the submission system """
 
 import re
-from wtforms import ValidationError
 from pathlib import Path
+
+from wtforms import ValidationError, validators
 
 
 # TODO: rework to validate if entered gene IDs fall in locus
@@ -24,6 +25,26 @@ def is_valid_bgc_id(bgc_id: str):
     if Path(f"{bgc_id}_data.json").exists():
         return True
     return False
+
+
+class RequiredIf(validators.InputRequired):
+    """Input required validator only if another field is filled
+
+    Arguments:
+        other_field_name (str): name of field to check
+    """
+
+    def __init__(self, other_field_name, *args, **kwargs):
+        self.other_field_name = other_field_name
+        super(RequiredIf, self).__init__(*args, **kwargs)
+        self.field_flags.pop("required")
+
+    def __call__(self, form, field):
+        other_field = form._fields.get(self.other_field_name)
+        if other_field is None:
+            raise Exception(f"no field named {self.other_field_name} in form")
+        if bool(other_field.data):
+            super(RequiredIf, self).__call__(form, field)
 
 
 # TODO: db cross validator

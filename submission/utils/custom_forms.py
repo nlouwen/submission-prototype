@@ -64,6 +64,7 @@ class SubtrateEvidenceForm(Form):
             "X-ray crystallography",
         ],
         widget=SelectDefault(),
+        validate_choice=False,
     )
     references = TagListField(
         "Citation(s)", widget=TextInputWithSuggestions(post_url="/edit/get_references")
@@ -82,6 +83,7 @@ class StructureEvidenceForm(Form):
             "Total synthesis",
         ],
         widget=SelectDefault(),
+        validate_choice=False,
     )
     references = TagListField(
         "Citation(s)", widget=TextInputWithSuggestions(post_url="/edit/get_references")
@@ -98,6 +100,7 @@ class FunctionEvidenceForm(Form):
             "Activity assay",
         ],
         widget=SelectDefault(),
+        validate_choice=False,
     )
     references = TagListField(
         "Citation(s)", widget=TextInputWithSuggestions(post_url="/edit/get_references")

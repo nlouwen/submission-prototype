@@ -33,6 +33,7 @@ class CondensationDomain(Form):
             "Heterocyclization",
         ],
         widget=SelectDefault(),
+        validate_choice=False,
     )
     references = TagListField(
         "Citation(s)", widget=TextInputWithSuggestions(post_url="/edit/get_references")
@@ -68,7 +69,9 @@ class AdenylationDomain(Form):
 class CarrierDomain(Form):
     # "required": ["type", "gene", "location"]
     _type = HiddenField("carrier")
-    subtype = SelectField("Subtype", choices=["ACP", "PCP"], widget=SelectDefault())
+    subtype = SelectField(
+        "Subtype", choices=["ACP", "PCP"], widget=SelectDefault(), validate_choice=False
+    )
     gene = GeneIdField("Gene")
     location = FormField(LocationForm)
     inactive = BooleanField("Inactive?")
@@ -129,6 +132,7 @@ class KetoreductaseDomain(Form):
         "Stereochemistry",
         choices=["A1", "A2", "B1", "B2", "C1", "C2"],
         widget=SelectDefault(),
+        validate_choice=False,
     )
     evidence = FieldList(
         FormField(SubtrateEvidenceForm),
@@ -140,7 +144,10 @@ class KetoreductaseDomain(Form):
 class MethyltransferaseDomain(Form):
     _type = HiddenField("methyltransferase")
     subtype = SelectField(
-        "Subtype", choices=["C", "N", "O", "other"], widget=SelectDefault()
+        "Subtype",
+        choices=["C", "N", "O", "other"],
+        widget=SelectDefault(),
+        validate_choice=False,
     )
     gene = GeneIdField("Gene")
     location = FormField(LocationForm)
@@ -220,6 +227,7 @@ class AcyltransferaseForm(Form):
             "Name",
             choices=["malonyl-CoA", "methylmalonyl-CoA", "ethylmalonyl-CoA", "other"],
             widget=SelectDefault(),
+            validate_choice=False,
         )
         structure = StringField(
             "Structure (SMILES)", widget=StructureInput()
@@ -229,7 +237,9 @@ class AcyltransferaseForm(Form):
     _type = HiddenField("acyltransferase")
     gene = GeneIdField()
     location = FormField(LocationForm)
-    subtype = SelectField(choices=["cis-AT", "trans-AT"], widget=SelectDefault())
+    subtype = SelectField(
+        choices=["cis-AT", "trans-AT"], widget=SelectDefault(), validate_choice=False
+    )
     inactive = BooleanField("Inactive?")
     substrates = FieldList(
         FormField(SubstrateForm),

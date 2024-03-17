@@ -115,7 +115,7 @@ def edit_structure(bgc_id: str) -> str | response.Response:
                 )
             )
         except:
-            products = [""]
+            products = []
 
         for product in products:
             if product not in [struct.data.get("name") for struct in form.structures]:
@@ -173,7 +173,7 @@ def edit_activity(bgc_id: str) -> str | response.Response:
                 )
             )
         except:
-            products = [""]
+            products = []
 
         for product in products:
             if product not in [act.data.get("compound") for act in form.activities]:

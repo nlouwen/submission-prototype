@@ -39,6 +39,7 @@ class NRPSForm(Form):
                 "Reductive release",
             ],
             widget=SelectDefault(),
+            validate_choice=False,
         )
         details = StringField("Details (Optional)")
         references = TagListField(
@@ -50,13 +51,17 @@ class NRPSForm(Form):
         gene = GeneIdField()
         location = FormField(LocationForm)
         subtype = SelectField(
-            "Sub-type", choices=["Type I", "Type II"], widget=SelectDefault()
+            "Sub-type",
+            choices=["Type I", "Type II"],
+            widget=SelectDefault(),
+            validate_choice=False,
         )
 
     subclass = SelectField(
         "Sub-class",
         choices=["Type I", "Type II", "Type III", "Type IV", "Type V", "Type VI"],
         widget=SelectDefault(),
+        validate_choice=False,
     )
     release_types = FieldList(
         FormField(ReleaseTypeForm),
@@ -86,6 +91,7 @@ class PKSForm(Form):
             "Type III",
         ],
         widget=SelectDefault(),
+        validate_choice=False,
     )
     cyclases = TagListField(
         "Cyclase(s)",
@@ -109,7 +115,10 @@ class RibosomalForm(Form):
                 "To", validators=[validators.Optional(), validators.NumberRange(min=2)]
             )
             link_type = SelectField(
-                "Type", choices=["ether", "thioether", "other"], widget=SelectDefault()
+                "Type",
+                choices=["ether", "thioether", "other"],
+                widget=SelectDefault(),
+                validate_choice=False,
             )
             details = StringField("Details (Optional)")
 
@@ -172,6 +181,7 @@ class RibosomalForm(Form):
             "Other",
         ],
         widget=SelectDefault(),
+        validate_choice=False,
     )
     # Only if not unmodified
     details = StringField("Details (Optional)")
@@ -203,6 +213,7 @@ class SaccharideForm(Form):
                 "Activity assay",
             ],
             widget=SelectDefault(),
+            validate_choice=False,
         )
         references = TagListField(
             "Citation(s)",
@@ -270,6 +281,7 @@ class TerpeneForm(Form):
             "Triterpene",
         ],
         widget=SelectDefault(),
+        validate_choice=False,
     )
     prenyltransferases = TagListField(
         "Prenyltransferase(s)",
@@ -284,6 +296,7 @@ class TerpeneForm(Form):
         "Precursor",
         choices=["DMAPP", "FPP", "GGPP", "GPP", "IPP"],
         widget=SelectDefault(),
+        validate_choice=False,
     )
     submit = SubmitField("Submit")
 
@@ -293,6 +306,7 @@ class OtherForm(Form):
         "Sub-class",
         choices=["aminocoumarin", "cyclitol", "other"],
         widget=SelectDefault(),
+        validate_choice=False,
     )
     details = StringField("Details")
     submit = SubmitField("Submit")

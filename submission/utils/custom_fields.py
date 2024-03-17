@@ -15,9 +15,14 @@ class GeneIdField(StringField):
             validators.Optional(),
             validators.Regexp(r"^[^, ]*$", message="Invalid Gene ID"),
         ],
+        description: (
+            str | None
+        ) = "NCBI GenPept ID (e.g. CAB60185.1), locus tag (e.g. SCO6266), or gene name (e.g. scbA)",
         **kwargs,
     ):
-        super(GeneIdField, self).__init__(label, validators, **kwargs)
+        super(GeneIdField, self).__init__(
+            label=label, validators=validators, description=description, **kwargs
+        )
 
 
 class TagListField(Field):
