@@ -4,7 +4,7 @@ from flask import url_for
 from wtforms import Form, IntegerField, SelectField, validators
 
 from .custom_fields import TagListField
-from .custom_widgets import StructureInput, TextInputWithSuggestions
+from .custom_widgets import StructureInput, TextInputWithSuggestions, SelectDefault
 
 
 class LocationForm(Form):
@@ -22,7 +22,6 @@ class EvidenceForm(Form):
     method = SelectField(
         "Method",
         choices=[
-            "",
             "Homology-based prediction",
             "Correlation of genomic and metabolomic data",
             "Gene expression correlated with compound production",
@@ -31,6 +30,7 @@ class EvidenceForm(Form):
             "Heterologous expression",
             "In vitro expression",
         ],
+        widget=SelectDefault(),
         validators=[validators.InputRequired()],
     )
     references = TagListField(
@@ -45,7 +45,6 @@ class SubtrateEvidenceForm(Form):
     name = SelectField(
         "Method",
         choices=[
-            "",
             "Activity assay",
             "ACVS assay",
             "ATP-PPi exchange assay",
@@ -64,6 +63,7 @@ class SubtrateEvidenceForm(Form):
             "Structure-based inference",
             "X-ray crystallography",
         ],
+        widget=SelectDefault(),
     )
     references = TagListField(
         "Citation(s)", widget=TextInputWithSuggestions(post_url="/edit/get_references")
@@ -74,7 +74,6 @@ class StructureEvidenceForm(Form):
     method = SelectField(
         "Method",
         choices=[
-            "",
             "NMR",
             "Mass spectrometry",
             "MS/MS",
@@ -82,6 +81,7 @@ class StructureEvidenceForm(Form):
             "Chemical derivatisation",
             "Total synthesis",
         ],
+        widget=SelectDefault(),
     )
     references = TagListField(
         "Citation(s)", widget=TextInputWithSuggestions(post_url="/edit/get_references")
@@ -92,12 +92,12 @@ class FunctionEvidenceForm(Form):
     method = SelectField(
         "Method",
         choices=[
-            "",
             "Other in vivo study",
             "Heterologous expression",
             "Knock-out",
             "Activity assay",
         ],
+        widget=SelectDefault(),
     )
     references = TagListField(
         "Citation(s)", widget=TextInputWithSuggestions(post_url="/edit/get_references")

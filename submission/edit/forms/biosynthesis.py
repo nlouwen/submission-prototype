@@ -17,7 +17,11 @@ from submission.utils.custom_fields import (
 )
 
 from submission.utils.custom_forms import LocationForm
-from submission.utils.custom_widgets import FieldListAddBtn, TextInputWithSuggestions
+from submission.utils.custom_widgets import (
+    FieldListAddBtn,
+    TextInputWithSuggestions,
+    SelectDefault,
+)
 from submission.utils.custom_validators import ValidateTagListRegexp
 
 
@@ -26,7 +30,6 @@ class NRPSForm(Form):
         name = SelectField(
             "Release type",
             choices=[
-                "",
                 "Claisen condensation",
                 "Hydrolysis",
                 "Macrolactamization",
@@ -35,6 +38,7 @@ class NRPSForm(Form):
                 "Other",
                 "Reductive release",
             ],
+            widget=SelectDefault(),
         )
         details = StringField("Details (Optional)")
         references = TagListField(
@@ -45,11 +49,14 @@ class NRPSForm(Form):
     class ThioesteraseForm(Form):
         gene = GeneIdField()
         location = FormField(LocationForm)
-        subtype = SelectField("Sub-type", choices=["", "Type I", "Type II"])
+        subtype = SelectField(
+            "Sub-type", choices=["Type I", "Type II"], widget=SelectDefault()
+        )
 
     subclass = SelectField(
         "Sub-class",
-        choices=["", "Type I", "Type II", "Type III", "Type IV", "Type V", "Type VI"],
+        choices=["Type I", "Type II", "Type III", "Type IV", "Type V", "Type VI"],
+        widget=SelectDefault(),
     )
     release_types = FieldList(
         FormField(ReleaseTypeForm),
@@ -72,13 +79,13 @@ class PKSForm(Form):
     subclass = SelectField(
         "Sub-class",
         choices=[
-            "",
             "Type I",
             "Type II aromatic",
             "Type II highly reducing",
             "Type II arylpolyene",
             "Type III",
         ],
+        widget=SelectDefault(),
     )
     cyclases = TagListField(
         "Cyclase(s)",
@@ -101,7 +108,9 @@ class RibosomalForm(Form):
             to_loc = IntegerField(
                 "To", validators=[validators.Optional(), validators.NumberRange(min=2)]
             )
-            link_type = SelectField("Type", choices=["", "ether", "thioether", "other"])
+            link_type = SelectField(
+                "Type", choices=["ether", "thioether", "other"], widget=SelectDefault()
+            )
             details = StringField("Details (Optional)")
 
         gene = GeneIdField()
@@ -128,7 +137,6 @@ class RibosomalForm(Form):
         "Sub-class",
         description="If unmodified, skip the rest of this form",
         choices=[
-            "",
             "Unmodified",
             "Atropopeptide",
             "Biarylitide",
@@ -163,6 +171,7 @@ class RibosomalForm(Form):
             "Thiopeptide",
             "Other",
         ],
+        widget=SelectDefault(),
     )
     # Only if not unmodified
     details = StringField("Details (Optional)")
@@ -188,12 +197,12 @@ class SaccharideForm(Form):
         evidence = SelectField(
             "Evidence type",
             choices=[
-                "",
                 "Sequence-based prediction",
                 "Structure-based inference",
                 "Knock-out construct",
                 "Activity assay",
             ],
+            widget=SelectDefault(),
         )
         references = TagListField(
             "Citation(s)",
@@ -254,13 +263,13 @@ class TerpeneForm(Form):
     subclass = SelectField(
         "Sub-class",
         choices=[
-            "",
             "Diterpene",
             "Hemiterpene",
             "Monoterpene",
             "Sesquiterpene",
             "Triterpene",
         ],
+        widget=SelectDefault(),
     )
     prenyltransferases = TagListField(
         "Prenyltransferase(s)",
@@ -272,14 +281,18 @@ class TerpeneForm(Form):
         description="Comma separated list of synthase/cyclase gene IDs",
     )
     precursor = SelectField(
-        "Precursor", choices=["", "DMAPP", "FPP", "GGPP", "GPP", "IPP"]
+        "Precursor",
+        choices=["DMAPP", "FPP", "GGPP", "GPP", "IPP"],
+        widget=SelectDefault(),
     )
     submit = SubmitField("Submit")
 
 
 class OtherForm(Form):
     subclass = SelectField(
-        "Sub-class", choices=["", "aminocoumarin", "cyclitol", "other"]
+        "Sub-class",
+        choices=["aminocoumarin", "cyclitol", "other"],
+        widget=SelectDefault(),
     )
     details = StringField("Details")
     submit = SubmitField("Submit")
@@ -298,9 +311,7 @@ class OperonForm(Form):
     genes = TagListField("Gene(s) forming operon")
 
 
-# TODO: separate biosynth components into their own page
-class BiosynthesisForm(Form):
-    classes = None
-    modules = None
-    operons = FieldList(FormField(OperonForm))  # add btn
-    paths = None
+class OperonMultipleForm(Form):
+    operons = FieldList(
+        FormField(OperonForm), widget=FieldListAddBtn(label="Add additional operon")
+    )

@@ -18,6 +18,7 @@ from submission.utils.custom_widgets import (
     FieldListAddBtn,
     StructureInput,
     TextInputWithSuggestions,
+    SelectDefault,
 )
 
 
@@ -46,7 +47,6 @@ class StructureSingle(Form):
     method = SelectField(  # TODO: add method+citation to 'evidence' formfield, allow multiple
         "Method",
         choices=[
-            "",
             "NMR",
             "Mass spectrometry",
             "MS/MS",
@@ -55,6 +55,7 @@ class StructureSingle(Form):
             "Total synthesis",
         ],
         description="Technique used to elucidate/verify the structure",
+        widget=SelectDefault(),
     )
     classes = SelectMultipleField(
         "Compound class(es) (Optional)",

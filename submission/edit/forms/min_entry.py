@@ -9,9 +9,13 @@ from wtforms import (
     validators,
     SubmitField,
 )
-from submission.utils.custom_fields import TagListField, MultiCheckboxField
+from submission.utils.custom_fields import TagListField
 from submission.utils.custom_forms import LocationForm, EvidenceForm
-from submission.utils.custom_widgets import FieldListAddBtn, TextInputIndicator
+from submission.utils.custom_widgets import (
+    FieldListAddBtn,
+    TextInputIndicator,
+    SelectDefault,
+)
 
 
 class MinEntryForm(Form):
@@ -74,8 +78,9 @@ class MinEntryForm(Form):
 
     completeness = SelectField(
         "Completeness",
-        choices=["", "complete", "incomplete", "unknown"],
+        choices=["complete", "incomplete", "unknown"],
         description="Are all genes needed for production of compounds present in the specified locus/loci?",
+        widget=SelectDefault(),
     )
     taxonomy = FormField(TaxonomyForm)
     comments = StringField("Additional comments (Optional)")

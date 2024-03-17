@@ -55,7 +55,6 @@ class TailoringFunctionForm(Form):
     function = SelectField(
         "Function",
         choices=[
-            "",
             "Acetylation",
             "Acylation",
             "Amination",
@@ -85,6 +84,7 @@ class TailoringFunctionForm(Form):
             "Sulfation",
             "Other",
         ],
+        widget=SelectDefault(),
     )
     details = StringField("Details")
 

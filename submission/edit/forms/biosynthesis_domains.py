@@ -6,7 +6,6 @@ from wtforms import (
     FormField,
     SelectField,
     FieldList,
-    widgets,
 )
 from submission.utils.custom_fields import TagListField, GeneIdField
 from submission.utils.custom_forms import LocationForm, SubtrateEvidenceForm
@@ -26,7 +25,6 @@ class CondensationDomain(Form):
     subtype = SelectField(
         "Subtype",
         choices=[
-            "",
             "Dual",
             "Starter",
             "LCL",
@@ -34,6 +32,7 @@ class CondensationDomain(Form):
             "Ester bond-forming",
             "Heterocyclization",
         ],
+        widget=SelectDefault(),
     )
     references = TagListField(
         "Citation(s)", widget=TextInputWithSuggestions(post_url="/edit/get_references")
@@ -69,7 +68,7 @@ class AdenylationDomain(Form):
 class CarrierDomain(Form):
     # "required": ["type", "gene", "location"]
     _type = HiddenField("carrier")
-    subtype = SelectField("Subtype", choices=["", "ACP", "PCP"])
+    subtype = SelectField("Subtype", choices=["ACP", "PCP"], widget=SelectDefault())
     gene = GeneIdField("Gene")
     location = FormField(LocationForm)
     inactive = BooleanField("Inactive?")
@@ -127,7 +126,9 @@ class KetoreductaseDomain(Form):
     location = FormField(LocationForm)
     inactive = BooleanField("Inactive?")
     stereochemistry = SelectField(
-        "Stereochemistry", choices=["", "A1", "A2", "B1", "B2", "C1", "C2"]
+        "Stereochemistry",
+        choices=["A1", "A2", "B1", "B2", "C1", "C2"],
+        widget=SelectDefault(),
     )
     evidence = FieldList(
         FormField(SubtrateEvidenceForm),
@@ -138,7 +139,9 @@ class KetoreductaseDomain(Form):
 
 class MethyltransferaseDomain(Form):
     _type = HiddenField("methyltransferase")
-    subtype = SelectField("Subtype", choices=["", "C", "N", "O", "other"])
+    subtype = SelectField(
+        "Subtype", choices=["C", "N", "O", "other"], widget=SelectDefault()
+    )
     gene = GeneIdField("Gene")
     location = FormField(LocationForm)
     details = StringField("Details")

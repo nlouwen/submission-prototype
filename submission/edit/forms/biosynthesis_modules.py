@@ -1,7 +1,6 @@
 from wtforms import (
     Form,
     StringField,
-    SelectField,
     HiddenField,
     BooleanField,
     FormField,
@@ -13,8 +12,6 @@ from wtforms import (
 from submission.utils.custom_fields import TagListField
 from submission.utils.custom_widgets import (
     FieldListAddBtn,
-    StructureInput,
-    SelectDefault,
 )
 from submission.edit.forms.biosynthesis_domains import (
     CondensationDomain,
