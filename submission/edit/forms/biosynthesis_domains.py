@@ -6,10 +6,16 @@ from wtforms import (
     FormField,
     SelectField,
     FieldList,
+    widgets,
 )
 from submission.utils.custom_fields import TagListField, GeneIdField
 from submission.utils.custom_forms import LocationForm, SubtrateEvidenceForm
-from submission.utils.custom_widgets import TextInputWithSuggestions
+from submission.utils.custom_widgets import (
+    TextInputWithSuggestions,
+    SelectDefault,
+    FieldListAddBtn,
+    StructureInput,
+)
 
 
 class CondensationDomain(Form):
@@ -40,15 +46,24 @@ class AdenylationDomain(Form):
         # "required": ["name", "proteinogenic", "structure"]
         name = StringField("Name")
         proteinogenic = BooleanField("proteinogenic?")
-        structure = StringField("structure (SMILES)")  # TODO: standardize smiles input
+        structure = StringField(
+            "structure (SMILES)", widget=StructureInput()
+        )  # TODO: standardize smiles input
 
     _type = HiddenField("adenylation")
     gene = GeneIdField("Gene")
     location = FormField(LocationForm)
     inactive = BooleanField("Inactive?")
-    evidence = FieldList(FormField(SubtrateEvidenceForm))
+    evidence = FieldList(
+        FormField(SubtrateEvidenceForm),
+        min_entries=1,
+        widget=FieldListAddBtn(label="Add additional evidence"),
+    )
     precursor_biosynthesis = TagListField("Gene(s) involved in precursor biosynthesis")
-    substrates = FieldList(FormField(SubstateForm))
+    substrates = FieldList(
+        FormField(SubstateForm),
+        widget=FieldListAddBtn(label="Add additional substrate"),
+    )
 
 
 class CarrierDomain(Form):
@@ -59,7 +74,11 @@ class CarrierDomain(Form):
     location = FormField(LocationForm)
     inactive = BooleanField("Inactive?")
     beta_branching = BooleanField("Beta-branching?")
-    evidence = FieldList(FormField(SubtrateEvidenceForm))
+    evidence = FieldList(
+        FormField(SubtrateEvidenceForm),
+        min_entries=1,
+        widget=FieldListAddBtn(label="Add additional evidence"),
+    )
 
 
 class AminotransferaseDomain(Form):
@@ -110,7 +129,11 @@ class KetoreductaseDomain(Form):
     stereochemistry = SelectField(
         "Stereochemistry", choices=["", "A1", "A2", "B1", "B2", "C1", "C2"]
     )
-    evidence = FieldList(FormField(SubtrateEvidenceForm))
+    evidence = FieldList(
+        FormField(SubtrateEvidenceForm),
+        min_entries=1,
+        widget=FieldListAddBtn(label="Add additional evidence"),
+    )
 
 
 class MethyltransferaseDomain(Form):
@@ -135,8 +158,83 @@ class OxidaseDomain(Form):
     location = FormField(LocationForm)
 
 
+class ModificationDomainForm(Form):
+    aminotransferase = FieldList(
+        FormField(AminotransferaseDomain),
+        widget=FieldListAddBtn(label="Add additional domain"),
+    )
+    cyclase = FieldList(
+        FormField(CyclaseDomain), widget=FieldListAddBtn(label="Add additional domain")
+    )
+    dehydratase = FieldList(
+        FormField(DehydrataseDomain),
+        widget=FieldListAddBtn(label="Add additional domain"),
+    )
+    enoylreductase = FieldList(
+        FormField(EnoylreductaseDomain),
+        widget=FieldListAddBtn(label="Add additional domain"),
+    )
+    epimerase = FieldList(
+        FormField(EpimeraseDomain),
+        widget=FieldListAddBtn(label="Add additional domain"),
+    )
+    hydroxylase = FieldList(
+        FormField(HydroxylaseDomain),
+        widget=FieldListAddBtn(label="Add additional domain"),
+    )
+    ketoreductase = FieldList(
+        FormField(KetoreductaseDomain),
+        widget=FieldListAddBtn(label="Add additional domain"),
+    )
+    methyltransferase = FieldList(
+        FormField(MethyltransferaseDomain),
+        widget=FieldListAddBtn(label="Add additional domain"),
+    )
+    oxidase = FieldList(
+        FormField(OxidaseDomain), widget=FieldListAddBtn(label="Add additional domain")
+    )
+    other = FieldList(
+        FormField(OtherDomain), widget=FieldListAddBtn(label="Add additional domain")
+    )
+
+
 class MonomerForm(Form):
     # "required": ["evidence", "name", "structure"]
-    evidence = FieldList(FormField(SubtrateEvidenceForm))
     name = StringField("Name")
-    structure = StringField("Structure (SMILES)")  # TODO: standardize smiles
+    structure = StringField(
+        "Structure (SMILES)", widget=StructureInput()
+    )  # TODO: standardize smiles
+    evidence = FieldList(
+        FormField(SubtrateEvidenceForm),
+        min_entries=1,
+        widget=FieldListAddBtn(label="Add additional evidence"),
+    )
+
+
+class AcyltransferaseForm(Form):
+    class SubstrateForm(Form):
+        name = SelectField(
+            "Name",
+            choices=["malonyl-CoA", "methylmalonyl-CoA", "ethylmalonyl-CoA", "other"],
+            widget=SelectDefault(),
+        )
+        structure = StringField(
+            "Structure (SMILES)", widget=StructureInput()
+        )  # TODO: standardize smiles
+        details = StringField("Details (Optional)")
+
+    _type = HiddenField("acyltransferase")
+    gene = GeneIdField()
+    location = FormField(LocationForm)
+    subtype = SelectField(choices=["cis-AT", "trans-AT"], widget=SelectDefault())
+    inactive = BooleanField("Inactive?")
+    substrates = FieldList(
+        FormField(SubstrateForm),
+        min_entries=1,
+        widget=FieldListAddBtn(label="Add additional substrate"),
+    )
+    evidence = FieldList(
+        FormField(SubtrateEvidenceForm),
+        min_entries=1,
+        widget=FieldListAddBtn(label="Add additional evidence"),
+    )

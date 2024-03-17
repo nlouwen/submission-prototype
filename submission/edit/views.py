@@ -251,6 +251,64 @@ def edit_biosynth_class(bgc_id: str, b_class: str) -> str | response.Response:
     )
 
 
+@bp_edit.route("/<bgc_id>/biosynth/paths", methods=["GET", "POST"])
+def edit_biosynth_paths(bgc_id: str) -> str | response.Response:
+    """Form to enter biosynthetic path information
+
+    Args:
+        bgc_id (str): BGC identifier
+
+    Returns:
+        str | Response: rendered template or redirect to edit_biosynth overview
+    """
+    if not is_valid_bgc_id(bgc_id):
+        return abort(403, "Invalid existing entry!")
+
+    if not request.form:
+        form = FormCollection.paths(
+            MultiDict(Storage.read_data(bgc_id).get("Biosynth_paths"))
+        )
+    else:
+        form = FormCollection.paths(request.form)
+
+    if request.method == "POST" and form.validate():
+        # TODO: save to db
+        Storage.save_data(bgc_id, "Biosynth_paths", request.form)
+        flash("Submitted biosynthetic path information!")
+        return redirect(url_for("edit.edit_biosynth", bgc_id=bgc_id))
+
+    return render_template("edit/biosynth_paths.html", bgc_id=bgc_id, form=form)
+
+
+@bp_edit.route("/<bgc_id>/biosynth/modules", methods=["GET", "POST"])
+def edit_biosynth_modules(bgc_id: str) -> str | response.Response:
+    """Form to enter biosynthetic module information
+
+    Args:
+        bgc_id (str): BGC identifier
+
+    Returns:
+        str | Response: rendered template or redirect to edit_biosynth overview
+    """
+    if not is_valid_bgc_id(bgc_id):
+        return abort(403, "Invalid existing entry!")
+
+    if not request.form:
+        form = FormCollection.modules(
+            MultiDict(Storage.read_data(bgc_id).get("Biosynth_modules"))
+        )
+    else:
+        form = FormCollection.modules(request.form)
+
+    if request.method == "POST" and form.validate():
+        # TODO: save to db
+        Storage.save_data(bgc_id, "Biosynth_modules", request.form)
+        flash("Submitted biosynthetic module information!")
+        return redirect(url_for("edit.edit_biosynth", bgc_id=bgc_id))
+
+    return render_template("edit/biosynth_modules.html", bgc_id=bgc_id, form=form)
+
+
 @bp_edit.route("/<bgc_id>/tailoring", methods=["GET", "POST"])
 def edit_tailoring(bgc_id: str) -> str | response.Response:
     """Form to enter tailoring enzyme information

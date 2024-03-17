@@ -7,10 +7,27 @@
 {% block body %}
 
 <div class="form-wrapper">
-    <h4>Select relevant biosynthetic class</h4>
+    <div class="container" style="margin: 15px 3px 15px 3px">
+        <h4>Select relevant biosynthetic class</h4>
 
-    <div class="tab-container" hx-post="{{ url_for('edit.class_buttons', bgc_id=bgc_id) }}" hx-trigger="load"
-        hx-swap="innerHTML">
+        <div class="tab-container" hx-post="{{ url_for('edit.class_buttons', bgc_id=bgc_id) }}" hx-trigger="load"
+            hx-swap="innerHTML">
+        </div>
     </div>
+    <div class="container" style="margin: 15px 3px 15px 3px">
+        <h4>Select to enter biosynthetic paths</h4>
+
+        <div><a class="btn btn-light" href=" {{ url_for('edit.edit_biosynth_paths', bgc_id=bgc_id) }}">Paths</a></div>
+    </div>
+    <div class="container" style="margin: 15px 3px 15px 3px">
+        <h4>Select to enter biosynthetic module information</h4>
+
+        <div><a class="btn btn-light" href=" {{ url_for('edit.edit_biosynth_modules', bgc_id=bgc_id) }}">Modules</a>
+        </div>
+    </div>
+</div>
+<div class="container">
+    <a href="{{ url_for('edit.edit_bgc', bgc_id=bgc_id) }}"><button class="btn btn-outline-secondary">Back to
+            overview</button></a>
 </div>
 {% endblock %}
