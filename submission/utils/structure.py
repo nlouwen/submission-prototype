@@ -1,10 +1,12 @@
+from typing import Union
+
 from flask import make_response, Response
 from rdkit import Chem, rdBase
 from rdkit.Chem import Draw, rdDepictor
 from rdkit.Chem.Draw import rdMolDraw2D
 
 
-def draw_smiles_svg(smiles: str) -> str | Response:
+def draw_smiles_svg(smiles: str) -> Union[str, Response]:
     """Draw svg image of a SMILES structure string
 
     Args:

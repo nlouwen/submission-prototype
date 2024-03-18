@@ -4,7 +4,7 @@
 from argparse import ArgumentParser, FileType
 from csv import DictReader
 from dataclasses import dataclass
-from typing import Self, TextIO
+from typing import Self, TextIO, Optional
 
 from sqlalchemy import or_
 
@@ -20,9 +20,9 @@ class LegacyUser:
     org: str
     public: bool
     active: bool
-    orcid: str | None = None
-    org_2: str | None = None
-    org_3: str | None = None
+    orcid: Optional[str] = None
+    org_2: Optional[str] = None
+    org_3: Optional[str] = None
     reviewer: bool = False
 
     @classmethod

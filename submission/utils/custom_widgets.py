@@ -1,5 +1,7 @@
 """ Collection of custom widget classes used throughout the submission system """
 
+from typing import Optional
+
 from flask import url_for
 from wtforms import Field, SelectFieldBase, widgets
 from markupsafe import Markup
@@ -20,7 +22,7 @@ class StringFieldAddBtn(widgets.TextInput):
 class FieldListAddBtn(widgets.SubmitInput):
     def __init__(
         self,
-        input_type: str | None = None,
+        input_type: Optional[str] = None,
         label="",
         render_kw={
             "formnovalidate": True,
@@ -42,7 +44,7 @@ class FieldListAddBtn(widgets.SubmitInput):
 
 class MultiTextInput(widgets.TextInput):
     def __init__(
-        self, input_type: str | None = None, number: int = 1, render_kw: list[dict] = []
+        self, input_type: Optional[str] = None, number: int = 1, render_kw: list[dict] = []
     ) -> None:
         super().__init__(input_type)
         self.number = number
@@ -64,7 +66,7 @@ class SelectDefault(widgets.Select):
     def __init__(
         self,
         multiple: bool = False,
-        default: tuple[str, str] | None = ("", " --- Select --- "),
+        default: Optional[tuple[str, str]] = ("", " --- Select --- "),
         **kwargs,
     ) -> None:
         super().__init__(multiple)
@@ -84,7 +86,7 @@ class SelectDefault(widgets.Select):
 
 
 class TextInputIndicator(widgets.TextInput):
-    def __init__(self, input_type: str | None = None) -> None:
+    def __init__(self, input_type: Optional[str] = None) -> None:
         super().__init__(input_type)
 
     def __call__(self, field: Field, **kwargs: object) -> Markup:
@@ -98,7 +100,7 @@ class TextInputIndicator(widgets.TextInput):
 class StructureInput(widgets.TextInput):
     def __init__(
         self,
-        input_type: str | None = None,
+        input_type: Optional[str] = None,
         render_kw={
             "hx-post": "/edit/render_smiles",
             "hx-trigger": "change, load",
@@ -118,7 +120,7 @@ class StructureInput(widgets.TextInput):
 
 class TextInputWithSuggestions(widgets.TextInput):
     def __init__(
-        self, input_type: str | None = None, post_url: str | None = None
+        self, input_type: Optional[str] = None, post_url: Optional[str] = None
     ) -> None:
         super().__init__(input_type)
         self.render_kw = {
