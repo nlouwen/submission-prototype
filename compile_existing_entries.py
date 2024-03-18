@@ -39,6 +39,7 @@ def compile_entry(entry: Path, output_dir: Path):
         "BioSynth_Ribosomal": convert_ripp(data),
         "BioSynth_Terpene": convert_terpene(data),
         "Annotation": convert_annotation(data),
+        "reference_dummy": convert_references(data),
     }
 
     outf = output_dir / f"{entry.stem}_data.json"
@@ -72,7 +73,11 @@ def convert_minimal(data: dict):
     if (org := data.get("organism_name")) is None:
         genus, species, strain = "", "", ""
     else:
-        genus, species, strain = org.split(" ", 2)
+        genus, _, rem = org.partition(" ")
+        if rem:
+            species, _, strain = rem.partition(" ")
+        else:
+            species, strain = "", ""
     min_data.append(["taxonomy-genus", genus])
     min_data.append(["taxonomy-species", species])
     min_data.append(["taxonomy-strain", strain])
@@ -167,7 +172,7 @@ def convert_pks(data: dict):
     pks_data: list[list[str]] = []
 
     if pks := data.get("polyketide"):
-        if isinstance(list, (sbclass := pks.get("subclasses", ""))):
+        if isinstance((sbclass := pks.get("subclasses", "")), list):
             pks_data.append(["subclass", sbclass[0]])
         pks_data.append(
             [
@@ -191,6 +196,7 @@ def convert_nrps(data: dict):
             nrps_data.append(
                 [f"thioesterases-{idx}-subtype", thio.get("thioesterase_type", "")]
             )
+    return nrps_data
 
 
 def convert_other(data: dict):
@@ -259,7 +265,7 @@ def convert_saccharide(data: dict):
                     gtrans.get("specificity", ""),
                 ]
             )
-            if isinstance(list, (evid := gtrans.get("evidence"))):
+            if isinstance((evid := gtrans.get("evidence")), list):
                 sac_data.append([f"glycosyltransferases-{g_idx}-evidence", evid[0]])
 
         for idx, subcl in enumerate(sac.get("sugar_subclusters", "")):
@@ -340,6 +346,16 @@ def convert_annotation(data: dict):
                     ]
                 )
     return annot_data
+
+
+def convert_references(data: dict):
+    refs = [
+        [
+            "references",
+            '"' + '", "'.join([ref for ref in data.get("publications", "")]) + '"',
+        ]
+    ]
+    return refs
 
 
 if __name__ == "__main__":

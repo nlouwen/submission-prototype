@@ -36,7 +36,7 @@ class EvidenceForm(Form):
     references = TagListField(
         "Citation(s) *",
         [validators.InputRequired()],
-        description="Comma separated list of references. Accepted formats are: 'doi:10.1016/j.chembiol.2020.11.009', 'PMID:33321099'",
+        description="Comma separated list of references. Accepted formats are: 'doi:10.1016/j.chembiol.2020.11.009', 'pubmed:33321099'",
         widget=TextInputWithSuggestions(post_url="/edit/get_references"),
     )
 
