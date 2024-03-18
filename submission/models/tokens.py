@@ -15,7 +15,7 @@ class Token(db.Model):
     )
     user_id: Mapped[int] = mapped_column(db.ForeignKey("auth.users.id"), nullable=False)
     purpose: Mapped[str] = mapped_column(nullable=False)
-    created_at: Mapped[datetime.datetime] = mapped_column(default=db.func.now())
+    created_at: Mapped[datetime.datetime] = mapped_column(db.DateTime(timezone=True), default=db.func.now())
 
     @staticmethod
     def generate_token(user_id: int, purpose: str) -> str:
