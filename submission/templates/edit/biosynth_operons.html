@@ -4,15 +4,17 @@
 
 {% block header %}
 <h2>Editing {{ bgc_id }}</h2>
-
 {% endblock %}
 
 {% block body %}
+
 <div class="form-wrapper">
+    <h4>Enter operon information</h4>
 
-    <h4>Enter gene annotation information</h4>
     {{ macros.simple_divform(form, is_reviewer=is_reviewer) }}
-
 </div>
-
+<div class="container">
+    <a href="{{ url_for('edit.edit_biosynth', bgc_id=bgc_id) }}"><button class="btn btn-outline-secondary">Back to
+            Biosynthesis overview</button></a>
+</div>
 {% endblock %}

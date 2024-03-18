@@ -7,11 +7,18 @@
 {% block body %}
 
 <div class="form-wrapper">
+    <h3>Biosynthesis Overview</h3>
     <div class="container" style="margin: 15px 3px 15px 3px">
         <h4>Select relevant biosynthetic class</h4>
 
         <div class="tab-container" hx-post="{{ url_for('edit.class_buttons', bgc_id=bgc_id) }}" hx-trigger="load"
             hx-swap="innerHTML">
+        </div>
+    </div>
+    <div class="container" style="margin: 15px 3px 15px 3px">
+        <h4>Select to enter operons</h4>
+
+        <div><a class="btn btn-light" href=" {{ url_for('edit.edit_biosynth_operons', bgc_id=bgc_id) }}">Operons</a>
         </div>
     </div>
     <div class="container" style="margin: 15px 3px 15px 3px">

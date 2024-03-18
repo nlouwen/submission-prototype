@@ -96,12 +96,12 @@
 {% endmacro %}
 
 
-{% macro simple_divform(form) %}
+{% macro simple_divform(form, is_reviewer=false) %}
 <form method="post" class="container">
     <fieldset>
         {% for field in form %}
         <div id="{{ field.id }}" class="form-group">
-            {{ render_field(field) }}
+            {{ render_field(field, is_reviewer) }}
         </div>
 
         {% endfor %}
@@ -111,12 +111,21 @@
 {% endmacro %}
 
 
-{% macro render_field(field) %}
+{% macro render_field(field, is_reviewer=false) %}
 
 {% set is_required = " fw-bold" %}
 
 {% if field.type == 'SubmitField' %}
 <div>
+    {% if is_reviewer %}
+    <div class="form-group" style="background-color: var(--mibig-light)">
+        <label class="form-label fw-bold" for="reviewed">Mark as reviewed</label>
+        <input id="reviewed" name="reviewed" class="form-check-input" type="checkbox" value="yes">
+        <p class="form-text text-muted">Visible to reviewers only, please check this box only when reviewing <u>a
+                colleague's</u> submission</p>
+    </div>
+    {% endif %}
+
     {{ field(class='btn btn-light')}}
 </div>
 {% else %}

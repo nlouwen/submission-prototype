@@ -13,7 +13,7 @@ from submission.utils.custom_widgets import StringFieldAddBtn
 def valid_id(form, field):
     # grab existing ids from MIBiG
     if not is_valid_bgc_id(field.data):
-        raise ValidationError("Invalid MIBiG ID!")
+        raise ValidationError("Invalid MIBiG or temporary ID!")
 
 
 class SelectExisting(Form):
@@ -31,4 +31,4 @@ class SelectExisting(Form):
             },
         ),
     )
-    submit = SubmitField("Submit new entry", render_kw={"formnovalidate": True})
+    submit = SubmitField("Create new entry", render_kw={"formnovalidate": True})

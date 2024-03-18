@@ -23,29 +23,23 @@ from submission.utils.custom_widgets import (
 
 
 class StructureSingle(Form):
-    name = StringField("Compound Name", [validators.DataRequired()])
-    synonyms = StringField(
-        "Synonyms (Optional)",
+    name = StringField("Compound Name *", [validators.InputRequired()])
+    synonyms = TagListField(
+        "Synonyms",
         [validators.Optional()],
         description="Synonyms for the compound, separated by commas.",
     )
-    formula = StringField("Molecular Formula")
-    mass = FloatField(
-        "Molecular mass",
-        [validators.Optional(), validators.NumberRange(min=0)],
-        description="Monoisotopic mass (Dalton) of the molecule. Use a dot as a decimal point, not a comma.",
-    )
     structure = StringField(  # TODO: crossreference chemical database, only if not in one enter SMILES, mass, formula manually
-        "SMILES representation",
+        "SMILES representation *",
         [
-            validators.Optional(),
+            validators.InputRequired(),
             validators.Regexp(regex=re.compile(r"^[\[\]a-zA-Z0-9\@()=\/\\#+.%*-]+$")),
         ],
         widget=StructureInput(),
         description="Mandatory for all structurally characterized compounds except for large ones such as most RiPPs and polysaccharides. Chemical structure entered as SMILES string, preferentially isomeric. This can be easily acquired with standard software such as ChemDraw, by, e.g., choosing 'Copy as SMILES'.",
     )
     method = SelectField(  # TODO: add method+citation to 'evidence' formfield, allow multiple
-        "Method",
+        "Method *",
         choices=[
             "NMR",
             "Mass spectrometry",
@@ -57,9 +51,22 @@ class StructureSingle(Form):
         description="Technique used to elucidate/verify the structure",
         widget=SelectDefault(),
         validate_choice=False,
+        validators=[validators.InputRequired()],
+    )
+    references = TagListField(
+        "Citation(s) *",
+        description="Comma separated list of references on this compound",
+        widget=TextInputWithSuggestions(post_url="/edit/get_references"),
+        validators=[validators.InputRequired()],
+    )
+    formula = StringField("Molecular Formula")
+    mass = FloatField(
+        "Molecular mass",
+        [validators.Optional(), validators.NumberRange(min=0)],
+        description="Monoisotopic mass (Dalton) of the molecule.",
     )
     classes = SelectMultipleField(
-        "Compound class(es) (Optional)",
+        "Compound class(es)",
         description="Hold ctrl or cmd key to select multiple compound classes.",
         choices={
             "Alkaloid": [
@@ -122,18 +129,15 @@ class StructureSingle(Form):
     )
     cyclic = BooleanField("Cyclic Compound?")
     moieties = TagListField(
-        "Moieties (Optional)",
-        description="Characteristic and/or noteworthy chemical moieties found in compound.",
+        "Moieties",
+        description="Comma separated list of characteristic and/or noteworthy chemical moieties found in compound.",
+        validators=[validators.Optional()],
     )
-    references = TagListField(
-        "Citation(s)",
-        description="Comma separated list of references on this compound",
-        widget=TextInputWithSuggestions(post_url="/edit/get_references"),
-    )
-    db_cross = StringField(
-        "Database cross-links (Optional)",
-        description="Database cross-reference for this compound (pubchem, chebi, chembl, chemspider, npatlas, lotus, gnps, cyanometdb), "
-        "e.g. pubchem:3081434 or chebi:29016 or chembl:CHEMBL414130 or chemspider:6082 or npatlas:NPA004746 or lotus:Q27102265 or gnps:MSV000087858 or cyanometdb:CyanoMetDB_0002",
+    db_cross = TagListField(
+        "Database cross-reference(s)",
+        description="Comma separated list of database cross-references for this compound. Accepted formats: "
+        "pubchem:3081434, chebi:29016, chembl:CHEMBL414130, chemspider:6082, npatlas:NPA004746, lotus:Q27102265, gnps:MSV000087858 and cyanometdb:CyanoMetDB_0002",
+        validators=[validators.Optional()],
     )  # TODO: validate input
 
 

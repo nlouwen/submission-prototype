@@ -21,7 +21,9 @@ from submission.utils.custom_widgets import (
 class MinEntryForm(Form):
 
     class TaxonomyForm(Form):
-        ncbi_tax_id = IntegerField("NCBI Taxonomy ID")
+        ncbi_tax_id = IntegerField(
+            "NCBI Taxonomy ID *", validators=[validators.InputRequired()]
+        )
         genus = StringField("Genus")
         species = StringField("Species")
         strain = StringField("Strain")
@@ -29,7 +31,7 @@ class MinEntryForm(Form):
     class LocusForm(Form):
 
         genome = StringField(
-            "Genome identifier",
+            "Genome identifier *",
             [validators.InputRequired()],
             widget=TextInputIndicator(),
             description="E.g., AL645882. Only use GenBank accessions, not RefSeq accessions or GI numbers.",
@@ -63,27 +65,29 @@ class MinEntryForm(Form):
         ),
     )
     b_class = SelectMultipleField(
-        "Biosynthetic class(es)",
+        "Biosynthetic class(es) *",
         choices=["NRPS", "PKS", "Ribosomal", "Saccharide", "Terpene", "Other"],
         description="Hold ctrl or cmd key to select multiple classes in the case of a hybrid gene cluster. "
         "Select all categories that apply: e.g. a compound resulting from a BGC with both non-ribosomal "
         "and polyketide synthases should be both 'NRPS' and 'PKS', while a BGC with both a polyketide "
         "synthase and a glycosyltransferase would be 'PKS' and 'Saccharide'.",
+        validators=[validators.InputRequired()],
     )
     products = TagListField(
-        "Product(s)",
+        "Product(s) *",
         [validators.InputRequired()],
         description='Comma separated list of produced compounds. To enter a compound name containing a comma, encase in double quotes, e.g. "8,9-dihydrolactimidomycin"',
     )
 
     completeness = SelectField(
-        "Completeness",
+        "Completeness *",
         choices=["complete", "incomplete", "unknown"],
         description="Are all genes needed for production of compounds present in the specified locus/loci?",
         widget=SelectDefault(),
         validate_choice=False,
+        validators=[validators.InputRequired()],
     )
     taxonomy = FormField(TaxonomyForm)
-    comments = StringField("Additional comments (Optional)")
+    comments = StringField("Additional comments")
 
     submit = SubmitField("Submit")

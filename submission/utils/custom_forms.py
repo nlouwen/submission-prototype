@@ -20,21 +20,21 @@ class LocationForm(Form):
 
 class EvidenceForm(Form):
     method = SelectField(
-        "Method",
+        "Method *",
         choices=[
-            "Homology-based prediction",
-            "Correlation of genomic and metabolomic data",
-            "Gene expression correlated with compound production",
-            "Knock-out studies",
-            "Enzymatic assays",
-            "Heterologous expression",
             "In vitro expression",
+            "Heterologous expression",
+            "Enzymatic assays",
+            "Knock-out studies",
+            "Gene expression correlated with compound production",
+            "Correlation of genomic and metabolomic data",
+            "Homology-based prediction",
         ],
         widget=SelectDefault(),
         validators=[validators.InputRequired()],
     )
     references = TagListField(
-        "Citation(s)",
+        "Citation(s) *",
         [validators.InputRequired()],
         description="Comma separated list of references. Accepted formats are: 'doi:10.1016/j.chembiol.2020.11.009', 'PMID:33321099'",
         widget=TextInputWithSuggestions(post_url="/edit/get_references"),
@@ -43,7 +43,7 @@ class EvidenceForm(Form):
 
 class SubtrateEvidenceForm(Form):
     name = SelectField(
-        "Method",
+        "Method *",
         choices=[
             "Activity assay",
             "ACVS assay",
@@ -65,9 +65,12 @@ class SubtrateEvidenceForm(Form):
         ],
         widget=SelectDefault(),
         validate_choice=False,
+        validators=[validators.InputRequired()],
     )
     references = TagListField(
-        "Citation(s)", widget=TextInputWithSuggestions(post_url="/edit/get_references")
+        "Citation(s) *",
+        widget=TextInputWithSuggestions(post_url="/edit/get_references"),
+        validators=[validators.InputRequired()],
     )
 
 
@@ -92,7 +95,7 @@ class StructureEvidenceForm(Form):
 
 class FunctionEvidenceForm(Form):
     method = SelectField(
-        "Method",
+        "Method *",
         choices=[
             "Other in vivo study",
             "Heterologous expression",
@@ -101,7 +104,10 @@ class FunctionEvidenceForm(Form):
         ],
         widget=SelectDefault(),
         validate_choice=False,
+        validators=[validators.InputRequired()],
     )
     references = TagListField(
-        "Citation(s)", widget=TextInputWithSuggestions(post_url="/edit/get_references")
+        "Citation(s) *",
+        widget=TextInputWithSuggestions(post_url="/edit/get_references"),
+        validators=[validators.InputRequired()],
     )

@@ -58,10 +58,11 @@ class NRPSForm(Form):
         )
 
     subclass = SelectField(
-        "Sub-class",
+        "Sub-class *",
         choices=["Type I", "Type II", "Type III", "Type IV", "Type V", "Type VI"],
         widget=SelectDefault(),
         validate_choice=False,
+        validators=[validators.InputRequired()],
     )
     release_types = FieldList(
         FormField(ReleaseTypeForm),
@@ -82,7 +83,7 @@ class NRPSForm(Form):
 
 class PKSForm(Form):
     subclass = SelectField(
-        "Sub-class",
+        "Sub-class *",
         choices=[
             "Type I",
             "Type II aromatic",
@@ -92,10 +93,11 @@ class PKSForm(Form):
         ],
         widget=SelectDefault(),
         validate_choice=False,
+        validators=[validators.InputRequired()],
     )
     cyclases = TagListField(
         "Cyclase(s)",
-        [ValidateTagListRegexp(r"^[^, ]*$")],
+        [validators.Optional(), ValidateTagListRegexp(r"^[^, ]*$")],
         description="Comma separated list of PKS cyclase gene IDs.",
     )
     starter_unit = None  # TODO: add to schema
@@ -120,11 +122,13 @@ class RibosomalForm(Form):
                 widget=SelectDefault(),
                 validate_choice=False,
             )
-            details = StringField("Details (Optional)")
+            details = StringField("Details")
 
-        gene = GeneIdField()
+        gene = GeneIdField("Gene *", validators=[validators.InputRequired()])
         core_sequence = StringField(
-            "Core sequence", description="Core sequence of precursor in amino acids."
+            "Core sequence *",
+            description="Core sequence of precursor in amino acids.",
+            validators=[validators.InputRequired()],
         )
         leader_cleavage_location = FormField(
             LocationForm, "Leader cleavage location (Optional)"
@@ -143,7 +147,7 @@ class RibosomalForm(Form):
         recognition_motif = StringField("Recognition motif (Optional)")
 
     subclass = SelectField(
-        "Sub-class",
+        "Sub-class *",
         description="If unmodified, skip the rest of this form",
         choices=[
             "Unmodified",
@@ -182,30 +186,31 @@ class RibosomalForm(Form):
         ],
         widget=SelectDefault(),
         validate_choice=False,
+        validators=[validators.InputRequired()],
     )
     # Only if not unmodified
-    details = StringField("Details (Optional)")
     peptidases = TagListField(
-        "Peptidase(s) (Optional)",
+        "Peptidase(s)",
         validators=[ValidateTagListRegexp(r"^[^, ]*$")],
         description="Comma separated list of peptidase gene IDs",
     )
     precursors = FieldList(
         FormField(PrecursorForm),
         "Precursor(s)",
-        min_entries=1,
         widget=FieldListAddBtn(
             label="Add additional precursor",
         ),
+        description="Note: if the precursor gene is not detected in the genbank entry, please remember to add it in the 'gene annotation' section of the submission system.",
     )
+    details = StringField("Details")
     submit = SubmitField("Submit")
 
 
 class SaccharideForm(Form):
     class GlycosylTranferaseForm(Form):
-        gene = GeneIdField()
+        gene = GeneIdField("Gene *", validators=[validators.InputRequired()])
         evidence = SelectField(
-            "Evidence type",
+            "Evidence type *",
             choices=[
                 "Sequence-based prediction",
                 "Structure-based inference",
@@ -214,10 +219,12 @@ class SaccharideForm(Form):
             ],
             widget=SelectDefault(),
             validate_choice=False,
+            validators=[validators.InputRequired()],
         )
         references = TagListField(
-            "Citation(s)",
+            "Citation(s) *",
             widget=TextInputWithSuggestions(post_url="/edit/get_references"),
+            validators=[validators.InputRequired()],
         )
         specificity = StringField(
             "Specificity (SMILES)",
@@ -254,7 +261,7 @@ class SaccharideForm(Form):
     glycosyltransferases = FieldList(
         FormField(GlycosylTranferaseForm),
         "Glycosyltransferase(s)",
-        min_entries=0,
+        min_entries=1,
         widget=FieldListAddBtn(
             label="Add additional glycosyltransferase",
         ),
@@ -303,10 +310,11 @@ class TerpeneForm(Form):
 
 class OtherForm(Form):
     subclass = SelectField(
-        "Sub-class",
+        "Sub-class *",
         choices=["aminocoumarin", "cyclitol", "other"],
         widget=SelectDefault(),
         validate_choice=False,
+        validators=[validators.InputRequired()],
     )
     details = StringField("Details")
     submit = SubmitField("Submit")
@@ -322,10 +330,15 @@ class BioClassesCollection:
 
 
 class OperonForm(Form):
-    genes = TagListField("Gene(s) forming operon")
+    genes = TagListField(
+        "Gene(s) *",
+        description="Comma separated list of gene IDs forming an operon",
+        validators=[validators.InputRequired()],
+    )
 
 
 class OperonMultipleForm(Form):
     operons = FieldList(
         FormField(OperonForm), widget=FieldListAddBtn(label="Add additional operon")
     )
+    submit = SubmitField("Submit")

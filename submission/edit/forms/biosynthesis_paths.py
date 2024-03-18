@@ -1,4 +1,12 @@
-from wtforms import Form, StringField, BooleanField, FormField, FieldList, SubmitField
+from wtforms import (
+    Form,
+    StringField,
+    BooleanField,
+    FormField,
+    FieldList,
+    SubmitField,
+    validators,
+)
 from submission.utils.custom_fields import TagListField, GeneIdField
 from submission.utils.custom_widgets import (
     TextInputWithSuggestions,
@@ -10,14 +18,18 @@ from markupsafe import Markup
 
 
 class ProductForm(Form):
-    name = StringField("Name", description="Name of the product produced by this path")
+    name = StringField(
+        "Name *",
+        description="Name of the product produced by this path",
+        validators=[validators.InputRequired()],
+    )
     structure = StringField("Structure (SMILES)", widget=StructureInput())
     comment = StringField("Comment")
 
 
 class PathForm(Form):
     steps = StringField(
-        "Steps",
+        "Steps *",
         description=Markup(
             "Define the steps in the biosynthetic path using their gene names."
             "<ul class='form-text text-muted'>"
@@ -28,6 +40,7 @@ class PathForm(Form):
             "<li>Trans-AT can be written as '[d]+c'.</li>"
             "</ul>"
         ),
+        validators=[validators.InputRequired()],
     )
     products = FieldList(
         FormField(ProductForm),
@@ -35,7 +48,9 @@ class PathForm(Form):
         widget=FieldListAddBtn(label="Add additional product"),
     )
     references = TagListField(
-        "Citation(s)", widget=TextInputWithSuggestions(post_url="/edit/get_references")
+        "Citation(s) *",
+        widget=TextInputWithSuggestions(post_url="/edit/get_references"),
+        validators=[validators.InputRequired()],
     )
     isSubcluster = BooleanField("Is this path carried out by a subcluster?")
     producesPrecursor = BooleanField("Does this path produce a precursor?")

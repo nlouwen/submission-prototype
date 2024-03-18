@@ -8,6 +8,7 @@ from submission.edit.forms.biosynthesis import (
     SaccharideForm,
     TerpeneForm,
     OtherForm,
+    OperonMultipleForm,
 )
 from submission.edit.forms.biosynthesis_paths import PathMultipleForm
 from submission.edit.forms.biosynthesis_modules import ModulesForm
@@ -28,6 +29,7 @@ class FormCollection:
     Terpene = TerpeneForm
     Other = OtherForm
 
+    operons = OperonMultipleForm
     paths = PathMultipleForm
     modules = ModulesForm
 
