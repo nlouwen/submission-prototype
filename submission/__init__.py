@@ -49,8 +49,8 @@ def configure_app(app: Flask, test_config: Optional[dict] = None) -> Flask:
         Flask: Configures Flask app instance
     """
     load_dotenv()
-    app.config["SECRET_KEY"] = "IYKYK"
-    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///auth.sqlite3"
+    app.config["SECRET_KEY"] = os.getenv("SECRET_KEY", "IYKYK")
+    app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("SQLALCHEMY_DATABASE_URI", "sqlite:///auth.sqlite3")
 
     app.config["MAIL_SERVER"] = os.getenv("MAIL_SERVER")
     app.config["MAIL_PORT"] = os.getenv("MAIL_PORT")

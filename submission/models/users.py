@@ -8,7 +8,7 @@ from submission.extensions import db
 
 class User(UserMixin, db.Model):
     __tablename__ = "users"
-    # __table_args__ = {"schema": "auth"}
+    __table_args__ = {"schema": "auth"}
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     email: Mapped[str] = mapped_column(unique=True, nullable=False)
@@ -16,7 +16,7 @@ class User(UserMixin, db.Model):
     _password: Mapped[str] = mapped_column(nullable=False)
 
     roles: Mapped[list["Role"]] = db.relationship(
-        "Role", secondary="user_roles", back_populates="users", lazy="selectin"
+        "Role", secondary="auth.user_roles", back_populates="users", lazy="selectin"
     )
 
     info: Mapped["UserInfo"] = db.relationship("UserInfo")
@@ -44,14 +44,14 @@ class User(UserMixin, db.Model):
 
 class Role(db.Model):
     __tablename__ = "roles"
-    # __table_args__ = {"schema": "auth"}
+    __table_args__ = {"schema": "auth"}
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     name: Mapped[str] = mapped_column(nullable=False)
     slug: Mapped[str] = mapped_column(nullable=False, unique=True)
 
     users: Mapped[list["User"]] = db.relationship(
-        "User", secondary="user_roles", back_populates="roles", lazy="selectin"
+        "User", secondary="auth.user_roles", back_populates="roles", lazy="selectin"
     )
 
     def __str__(self) -> str:
@@ -63,17 +63,17 @@ class Role(db.Model):
 
 class UserRole(db.Model):
     __tablename__ = "user_roles"
-    # __table_args__ = {"schema": "auth"}
+    __table_args__ = {"schema": "auth"}
 
-    user_id: Mapped[int] = mapped_column(db.ForeignKey("users.id"), primary_key=True)
-    role_id: Mapped[int] = mapped_column(db.ForeignKey("roles.id"), primary_key=True)
+    user_id: Mapped[int] = mapped_column(db.ForeignKey("auth.users.id"), primary_key=True)
+    role_id: Mapped[int] = mapped_column(db.ForeignKey("auth.roles.id"), primary_key=True)
 
 
 class UserInfo(db.Model):
     __tablename__ = "user_info"
-    # __table_args = {"schema": "auth"}
+    __table_args__ = {"schema": "auth"}
 
-    id: Mapped[int] = mapped_column(db.ForeignKey("users.id"), primary_key=True)
+    id: Mapped[int] = mapped_column(db.ForeignKey("auth.users.id"), primary_key=True)
     alias: Mapped[str] = mapped_column(nullable=False, unique=True)
     name: Mapped[str] = mapped_column(nullable=False)
     call_name: Mapped[str] = mapped_column(nullable=False)

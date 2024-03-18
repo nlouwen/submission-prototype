@@ -9,7 +9,7 @@ from typing import Self, TextIO
 from sqlalchemy import or_
 
 from submission import create_app, db
-from submission.models import User, Role, UserInfo
+from submission.models import User, Role, UserInfo, UserRole
 
 @dataclass
 class LegacyUser:
@@ -81,9 +81,19 @@ def main():
     parser = ArgumentParser()
     parser.add_argument("dumpfile", type=FileType('r', encoding="utf-8"),
                         help="File to read users from")
-    parser.add_argument("-m", "--mode", type=str, choices=("legacy", "csv"), default="csv",
+    parser.add_argument("-m", "--mode", type=str, choices=("legacy", "csv", "submitters-dummy"), default="csv",
                         help="Import the user from legacy database dump or new csv file")
     args = parser.parse_args()
+
+    if args.mode == "submitters-dummy":
+        app = create_app()
+        with app.app_context():
+            submitters = Role.query.filter_by(slug="submitter").one()
+            users = User.query.all()
+            for user in users:
+                if submitters not in user.roles:
+                    db.session.add(UserRole(user_id=user.id, role_id=submitters.id))
+            db.session.commit()
 
     users = parse_users(args.dumpfile, args.mode)
 
@@ -107,6 +117,8 @@ def parse_users(handle: TextIO, mode: str) -> list[LegacyUser]:
 def load_users(users: list[LegacyUser]):
     app = create_app()
     with app.app_context():
+        submitters = Role.query.filter_by(slug="submitter").one()
+        reviewers = Role.query.filter_by(slug="reviewer").one()
         for user in users:
 
             if user.orcid is not None:
@@ -136,6 +148,16 @@ def load_users(users: list[LegacyUser]):
                 print("updated", existing.info.name)
             else:
                 load_user(user)
+
+            existing = User.query.filter_by(email=user.email).first()
+            if not existing:
+                continue
+
+            if submitters not in existing.roles:
+                db.session.add(UserRole(user_id=existing.id, role_id=submitters.id))
+            if user.reviewer and reviewers not in existing.roles:
+                db.session.add(UserRole(user_id=existing.id, role_id=reviewers.id))
+            db.session.commit()
 
 
 def load_user(legacy: LegacyUser):
