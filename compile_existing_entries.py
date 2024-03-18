@@ -32,7 +32,14 @@ def compile_entry(entry: Path, output_dir: Path):
         "Minimal": convert_minimal(data),
         "Structure": convert_structure(data),
         "Bio_activity": convert_bioact(data),
+        "BioSynth_PKS": convert_pks(data),
+        "BioSynth_NRPS": convert_nrps(data),
+        "BioSynth_Other": convert_other(data),
+        "BioSynth_Saccharide": convert_saccharide(data),
+        "BioSynth_Ribosomal": convert_ripp(data),
+        "BioSynth_Terpene": convert_terpene(data),
         "Annotation": convert_annotation(data),
+        "reference_dummy": convert_references(data),
     }
 
     outf = output_dir / f"{entry.stem}_data.json"
@@ -66,7 +73,11 @@ def convert_minimal(data: dict):
     if (org := data.get("organism_name")) is None:
         genus, species, strain = "", "", ""
     else:
-        genus, species, strain = org.split(" ", 2)
+        genus, _, rem = org.partition(" ")
+        if rem:
+            species, _, strain = rem.partition(" ")
+        else:
+            species, strain = "", ""
     min_data.append(["taxonomy-genus", genus])
     min_data.append(["taxonomy-species", species])
     min_data.append(["taxonomy-strain", strain])
@@ -157,6 +168,138 @@ def convert_bioact(data: dict):
     return act_data
 
 
+def convert_pks(data: dict):
+    pks_data: list[list[str]] = []
+
+    if pks := data.get("polyketide"):
+        if isinstance((sbclass := pks.get("subclasses", "")), list):
+            pks_data.append(["subclass", sbclass[0]])
+        pks_data.append(
+            [
+                "cyclases",
+                '"' + '", "'.join([cycl for cycl in pks.get("cyclases", "")]) + '"',
+            ]
+        )
+        pks_data.append(["ketide_length", pks.get("ketide_length", "")])
+    return pks_data
+
+
+def convert_nrps(data: dict):
+    nrps_data: list[list[str]] = []
+
+    if nrps := data.get("nrp"):
+        for idx, rel_type in enumerate(nrps.get("release_type", "")):
+            nrps_data.append([f"release_types-{idx}-name", rel_type])
+        nrps_data.append(["subclass", nrps.get("subclass", "")])
+        for idx, thio in enumerate(nrps.get("thioesterases", "")):
+            nrps_data.append([f"thioesterases-{idx}-gene", thio.get("gene", "")])
+            nrps_data.append(
+                [f"thioesterases-{idx}-subtype", thio.get("thioesterase_type", "")]
+            )
+    return nrps_data
+
+
+def convert_other(data: dict):
+    other_data = []
+
+    if other := data.get("other"):
+        other_data.append(["subclass", other.get("subclass", "")])
+    return other_data
+
+
+def convert_ripp(data: dict):
+    ripp_data = []
+
+    if ripp := data.get("ripp"):
+        ripp_data.append(
+            [
+                "peptidases",
+                '"' + '", "'.join([pep for pep in ripp.get("peptidases", "")]) + '"',
+            ]
+        )
+        for p_idx, precursor in enumerate(ripp.get("precursor_genes", "")):
+            ripp_data.append([f"precursors-{p_idx}-gene", precursor.get("gene_id")])
+            ripp_data.append(
+                [f"precursors-{p_idx}-core_sequence", precursor.get("core_sequence")]
+            )
+            ripp_data.append(
+                [
+                    f"precursors-{p_idx}-recognition_motif",
+                    precursor.get("recognition_motif"),
+                ]
+            )
+            for c_idx, cross in enumerate(precursor.get("crosslinks", "")):
+                ripp_data.append(
+                    [
+                        f"precursors-{p_idx}-crosslinks-{c_idx}-from_loc",
+                        cross.get("first_AA", ""),
+                    ]
+                )
+                ripp_data.append(
+                    [
+                        f"precursors-{p_idx}-crosslinks-{c_idx}-to_loc",
+                        cross.get("second_AA", ""),
+                    ]
+                )
+                ripp_data.append(
+                    [
+                        f"precursors-{p_idx}-crosslinks-{c_idx}-link_type",
+                        cross.get("crosslink_type", ""),
+                    ]
+                )
+    return ripp_data
+
+
+def convert_saccharide(data: dict):
+    sac_data = []
+
+    if sac := data.get("saccharide"):
+
+        for g_idx, gtrans in enumerate(sac.get("glycosyltransferases", "")):
+            sac_data.append(
+                [f"glycosyltransferases-{g_idx}-gene", gtrans.get("gene_id", "")]
+            )
+            sac_data.append(
+                [
+                    f"glycosyltransferases-{g_idx}-specificity",
+                    gtrans.get("specificity", ""),
+                ]
+            )
+            if isinstance((evid := gtrans.get("evidence")), list):
+                sac_data.append([f"glycosyltransferases-{g_idx}-evidence", evid[0]])
+
+        for idx, subcl in enumerate(sac.get("sugar_subclusters", "")):
+            sac_data.append(
+                [f"subclusters-{idx}-genes", '"' + '", "'.join(subcl) + '"']
+            )
+    return sac_data
+
+
+def convert_terpene(data: dict):
+    trp_data = []
+
+    if trp := data.get("terpene"):
+        trp_data.append(
+            [
+                "synthases_cyclases",
+                '"'
+                + '", "'.join([sc for sc in trp.get("terpene_synth_cycl", "")])
+                + '"',
+            ]
+        )
+        trp_data.append(
+            [
+                "prenyltransferases",
+                '"'
+                + '", "'.join([pr for pr in trp.get("prenyltransferases", "")])
+                + '"',
+            ]
+        )
+        trp_data.append(["subclass", trp.get("carbon_count_subclass", "")])
+        trp_data.append(["precursor", trp.get("terpene_precursor", "")])
+    return trp_data
+
+
 def convert_annotation(data: dict):
     annot_data: list[list[str]] = []
 
@@ -203,6 +346,16 @@ def convert_annotation(data: dict):
                     ]
                 )
     return annot_data
+
+
+def convert_references(data: dict):
+    refs = [
+        [
+            "references",
+            '"' + '", "'.join([ref for ref in data.get("publications", "")]) + '"',
+        ]
+    ]
+    return refs
 
 
 if __name__ == "__main__":
