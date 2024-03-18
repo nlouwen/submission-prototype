@@ -19,7 +19,7 @@ def login() -> str:
 @bp_auth.route("/login", methods=["POST"])
 def login_post() -> response.Response:
     """Handles POST requests to the login page to log in users"""
-    email = request.form.get("email")
+    email = request.form.get("username")
     password = request.form.get("password")
     remember = True if request.form.get("remember") else False
 

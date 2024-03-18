@@ -43,18 +43,20 @@ def delete() -> str:
 @login_required
 def profile():
     roles = [role.slug for role in current_user.roles]
-    return render_template("main/profile.html.j2", name=current_user.name, roles=roles)
+    return render_template(
+        "main/profile.html.j2", name=current_user.info.name, roles=roles
+    )
 
 
 @bp_main.route("/submitter")
 @login_required
 @auth_role("submitter")
 def submitter():
-    return render_template("main/submitter.html.j2", name=current_user.name)
+    return render_template("main/submitter.html.j2", name=current_user.info.name)
 
 
 @bp_main.route("/reviewer")
 @login_required
 @auth_role("reviewer")
 def reviewer():
-    return render_template("main/reviewer.html.j2", name=current_user.name)
+    return render_template("main/reviewer.html.j2", name=current_user.info.name)

@@ -11,7 +11,7 @@
 <div class="form-wrapper">
     <h4>Enter {{ b_class }} Class-specific biosynthesis information</h4>
 
-    {{ macros.simple_divform(form) }}
+    {{ macros.simple_divform(form, is_reviewer=is_reviewer) }}
 </div>
 <div class="container">
     <a href="{{ url_for('edit.edit_biosynth', bgc_id=bgc_id) }}"><button class="btn btn-outline-secondary">Back to

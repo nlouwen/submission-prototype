@@ -3,6 +3,7 @@
 import re
 from pathlib import Path
 
+from flask import current_app
 from wtforms import ValidationError, validators
 
 
@@ -19,10 +20,12 @@ class ValidateTagListRegexp(object):
 
 
 def is_valid_bgc_id(bgc_id: str):
-    valid_ids = [f"BGC{num:0>7}" for num in range(1, 2750)]
+    valid_ids = [f"BGC{num:0>7}" for num in range(1, 3000)]
     if bgc_id in valid_ids:
         return True
-    if Path(f"{bgc_id}_data.json").exists():
+
+    data_dir = Path(current_app.root_path).parent / "data"
+    if Path(data_dir / f"{bgc_id}_data.json").exists():
         return True
     return False
 

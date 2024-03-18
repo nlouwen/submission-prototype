@@ -11,6 +11,7 @@ from flask import (
     url_for,
     flash,
 )
+from flask_login import current_user
 from werkzeug.datastructures import MultiDict
 from werkzeug.wrappers import response
 from wtforms.widgets import html_params
@@ -71,7 +72,12 @@ def edit_minimal(bgc_id: str) -> str | response.Response:
         Storage.save_data(bgc_id, "Minimal", request.form)
         flash("Submitted minimal entry!")
         return redirect(url_for("edit.edit_bgc", bgc_id=bgc_id))
-    return render_template("edit/min_entry.html", form=form, bgc_id=bgc_id)
+    return render_template(
+        "edit/min_entry.html",
+        form=form,
+        bgc_id=bgc_id,
+        is_reviewer=current_user.has_role("reviewer"),
+    )
 
 
 @bp_edit.route("/<bgc_id>/structure", methods=["GET", "POST"])
@@ -120,7 +126,12 @@ def edit_structure(bgc_id: str) -> str | response.Response:
         for product in products:
             if product not in [struct.data.get("name") for struct in form.structures]:
                 form.structures.append_entry(data={"name": product})
-    return render_template("edit/structure.html", form=form, bgc_id=bgc_id)
+    return render_template(
+        "edit/structure.html",
+        form=form,
+        bgc_id=bgc_id,
+        is_reviewer=current_user.has_role("reviewer"),
+    )
 
 
 @bp_edit.route("/render_smiles", methods=["POST"])
@@ -178,7 +189,12 @@ def edit_activity(bgc_id: str) -> str | response.Response:
         for product in products:
             if product not in [act.data.get("compound") for act in form.activities]:
                 form.activities.append_entry(data={"compound": product})
-    return render_template("edit/biological_activity.html", bgc_id=bgc_id, form=form)
+    return render_template(
+        "edit/biological_activity.html",
+        bgc_id=bgc_id,
+        form=form,
+        is_reviewer=current_user.has_role("reviewer"),
+    )
 
 
 @bp_edit.route("/<bgc_id>/biosynth", methods=["GET", "POST"])
@@ -247,7 +263,11 @@ def edit_biosynth_class(bgc_id: str, b_class: str) -> str | response.Response:
         return redirect(url_for("edit.edit_bgc", bgc_id=bgc_id))
 
     return render_template(
-        "edit/biosynth_class_specific.html", form=form, b_class=b_class, bgc_id=bgc_id
+        "edit/biosynth_class_specific.html",
+        form=form,
+        b_class=b_class,
+        bgc_id=bgc_id,
+        is_reviewer=current_user.has_role("reviewer"),
     )
 
 
@@ -277,7 +297,12 @@ def edit_biosynth_paths(bgc_id: str) -> str | response.Response:
         flash("Submitted biosynthetic path information!")
         return redirect(url_for("edit.edit_biosynth", bgc_id=bgc_id))
 
-    return render_template("edit/biosynth_paths.html", bgc_id=bgc_id, form=form)
+    return render_template(
+        "edit/biosynth_paths.html",
+        bgc_id=bgc_id,
+        form=form,
+        is_reviewer=current_user.has_role("reviewer"),
+    )
 
 
 @bp_edit.route("/<bgc_id>/biosynth/modules", methods=["GET", "POST"])
@@ -306,7 +331,12 @@ def edit_biosynth_modules(bgc_id: str) -> str | response.Response:
         flash("Submitted biosynthetic module information!")
         return redirect(url_for("edit.edit_biosynth", bgc_id=bgc_id))
 
-    return render_template("edit/biosynth_modules.html", bgc_id=bgc_id, form=form)
+    return render_template(
+        "edit/biosynth_modules.html",
+        bgc_id=bgc_id,
+        form=form,
+        is_reviewer=current_user.has_role("reviewer"),
+    )
 
 
 @bp_edit.route("/<bgc_id>/tailoring", methods=["GET", "POST"])
@@ -334,7 +364,12 @@ def edit_tailoring(bgc_id: str) -> str | response.Response:
         flash("Submitted tailoring information!")
         return redirect(url_for("edit.edit_bgc", bgc_id=bgc_id))
 
-    return render_template("edit/tailoring.html", bgc_id=bgc_id, form=form)
+    return render_template(
+        "edit/tailoring.html",
+        bgc_id=bgc_id,
+        form=form,
+        is_reviewer=current_user.has_role("reviewer"),
+    )
 
 
 @bp_edit.route("/<bgc_id>/annotation", methods=["GET", "POST"])
@@ -362,7 +397,12 @@ def edit_annotation(bgc_id: str) -> str | response.Response:
         flash("Submitted annotation information!")
         return redirect(url_for("edit.edit_bgc", bgc_id=bgc_id))
 
-    return render_template("edit/annotation.html", bgc_id=bgc_id, form=form)
+    return render_template(
+        "edit/annotation.html",
+        bgc_id=bgc_id,
+        form=form,
+        is_reviewer=current_user.has_role("reviewer"),
+    )
 
 
 @bp_edit.route("/add_field", methods=["POST"])
