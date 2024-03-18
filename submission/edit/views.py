@@ -1,6 +1,7 @@
 import re
 import csv
 from pathlib import Path
+from typing import Union
 
 from flask import (
     abort,
@@ -26,7 +27,7 @@ from submission.utils.custom_validators import is_valid_bgc_id
 
 @bp_edit.route("/<bgc_id>", methods=["GET", "POST"])
 @login_required
-def edit_bgc(bgc_id: str) -> str | response.Response:
+def edit_bgc(bgc_id: str) -> Union[str, response.Response]:
     """Overview page with navigation to forms for entry sections
 
     Args:
@@ -49,7 +50,7 @@ def edit_bgc(bgc_id: str) -> str | response.Response:
 
 @bp_edit.route("/<bgc_id>/minimal", methods=["GET", "POST"])
 @login_required
-def edit_minimal(bgc_id: str) -> str | response.Response:
+def edit_minimal(bgc_id: str) -> Union[str, response.Response]:
     """Form to enter minimal entry information
 
     Args:
@@ -84,7 +85,7 @@ def edit_minimal(bgc_id: str) -> str | response.Response:
 
 @bp_edit.route("/<bgc_id>/structure", methods=["GET", "POST"])
 @login_required
-def edit_structure(bgc_id: str) -> str | response.Response:
+def edit_structure(bgc_id: str) -> Union[str, response.Response]:
     """Form to enter structure information
 
     Args:
@@ -138,7 +139,7 @@ def edit_structure(bgc_id: str) -> str | response.Response:
 
 
 @bp_edit.route("/render_smiles", methods=["POST"])
-def render_smiles() -> str | response.Response:
+def render_smiles() -> Union[str, response.Response]:
     origin = request.headers["Hx-Trigger-Name"]
     smiles_string = request.form.get(origin)
 
@@ -150,7 +151,7 @@ def render_smiles() -> str | response.Response:
 
 @bp_edit.route("/<bgc_id>/bioact", methods=["GET", "POST"])
 @login_required
-def edit_activity(bgc_id: str) -> str | response.Response:
+def edit_activity(bgc_id: str) -> Union[str, response.Response]:
     """Form to enter biological activity information
 
     Args:
@@ -242,7 +243,7 @@ def class_buttons(bgc_id: str) -> str:
 
 @bp_edit.route("/<bgc_id>/biosynth/<b_class>", methods=["GET", "POST"])
 @login_required
-def edit_biosynth_class(bgc_id: str, b_class: str) -> str | response.Response:
+def edit_biosynth_class(bgc_id: str, b_class: str) -> Union[str, response.Response]:
     """Form to enter class-specific biosynthesis information
 
     Args:
@@ -279,7 +280,7 @@ def edit_biosynth_class(bgc_id: str, b_class: str) -> str | response.Response:
 
 @bp_edit.route("/<bgc_id>/biosynth/operons", methods=["GET", "POST"])
 @login_required
-def edit_biosynth_operons(bgc_id: str) -> str | response.Response:
+def edit_biosynth_operons(bgc_id: str) -> Union[str, response.Response]:
     """Form to enter operon information
 
     Args:
@@ -314,7 +315,7 @@ def edit_biosynth_operons(bgc_id: str) -> str | response.Response:
 
 @bp_edit.route("/<bgc_id>/biosynth/paths", methods=["GET", "POST"])
 @login_required
-def edit_biosynth_paths(bgc_id: str) -> str | response.Response:
+def edit_biosynth_paths(bgc_id: str) -> Union[str, response.Response]:
     """Form to enter biosynthetic path information
 
     Args:
@@ -349,7 +350,7 @@ def edit_biosynth_paths(bgc_id: str) -> str | response.Response:
 
 @bp_edit.route("/<bgc_id>/biosynth/modules", methods=["GET", "POST"])
 @login_required
-def edit_biosynth_modules(bgc_id: str) -> str | response.Response:
+def edit_biosynth_modules(bgc_id: str) -> Union[str, response.Response]:
     """Form to enter biosynthetic module information
 
     Args:
@@ -384,7 +385,7 @@ def edit_biosynth_modules(bgc_id: str) -> str | response.Response:
 
 @bp_edit.route("/<bgc_id>/tailoring", methods=["GET", "POST"])
 @login_required
-def edit_tailoring(bgc_id: str) -> str | response.Response:
+def edit_tailoring(bgc_id: str) -> Union[str, response.Response]:
     """Form to enter tailoring enzyme information
 
     Args:
@@ -418,7 +419,7 @@ def edit_tailoring(bgc_id: str) -> str | response.Response:
 
 @bp_edit.route("/<bgc_id>/annotation", methods=["GET", "POST"])
 @login_required
-def edit_annotation(bgc_id: str) -> str | response.Response:
+def edit_annotation(bgc_id: str) -> Union[str, response.Response]:
     """Form to enter gene annotation information
 
     Args:

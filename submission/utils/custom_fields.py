@@ -2,7 +2,7 @@
 
 import csv
 from wtforms import Field, StringField, SelectMultipleField, validators, widgets
-from typing import Any
+from typing import Any, Optional
 
 
 class GeneIdField(StringField):
@@ -10,13 +10,13 @@ class GeneIdField(StringField):
 
     def __init__(
         self,
-        label: str | None = None,
-        validators: list[Any] | None = [
+        label: Optional[str] = None,
+        validators: Optional[list[Any]] = [
             validators.Optional(),
             validators.Regexp(r"^[^, ]*$", message="Invalid Gene ID"),
         ],
         description: (
-            str | None
+            Optional[str]
         ) = "NCBI GenPept ID (e.g. CAB60185.1), locus tag (e.g. SCO6266), or gene name (e.g. scbA)",
         **kwargs,
     ):

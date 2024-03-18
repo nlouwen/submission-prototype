@@ -1,4 +1,6 @@
-from flask import render_template, request, redirect, url_for, flash, abort
+from typing import Union
+
+from flask import render_template, request, redirect, url_for, flash, abort, current_app
 from flask_login import login_user, logout_user, login_required
 from flask_mail import Message
 from werkzeug.wrappers import response
@@ -43,7 +45,7 @@ def logout() -> response.Response:
 
 
 @bp_auth.route("/reset-my-password", methods=["GET", "POST"])
-def password_email() -> str | response.Response:
+def password_email() -> Union[str, response.Response]:
     """Send an email with password reset link to user provided email"""
     form = UserEmailForm(request.form)
     if request.method == "POST" and form.validate():
@@ -60,7 +62,7 @@ def password_email() -> str | response.Response:
             Message(
                 subject="Change your MIBiG password",
                 recipients=[email],
-                body=f"Hello, click this link <root>auth/{token_id}",  # TODO: complete final url
+                body=f"Hello, click this link {current_app.config['BASE_URL']}/auth/reset/{token_id}",
             )
         )
         flash(f"Please check your email")
@@ -70,7 +72,7 @@ def password_email() -> str | response.Response:
 
 
 @bp_auth.route("/reset/<token_id>", methods=["GET", "POST"])
-def reset_password(token_id: str) -> str | response.Response:
+def reset_password(token_id: str) -> Union[str, response.Response]:
     """Allow a user to change their password via email provided link
 
     Arguments:
