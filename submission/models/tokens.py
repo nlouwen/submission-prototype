@@ -56,6 +56,6 @@ class Token(db.Model):
         Returns:
             bool: true if token was created within specified number of hours
         """
-        current_time = datetime.datetime.now(datetime.UTC)
+        current_time = datetime.datetime.now(datetime.timezone.utc)
         boundary = current_time - datetime.timedelta(hours=hours)
         return self.created_at > boundary
