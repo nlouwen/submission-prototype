@@ -24,16 +24,10 @@ from submission.utils.custom_widgets import (
 
 class StructureSingle(Form):
     name = StringField("Compound Name *", [validators.InputRequired()])
-    synonyms = StringField(
+    synonyms = TagListField(
         "Synonyms",
         [validators.Optional()],
         description="Synonyms for the compound, separated by commas.",
-    )
-    formula = StringField("Molecular Formula")
-    mass = FloatField(
-        "Molecular mass",
-        [validators.Optional(), validators.NumberRange(min=0)],
-        description="Monoisotopic mass (Dalton) of the molecule. Use a dot as a decimal point, not a comma.",
     )
     structure = StringField(  # TODO: crossreference chemical database, only if not in one enter SMILES, mass, formula manually
         "SMILES representation *",
@@ -64,6 +58,12 @@ class StructureSingle(Form):
         description="Comma separated list of references on this compound",
         widget=TextInputWithSuggestions(post_url="/edit/get_references"),
         validators=[validators.InputRequired()],
+    )
+    formula = StringField("Molecular Formula")
+    mass = FloatField(
+        "Molecular mass",
+        [validators.Optional(), validators.NumberRange(min=0)],
+        description="Monoisotopic mass (Dalton) of the molecule.",
     )
     classes = SelectMultipleField(
         "Compound class(es)",
@@ -130,13 +130,13 @@ class StructureSingle(Form):
     cyclic = BooleanField("Cyclic Compound?")
     moieties = TagListField(
         "Moieties",
-        description="Characteristic and/or noteworthy chemical moieties found in compound.",
+        description="Comma separated list of characteristic and/or noteworthy chemical moieties found in compound.",
         validators=[validators.Optional()],
     )
-    db_cross = StringField(
-        "Database cross-links",
-        description="Database cross-reference for this compound (pubchem, chebi, chembl, chemspider, npatlas, lotus, gnps, cyanometdb), "
-        "e.g. pubchem:3081434 or chebi:29016 or chembl:CHEMBL414130 or chemspider:6082 or npatlas:NPA004746 or lotus:Q27102265 or gnps:MSV000087858 or cyanometdb:CyanoMetDB_0002",
+    db_cross = TagListField(
+        "Database cross-reference(s)",
+        description="Comma separated list of database cross-references for this compound. Accepted formats: "
+        "pubchem:3081434, chebi:29016, chembl:CHEMBL414130, chemspider:6082, npatlas:NPA004746, lotus:Q27102265, gnps:MSV000087858 and cyanometdb:CyanoMetDB_0002",
         validators=[validators.Optional()],
     )  # TODO: validate input
 

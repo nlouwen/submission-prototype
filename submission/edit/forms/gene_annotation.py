@@ -8,6 +8,7 @@ from wtforms import (
     validators,
 )
 from submission.utils.custom_fields import TagListField, GeneIdField
+from submission.utils.custom_validators import RequiredIf
 from submission.utils.custom_widgets import (
     FieldListAddBtn,
     SelectDefault,
@@ -66,6 +67,12 @@ class AnnotationForm(Form):
             references = TagListField(
                 "Citation(s)",
                 widget=TextInputWithSuggestions(post_url="/edit/get_references"),
+                validators=[
+                    RequiredIf(
+                        "phenotype",
+                        message="This field is required when phenotype is filled.",
+                    )
+                ],
             )
 
         function = SelectField(
@@ -86,6 +93,9 @@ class AnnotationForm(Form):
             validate_choice=False,
             validators=[validators.InputRequired()],
         )
+        details = StringField(
+            "Details", description="Any additional information on this gene's function"
+        )
         evidence = FieldList(
             FormField(FunctionEvidenceForm),
             min_entries=1,
@@ -98,8 +108,11 @@ class AnnotationForm(Form):
         )
 
     gene_id = GeneIdField("Gene *", validators=[validators.InputRequired()])
-    name = StringField("Gene name")
-    product = StringField("Gene product name")
+    name = StringField("Gene name", description="Commonly used gene name (e.g. scbA)")
+    product = StringField(
+        "Gene product name",
+        description="e.g. acyl-homoserine-lactone acylase or hypothetical protein",
+    )
     functions = FieldList(
         FormField(FunctionForm),
         widget=FieldListAddBtn(

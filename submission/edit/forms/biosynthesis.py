@@ -97,7 +97,7 @@ class PKSForm(Form):
     )
     cyclases = TagListField(
         "Cyclase(s)",
-        [ValidateTagListRegexp(r"^[^, ]*$")],
+        [validators.Optional(), ValidateTagListRegexp(r"^[^, ]*$")],
         description="Comma separated list of PKS cyclase gene IDs.",
     )
     starter_unit = None  # TODO: add to schema
@@ -200,6 +200,7 @@ class RibosomalForm(Form):
         widget=FieldListAddBtn(
             label="Add additional precursor",
         ),
+        description="Note: if the precursor gene is not detected in the genbank entry, please remember to add it in the 'gene annotation' section of the submission system.",
     )
     details = StringField("Details")
     submit = SubmitField("Submit")
@@ -329,10 +330,15 @@ class BioClassesCollection:
 
 
 class OperonForm(Form):
-    genes = TagListField("Gene(s) forming operon")
+    genes = TagListField(
+        "Gene(s) *",
+        description="Comma separated list of gene IDs forming an operon",
+        validators=[validators.InputRequired()],
+    )
 
 
 class OperonMultipleForm(Form):
     operons = FieldList(
         FormField(OperonForm), widget=FieldListAddBtn(label="Add additional operon")
     )
+    submit = SubmitField("Submit")

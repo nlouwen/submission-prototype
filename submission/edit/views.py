@@ -277,6 +277,41 @@ def edit_biosynth_class(bgc_id: str, b_class: str) -> str | response.Response:
     )
 
 
+@bp_edit.route("/<bgc_id>/biosynth/operons", methods=["GET", "POST"])
+@login_required
+def edit_biosynth_operons(bgc_id: str) -> str | response.Response:
+    """Form to enter operon information
+
+    Args:
+        bgc_id (str): BGC identifier
+
+    Returns:
+        str | Response: rendered template or redirect to edit_biosynth overview
+    """
+    if not is_valid_bgc_id(bgc_id):
+        return abort(403, "Invalid existing entry!")
+
+    if not request.form:
+        form = FormCollection.operons(
+            MultiDict(Storage.read_data(bgc_id).get("Biosynth_operons"))
+        )
+    else:
+        form = FormCollection.operons(request.form)
+
+    if request.method == "POST" and form.validate():
+        # TODO: save to db
+        Storage.save_data(bgc_id, "Biosynth_operons", request.form)
+        flash("Submitted operon information!")
+        return redirect(url_for("edit.edit_biosynth", bgc_id=bgc_id))
+
+    return render_template(
+        "edit/biosynth_operons.html",
+        bgc_id=bgc_id,
+        form=form,
+        is_reviewer=current_user.has_role("reviewer"),
+    )
+
+
 @bp_edit.route("/<bgc_id>/biosynth/paths", methods=["GET", "POST"])
 @login_required
 def edit_biosynth_paths(bgc_id: str) -> str | response.Response:
