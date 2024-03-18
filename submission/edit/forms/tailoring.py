@@ -29,13 +29,19 @@ class AuxEnzymeForm(Form):
 
 
 class EnzymeForm(Form):
-    name = StringField("Protein name", description="e.g. 'NisB'.")
+    name = StringField("Protein name *", description="e.g. 'NisB'.")
+
     description = StringField(
         "Description", description="Brief description of the enzyme function."
     )
     databaseIds = TagListField(
-        "Database cross-reference", description="Uniprot or GenBank ID of protein"
+        "Database cross-reference *", description="Uniprot or GenBank ID of protein"
     )  # TODO: db id regexp
+    references = TagListField(
+        "Citation(s) *",
+        description="Comma separated references on the protein",
+        widget=TextInputWithSuggestions(post_url="/edit/get_references"),
+    )
     auxiliary_enzymes = FieldList(
         FormField(AuxEnzymeForm),
         min_entries=0,
@@ -44,16 +50,11 @@ class EnzymeForm(Form):
             label="Add auxiliary enzyme",
         ),
     )
-    references = TagListField(
-        "Citation(s)",
-        description="Comma separated references on the protein",
-        widget=TextInputWithSuggestions(post_url="/edit/get_references"),
-    )
 
 
 class TailoringFunctionForm(Form):
     function = SelectField(
-        "Function",
+        "Function *",
         choices=[
             "Acetylation",
             "Acylation",
@@ -86,6 +87,7 @@ class TailoringFunctionForm(Form):
         ],
         widget=SelectDefault(),
         validate_choice=False,
+        validators=[validators.InputRequired()],
     )
     details = StringField("Details")
 
@@ -97,7 +99,7 @@ class HydrogenForm(Form):
 
 class ReactionSmartsEvidenceForm(Form):
     evidenceCode = SelectField(
-        "Evidence for enzymatic reaction and substrate specificity",
+        "Evidence for enzymatic reaction and substrate specificity *",
         choices=[
             "Heterologous expression",
             "Inference from genomic data and chemical structure",
@@ -109,16 +111,19 @@ class ReactionSmartsEvidenceForm(Form):
         ],
         widget=SelectDefault(),
         validate_choice=False,
+        validators=[validators.InputRequired()],
     )
     references = TagListField(
-        "Citation(s)", widget=TextInputWithSuggestions(post_url="/edit/get_references")
+        "Citation(s) *",
+        widget=TextInputWithSuggestions(post_url="/edit/get_references"),
+        validators=[validators.InputRequired()],
     )
 
 
 class ReactionSmartsForm(Form):
     reactionSMARTS = StringField(
-        "SMARTS",
-        validators=[validators.Regexp(r"^.+>>.+$")],
+        "SMARTS *",
+        validators=[validators.InputRequired(), validators.Regexp(r"^.+>>.+$")],
         description="The reaction SMARTS or reaction CXSMARTS string",
     )
     isIterative = BooleanField("Iterative? (modifying all possible substructures)")
@@ -127,6 +132,14 @@ class ReactionSmartsForm(Form):
     )
     hasPositionVariationBond = BooleanField(
         "Contains a position variation bond which indicates positional variation of a substituent over multiple atoms (e.g. variable chlorination on an aromatic ring)."
+    )
+    evidence_sm = FieldList(
+        FormField(ReactionSmartsEvidenceForm),
+        min_entries=1,
+        label="Evidence *",
+        widget=FieldListAddBtn(
+            label="Add additional evidence",
+        ),
     )
     explicitHydrogen = FieldList(
         FormField(HydrogenForm),
@@ -140,41 +153,32 @@ class ReactionSmartsForm(Form):
         "Cross-reference",
         description='Comma separated cross-references to other databases: Rhea (e.g. "rhea:32647"), MITE (e.g. "MITE0000001"), EC number (e.g. "EC 2.1.1.254")',
     )
-    evidence_sm = FieldList(
-        FormField(ReactionSmartsEvidenceForm),
-        min_entries=1,
-        label="Evidence",
-        widget=FieldListAddBtn(
-            label="Add additional evidence",
-        ),
-    )
 
 
 class ValidatedReactionForm(Form):
     substrate_substructure = StringField(
-        "Substrate (sub)structure (SMILES)", widget=StructureInput()
+        "Substrate (sub)structure (SMILES) *",
+        widget=StructureInput(),
+        validators=[validators.InputRequired()],
     )  # TODO: standardize smiles
     product_substructure = FieldList(
-        StringField(label="Product (sub)structure SMILES", widget=StructureInput()),
+        StringField(
+            label="Product (sub)structure (SMILES) *",
+            widget=StructureInput(),
+            validators=[validators.InputRequired()],
+        ),
         label="Product (sub)structure(s)",
         min_entries=1,
         widget=FieldListAddBtn(label="Add product (sub)structure"),
     )  # TODO: standardize smiles
     isBalanced = BooleanField(
-        "Is the validated reaction balanced (i.e. stoichiometric complete)?"
+        "Is the validated reaction balanced (i.e. stoichiometric complete)? *"
     )
     isAuthentic = BooleanField(
-        "Is this substrate-product pair authentic/experimentally verified (i.e. not substructures)"
+        "Is this substrate-product pair authentic/experimentally verified (i.e. not substructures) *"
     )
     isIntermediate = BooleanField(
-        "Is this validated reaction an intermediate step (i.e. not the final product)?"
-    )
-    description = StringField(
-        "Additional information about reaction example (Optional)"
-    )
-    databaseIds = TagListField(
-        "Cross-reference",
-        description='Comma separated cross-references to other databases: Rhea (e.g. "rhea:32647"), MITE (e.g. "MITE0000001"), EC number (e.g. "EC 2.1.1.254")',
+        "Is this validated reaction an intermediate step (i.e. not the final product)? *"
     )
     evidence_val = FieldList(
         FormField(ReactionSmartsEvidenceForm),
@@ -183,6 +187,11 @@ class ValidatedReactionForm(Form):
         widget=FieldListAddBtn(
             label="Add additional evidence",
         ),
+    )
+    description = StringField("Additional information about reaction example")
+    databaseIds = TagListField(
+        "Cross-reference",
+        description='Comma separated cross-references to other databases: Rhea (e.g. "rhea:32647"), MITE (e.g. "MITE0000001"), EC number (e.g. "EC 2.1.1.254")',
     )
 
 
@@ -230,7 +239,7 @@ class TailoringForm(Form):
             label="Add reaction",
         ),
     )
-    comment = StringField("Any additional information about this entry (Optional)")
+    comment = StringField("Any additional information about this entry")
 
 
 class TailoringMultipleForm(Form):

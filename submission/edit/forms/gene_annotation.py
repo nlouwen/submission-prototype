@@ -5,6 +5,7 @@ from wtforms import (
     FormField,
     SubmitField,
     SelectField,
+    validators,
 )
 from submission.utils.custom_fields import TagListField, GeneIdField
 from submission.utils.custom_widgets import (
@@ -24,19 +25,22 @@ class AddGeneForm(Form):
     gene_id = StringField(
         "Gene identifier", description="The commonly used gene name (e.g. nisA)"
     )
-    location = FieldList(
+    exons = FieldList(
         FormField(LocationForm),
+        label="Exons *",
         description="Location of coding sequences (CDS). Please also include the stop codon in the coordinates",
+        min_entries=1,
         widget=FieldListAddBtn(
             label="Add CDS location",
         ),
     )
     strand = SelectField(
-        "Strand",
+        "Strand *",
         choices=[1, -1],
         widget=SelectDefault(),
         description="The directionality of the CDS. '1' indicates forward directionality, '-1' indicates reverse diretionality",
         validate_choice=False,
+        validators=[validators.InputRequired()],
     )
     translation = StringField(
         "Translation",
@@ -45,7 +49,7 @@ class AddGeneForm(Form):
 
 
 class DeleteGeneForm(Form):
-    gene_id = GeneIdField("Gene")
+    gene_id = GeneIdField("Gene *", validators=[validators.InputRequired()])
     reason = StringField(
         "Reason",
         description="Rationale why this gene is not a part of this gene cluster",
@@ -65,7 +69,7 @@ class AnnotationForm(Form):
             )
 
         function = SelectField(
-            "Function",
+            "Function *",
             choices=[
                 "Activation / processing",
                 "Maturation",
@@ -80,6 +84,7 @@ class AnnotationForm(Form):
             ],
             widget=SelectDefault(),
             validate_choice=False,
+            validators=[validators.InputRequired()],
         )
         evidence = FieldList(
             FormField(FunctionEvidenceForm),
@@ -88,9 +93,11 @@ class AnnotationForm(Form):
                 label="Add additional evidence",
             ),
         )
-        mutation_phenotype = FormField(MutationPhenotype)
+        mutation_phenotype = FormField(
+            MutationPhenotype, label="Mutation phenotype (Optional)"
+        )
 
-    gene_id = GeneIdField("Gene")
+    gene_id = GeneIdField("Gene *", validators=[validators.InputRequired()])
     name = StringField("Gene name")
     product = StringField("Gene product name")
     functions = FieldList(
@@ -111,11 +118,15 @@ class DomainForm(Form):
             ),
         )
         structure = StringField(
-            "Substrate structure SMILES", widget=StructureInput()
+            "Substrate structure SMILES *",
+            widget=StructureInput(),
+            validators=[validators.InputRequired()],
         )  # TODO: standardize smiles
 
-    location = FormField(LocationForm, label="Domain location")
-    name = StringField("Domain name")
+    name = StringField("Domain name *", validators=[validators.InputRequired()])
+    location = FormField(
+        LocationForm, label="Domain location *"
+    )  # TODO: require location
     substrates = FieldList(
         FormField(SubtrateForm),
         widget=FieldListAddBtn(

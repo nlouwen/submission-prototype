@@ -6,6 +6,7 @@ from wtforms import (
     FormField,
     SelectField,
     FieldList,
+    validators,
 )
 from submission.utils.custom_fields import TagListField, GeneIdField
 from submission.utils.custom_forms import LocationForm, SubtrateEvidenceForm
@@ -85,15 +86,15 @@ class CarrierDomain(Form):
 
 class AminotransferaseDomain(Form):
     _type = HiddenField("aminotransferase")
-    gene = GeneIdField("Gene")
-    location = FormField(LocationForm)
+    gene = GeneIdField("Gene *", validators=[validators.InputRequired()])
+    location = FormField(LocationForm, label="Location *")  # TODO: require location
     inactive = BooleanField("Inactive?")
 
 
 class CyclaseDomain(Form):
     _type = HiddenField("cyclase")
-    gene = GeneIdField("Gene")
-    location = FormField(LocationForm)
+    gene = GeneIdField("Gene *", validators=[validators.InputRequired()])
+    location = FormField(LocationForm, label="Location *")  # TODO: require location
     references = TagListField(
         "Citation(s)", widget=TextInputWithSuggestions(post_url="/edit/get_references")
     )
@@ -101,32 +102,32 @@ class CyclaseDomain(Form):
 
 class DehydrataseDomain(Form):
     _type = HiddenField("dehydratase")
-    gene = GeneIdField("Gene")
-    location = FormField(LocationForm)
+    gene = GeneIdField("Gene *", validators=[validators.InputRequired()])
+    location = FormField(LocationForm, label="Location *")  # TODO: require location
 
 
 class EnoylreductaseDomain(Form):
     _type = HiddenField("enoylreductase")
-    gene = GeneIdField("Gene")
-    location = FormField(LocationForm)
+    gene = GeneIdField("Gene *", validators=[validators.InputRequired()])
+    location = FormField(LocationForm, label="Location *")  # TODO: require location
 
 
 class EpimeraseDomain(Form):
     _type = HiddenField("epimerase")
-    gene = GeneIdField("Gene")
-    location = FormField(LocationForm)
+    gene = GeneIdField("Gene *", validators=[validators.InputRequired()])
+    location = FormField(LocationForm, label="Location *")  # TODO: require location
 
 
 class HydroxylaseDomain(Form):
     _type = HiddenField("hydroxylase")
-    gene = GeneIdField("Gene")
-    location = FormField(LocationForm)
+    gene = GeneIdField("Gene *", validators=[validators.InputRequired()])
+    location = FormField(LocationForm, label="Location *")  # TODO: require location
 
 
 class KetoreductaseDomain(Form):
     _type = HiddenField("ketoreductase")
-    gene = GeneIdField("Gene")
-    location = FormField(LocationForm)
+    gene = GeneIdField("Gene *", validators=[validators.InputRequired()])
+    location = FormField(LocationForm, label="Location *")  # TODO: require location
     inactive = BooleanField("Inactive?")
     stereochemistry = SelectField(
         "Stereochemistry",
@@ -143,29 +144,29 @@ class KetoreductaseDomain(Form):
 
 class MethyltransferaseDomain(Form):
     _type = HiddenField("methyltransferase")
+    gene = GeneIdField("Gene *", validators=[validators.InputRequired()])
+    location = FormField(LocationForm, label="Location *")  # TODO: require location
     subtype = SelectField(
         "Subtype",
         choices=["C", "N", "O", "other"],
         widget=SelectDefault(),
         validate_choice=False,
     )
-    gene = GeneIdField("Gene")
-    location = FormField(LocationForm)
     details = StringField("Details")
 
 
 class OtherDomain(Form):
     # "required": ["type", "subtype", "gene", "location"]
     _type = HiddenField("other")
-    subtype = StringField("Subtype")
-    gene = GeneIdField("Gene")
-    location = FormField(LocationForm)
+    subtype = StringField("Subtype *", validators=[validators.InputRequired()])
+    gene = GeneIdField("Gene *", validators=[validators.InputRequired()])
+    location = FormField(LocationForm, label="Location *")  # TODO: require location
 
 
 class OxidaseDomain(Form):
     _type = HiddenField("oxidase")
-    gene = GeneIdField("Gene")
-    location = FormField(LocationForm)
+    gene = GeneIdField("Gene *", validators=[validators.InputRequired()])
+    location = FormField(LocationForm, label="Location *")  # TODO: require location
 
 
 class ModificationDomainForm(Form):
@@ -210,9 +211,11 @@ class ModificationDomainForm(Form):
 
 class MonomerForm(Form):
     # "required": ["evidence", "name", "structure"]
-    name = StringField("Name")
+    name = StringField("Name *", validators=[validators.InputRequired()])
     structure = StringField(
-        "Structure (SMILES)", widget=StructureInput()
+        "Structure (SMILES) *",
+        widget=StructureInput(),
+        validators=[validators.InputRequired()],
     )  # TODO: standardize smiles
     evidence = FieldList(
         FormField(SubtrateEvidenceForm),

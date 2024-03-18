@@ -23,9 +23,9 @@ from submission.utils.custom_widgets import (
 
 
 class StructureSingle(Form):
-    name = StringField("Compound Name", [validators.DataRequired()])
+    name = StringField("Compound Name *", [validators.InputRequired()])
     synonyms = StringField(
-        "Synonyms (Optional)",
+        "Synonyms",
         [validators.Optional()],
         description="Synonyms for the compound, separated by commas.",
     )
@@ -36,16 +36,16 @@ class StructureSingle(Form):
         description="Monoisotopic mass (Dalton) of the molecule. Use a dot as a decimal point, not a comma.",
     )
     structure = StringField(  # TODO: crossreference chemical database, only if not in one enter SMILES, mass, formula manually
-        "SMILES representation",
+        "SMILES representation *",
         [
-            validators.Optional(),
+            validators.InputRequired(),
             validators.Regexp(regex=re.compile(r"^[\[\]a-zA-Z0-9\@()=\/\\#+.%*-]+$")),
         ],
         widget=StructureInput(),
         description="Mandatory for all structurally characterized compounds except for large ones such as most RiPPs and polysaccharides. Chemical structure entered as SMILES string, preferentially isomeric. This can be easily acquired with standard software such as ChemDraw, by, e.g., choosing 'Copy as SMILES'.",
     )
     method = SelectField(  # TODO: add method+citation to 'evidence' formfield, allow multiple
-        "Method",
+        "Method *",
         choices=[
             "NMR",
             "Mass spectrometry",
@@ -57,9 +57,16 @@ class StructureSingle(Form):
         description="Technique used to elucidate/verify the structure",
         widget=SelectDefault(),
         validate_choice=False,
+        validators=[validators.InputRequired()],
+    )
+    references = TagListField(
+        "Citation(s) *",
+        description="Comma separated list of references on this compound",
+        widget=TextInputWithSuggestions(post_url="/edit/get_references"),
+        validators=[validators.InputRequired()],
     )
     classes = SelectMultipleField(
-        "Compound class(es) (Optional)",
+        "Compound class(es)",
         description="Hold ctrl or cmd key to select multiple compound classes.",
         choices={
             "Alkaloid": [
@@ -122,18 +129,15 @@ class StructureSingle(Form):
     )
     cyclic = BooleanField("Cyclic Compound?")
     moieties = TagListField(
-        "Moieties (Optional)",
+        "Moieties",
         description="Characteristic and/or noteworthy chemical moieties found in compound.",
-    )
-    references = TagListField(
-        "Citation(s)",
-        description="Comma separated list of references on this compound",
-        widget=TextInputWithSuggestions(post_url="/edit/get_references"),
+        validators=[validators.Optional()],
     )
     db_cross = StringField(
-        "Database cross-links (Optional)",
+        "Database cross-links",
         description="Database cross-reference for this compound (pubchem, chebi, chembl, chemspider, npatlas, lotus, gnps, cyanometdb), "
         "e.g. pubchem:3081434 or chebi:29016 or chembl:CHEMBL414130 or chemspider:6082 or npatlas:NPA004746 or lotus:Q27102265 or gnps:MSV000087858 or cyanometdb:CyanoMetDB_0002",
+        validators=[validators.Optional()],
     )  # TODO: validate input
 
 

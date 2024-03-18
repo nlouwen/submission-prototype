@@ -53,7 +53,7 @@ class AssayForm(Form):
 
     # TODO: show hierarchy, e.g. ionophore has deeper level: chalcophore etc.
     target = SelectField(
-        "Property",
+        "Property *",
         widget=SelectDefault(),
         choices={
             "chemical properties": [
@@ -140,17 +140,19 @@ class AssayForm(Form):
             "other": ["other"],
         },
         validate_choice=False,
+        validators=[validators.InputRequired()],
     )
     references = TagListField(
-        "Citation(s)",
+        "Citation(s) *",
         description="Comma separated list of references highlighted this activity. If references show different concentration, add them separately.",
         widget=TextInputWithSuggestions(post_url="/edit/get_references"),
+        validators=[validators.InputRequired()],
     )
     concentration = FormField(ConcentrationForm, label="Concentration (Optional)")
 
 
 class BioActivityForm(Form):
-    compound = StringField("Compound")
+    compound = StringField("Compound *", validators=[validators.InputRequired()])
     assays = FieldList(
         FormField(AssayForm),
         min_entries=0,
