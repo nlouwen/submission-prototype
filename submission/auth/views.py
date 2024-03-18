@@ -1,6 +1,6 @@
 from typing import Union
 
-from flask import render_template, request, redirect, url_for, flash, abort
+from flask import render_template, request, redirect, url_for, flash, abort, current_app
 from flask_login import login_user, logout_user, login_required
 from flask_mail import Message
 from werkzeug.wrappers import response
@@ -62,7 +62,7 @@ def password_email() -> Union[str, response.Response]:
             Message(
                 subject="Change your MIBiG password",
                 recipients=[email],
-                body=f"Hello, click this link <root>auth/{token_id}",  # TODO: complete final url
+                body=f"Hello, click this link {current_app.config['BASE_URL']}/auth/reset/{token_id}",
             )
         )
         flash(f"Please check your email")
