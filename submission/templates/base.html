@@ -1,3 +1,5 @@
+{% import 'macros.html' as m %}
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -13,11 +15,16 @@
 </head>
 
 <body>
-    <div class="container-fluid">
+    <div class="container-fluid navbar-mibig">
         <h1>MIBiG Submission Prototype</h1>
         {% block header %}
         {% endblock %}
-
+        {% if current_user and current_user.is_authenticated %}
+        <ul class="user-menu">
+            <li><a href="/profile">{{ m.icon('user') | safe}} {{ current_user.info.call_name }}</a></li>
+            <li><a href="/auth/logout">Log out</a></li>
+        </ul>
+        {% endif %}
     </div>
 
     {% with messages = get_flashed_messages() %}
