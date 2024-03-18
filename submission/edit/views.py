@@ -11,7 +11,7 @@ from flask import (
     url_for,
     flash,
 )
-from flask_login import current_user
+from flask_login import current_user, login_required
 from werkzeug.datastructures import MultiDict
 from werkzeug.wrappers import response
 from wtforms.widgets import html_params
@@ -25,6 +25,7 @@ from submission.utils.custom_validators import is_valid_bgc_id
 
 
 @bp_edit.route("/<bgc_id>", methods=["GET", "POST"])
+@login_required
 def edit_bgc(bgc_id: str) -> str | response.Response:
     """Overview page with navigation to forms for entry sections
 
@@ -47,6 +48,7 @@ def edit_bgc(bgc_id: str) -> str | response.Response:
 
 
 @bp_edit.route("/<bgc_id>/minimal", methods=["GET", "POST"])
+@login_required
 def edit_minimal(bgc_id: str) -> str | response.Response:
     """Form to enter minimal entry information
 
@@ -81,6 +83,7 @@ def edit_minimal(bgc_id: str) -> str | response.Response:
 
 
 @bp_edit.route("/<bgc_id>/structure", methods=["GET", "POST"])
+@login_required
 def edit_structure(bgc_id: str) -> str | response.Response:
     """Form to enter structure information
 
@@ -146,6 +149,7 @@ def render_smiles() -> str | response.Response:
 
 
 @bp_edit.route("/<bgc_id>/bioact", methods=["GET", "POST"])
+@login_required
 def edit_activity(bgc_id: str) -> str | response.Response:
     """Form to enter biological activity information
 
@@ -198,6 +202,7 @@ def edit_activity(bgc_id: str) -> str | response.Response:
 
 
 @bp_edit.route("/<bgc_id>/biosynth", methods=["GET", "POST"])
+@login_required
 def edit_biosynth(bgc_id: str) -> str:
     """Selection overview page for class-specific biosynthesis forms
 
@@ -236,6 +241,7 @@ def class_buttons(bgc_id: str) -> str:
 
 
 @bp_edit.route("/<bgc_id>/biosynth/<b_class>", methods=["GET", "POST"])
+@login_required
 def edit_biosynth_class(bgc_id: str, b_class: str) -> str | response.Response:
     """Form to enter class-specific biosynthesis information
 
@@ -272,6 +278,7 @@ def edit_biosynth_class(bgc_id: str, b_class: str) -> str | response.Response:
 
 
 @bp_edit.route("/<bgc_id>/biosynth/paths", methods=["GET", "POST"])
+@login_required
 def edit_biosynth_paths(bgc_id: str) -> str | response.Response:
     """Form to enter biosynthetic path information
 
@@ -306,6 +313,7 @@ def edit_biosynth_paths(bgc_id: str) -> str | response.Response:
 
 
 @bp_edit.route("/<bgc_id>/biosynth/modules", methods=["GET", "POST"])
+@login_required
 def edit_biosynth_modules(bgc_id: str) -> str | response.Response:
     """Form to enter biosynthetic module information
 
@@ -340,6 +348,7 @@ def edit_biosynth_modules(bgc_id: str) -> str | response.Response:
 
 
 @bp_edit.route("/<bgc_id>/tailoring", methods=["GET", "POST"])
+@login_required
 def edit_tailoring(bgc_id: str) -> str | response.Response:
     """Form to enter tailoring enzyme information
 
@@ -373,6 +382,7 @@ def edit_tailoring(bgc_id: str) -> str | response.Response:
 
 
 @bp_edit.route("/<bgc_id>/annotation", methods=["GET", "POST"])
+@login_required
 def edit_annotation(bgc_id: str) -> str | response.Response:
     """Form to enter gene annotation information
 

@@ -65,3 +65,15 @@ class Storage:
         Path(data_dir / f"{bgc_id}_data.json").touch()
 
         return bgc_id
+
+    @staticmethod
+    def create_entry_if_not_exists(bgc_id: str):
+        """Create data file for existing entry if it is somehow missing
+
+        Args:
+            bgc_id (str): MIBiG BGC identifier
+        """
+        data_dir = Path(current_app.root_path).parent / "data"
+
+        if not (fname := data_dir / f"{bgc_id}_data.json").exists():
+            fname.touch()

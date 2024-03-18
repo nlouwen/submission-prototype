@@ -31,7 +31,7 @@ def login_post() -> response.Response:
 
     login_user(user, remember)
 
-    return redirect(url_for("main.profile"))
+    return redirect(url_for("main.index"))
 
 
 @bp_auth.route("/logout")

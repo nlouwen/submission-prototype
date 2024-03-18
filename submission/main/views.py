@@ -10,6 +10,7 @@ from submission.utils import Storage
 
 
 @bp_main.route("/", methods=["GET", "POST"])
+@login_required
 def index():
     """Main page, edit existing entry or start new entry"""
     form = SelectExisting(request.form)
@@ -22,7 +23,7 @@ def index():
         # edit valid existing entry
         if request.form.get("edit") and form.validate():
             bgc_id = form.accession.data
-            Path(f"{bgc_id}_data.json").touch()
+            Storage.create_entry_if_not_exists(bgc_id)
 
             return redirect(url_for("edit.edit_bgc", bgc_id=bgc_id))
 
