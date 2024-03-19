@@ -76,8 +76,8 @@ class AssayForm(Form):
                 "anti-Gram-negative",
                 "anti-Gram-positive",
                 "anticancer",
-                "antineoplastic (duplicate of anticancer)",  # TODO: adress duplicate
-                "antitumor (duplicate of anticancer)",  # TODO: adress duplicate
+                "antineoplastic",
+                "antitumor",
                 "antifungal",
                 "antiinflammatory",
                 "antioomycete",
@@ -99,6 +99,7 @@ class AssayForm(Form):
                 "sodium channel blocking",
                 "toxic",
                 "cytotoxic",
+                "cytostatic",
                 "dermatotoxic",
                 "DNA-interfering",
                 "enterotoxic",
