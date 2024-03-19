@@ -125,6 +125,16 @@ class StructureSingle(Form):
                 "Lipopeptide",
                 "Macrocyclic",
             ],
+            "Carbohydrates": [
+                "Monosaccharide",
+                "Oligosaccharide",
+                "Polysaccharide",
+                "Nucleoside",
+                "Aminoglycoside",
+                "Liposaccharide",
+                "Glucosinolate",
+            ],
+            "Other": ["Lactone", "Ectoine", "Furan", "Phosphonate"],
         },
     )
     cyclic = BooleanField("Cyclic Compound?")
