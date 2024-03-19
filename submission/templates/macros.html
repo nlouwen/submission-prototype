@@ -96,12 +96,12 @@
 {% endmacro %}
 
 
-{% macro simple_divform(form, is_reviewer=false) %}
+{% macro simple_divform(form, is_reviewer=false, deletebtn=false) %}
 <form method="post" class="container">
     <fieldset>
         {% for field in form %}
         <div id="{{ field.id }}" class="form-group">
-            {{ render_field(field, is_reviewer) }}
+            {{ render_field(field, is_reviewer, deletebtn) }}
         </div>
 
         {% endfor %}
@@ -111,7 +111,7 @@
 {% endmacro %}
 
 
-{% macro render_field(field, is_reviewer=false) %}
+{% macro render_field(field, is_reviewer=false, deletebtn=false) %}
 
 {% set is_required = " fw-bold" %}
 
@@ -135,7 +135,7 @@
 <div id="{{field.id}}" class="subform">
     {{descr(field)}}
     {% for subfield in field %}
-    {{simple_divsubform(subfield)}}
+    {{simple_divsubform(subfield, deletebtn=deletebtn)}}
     {% endfor %}
     {{field}}
 </div>
@@ -174,7 +174,7 @@
 {% endif %}
 {% endmacro %}
 
-{% macro simple_divsubform(form, deletebtn="") %}
+{% macro simple_divsubform(form, deletebtn=false) %}
 <fieldset>
     <div id="{{form.id}}" class="form-group subgroup">
         {% if deletebtn %}
@@ -184,13 +184,13 @@
 
         {% if form.type != "FormField" %}
         <div class="form-field">
-            {{render_field(form)}}
+            {{render_field(form, deletebtn=deletebtn)}}
         </div>
         {% else %}
 
         {% for field in form %}
         <div class="form-field">
-            {{render_field(field)}}
+            {{render_field(field, deletebtn=deletebtn)}}
         </div>
         {% endfor %}
 
