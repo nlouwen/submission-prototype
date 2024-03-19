@@ -59,12 +59,15 @@ class NRPS_I_Form(Form):
         FormField(CondensationDomain),
         min_entries=1,
         max_entries=1,
+        label="Condensation domain",
+        description="If no C domain is present, please skip to 'Adenylation domain'",
         render_kw={"style": "display:none"},
     )
     a_domain = FieldList(
         FormField(AdenylationDomain),
         min_entries=1,
         max_entries=1,
+        label="Adenylation domain",
         render_kw={"style": "display:none"},
     )
     carriers = FieldList(
@@ -226,23 +229,34 @@ class PKSTransForm(Form):
 
 class ModulesForm(Form):
     cal = FieldList(
-        FormField(CalForm), widget=FieldListAddBtn(label="Add additional module")
+        FormField(CalForm),
+        widget=FieldListAddBtn(label="Add additional module"),
+        label="Co-enzyme A ligase (CAL)",
     )
     nrps_type1 = FieldList(
-        FormField(NRPS_I_Form), widget=FieldListAddBtn(label="Add additional module")
+        FormField(NRPS_I_Form),
+        widget=FieldListAddBtn(label="Add additional module"),
+        label="NRPS Type I",
     )
     nrps_type6 = FieldList(
-        FormField(NRPS_VI_Form), widget=FieldListAddBtn(label="Add additional module")
+        FormField(NRPS_VI_Form),
+        widget=FieldListAddBtn(label="Add additional module"),
+        label="NRPS Type VI",
     )
     pks_iterative = FieldList(
         FormField(PKSIterativeForm),
         widget=FieldListAddBtn(label="Add additional module"),
+        label="Iterative PKS",
     )
     pks_modular = FieldList(
-        FormField(PKSModularForm), widget=FieldListAddBtn(label="Add additional module")
+        FormField(PKSModularForm),
+        widget=FieldListAddBtn(label="Add additional module"),
+        label="Modular PKS",
     )
     pks_trans_at = FieldList(
-        FormField(PKSTransForm), widget=FieldListAddBtn(label="Add additional module")
+        FormField(PKSTransForm),
+        widget=FieldListAddBtn(label="Add additional module"),
+        label="Trans-AT PKS",
     )
     other = FieldList(
         FormField(OtherForm), widget=FieldListAddBtn(label="Add additional module")
