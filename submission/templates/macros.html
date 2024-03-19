@@ -1,107 +1,9 @@
-{% macro simple_form(form) %}
-<form method="post" class="container">
-    <fieldset>
-        <table>
-            <tbody>
-                {% for field in form %}
-
-                <tr>
-
-                    <th>
-                        {% if field.type != "HiddenField" and field.widget.input_type !=
-                        "hidden" and field.type != "SubmitField" %}
-                        {{field.label(class='form-label')}}
-                        {% endif %}
-                    </th>
-                    <td>
-                        {% if field.type == "FieldList" %}
-                        <div class="subform">
-                            {% for subfield in field %}
-                            {{simple_subform(subfield)}}
-
-                            {% endfor %}
-                        </div>
-                        {% elif field.type == 'FormField' %}
-                        {{ simple_form(field) }}
-                        {% elif field.type == 'BooleanField' %}
-                        {{ field(class='form-check-input') }}
-                        {% elif field.type == "SelectField" or field.type == "SelectMultipleField" %}
-                        {{ field(class='form-select') }}
-                        {% elif field.type == 'SubmitField' %}
-                        {{ field(class='btn btn-light')}}
-                        {% else %}
-                        {{ field(class='form-control' + (' is-invalid' if field.errors else '')) }}
-                        {% endif %}
-
-                        {% if field.description %}
-                        <span class="form-text text-muted">{{field.description}}</span>
-                        {% endif %}
-
-                        {% if field.errors %}
-                        {% for error in field.errors %}
-                        <div class="invalid-feedback">{{ error }}</div>
-                        {% endfor %}
-                        {% endif %}
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </fieldset>
-</form>
-{% endmacro %}
-
-{% macro simple_subform(form) %}
-<fieldset style="border: 3px solid var(--bs-border-color)">
-    <table>
-        <tbody>
-            {% for field in form %}
-
-            <tr>
-                <th>
-                    {% if field.type != "HiddenField" and field.widget.input_type !=
-                    "hidden" and field.type != "SubmitField" %}
-                    {{field.label(class='form-label')}}
-                    {% endif %}
-                </th>
-                <td>
-                    {% if field.type == "FieldList" %}
-                    <div class="subform">
-                        {% for subfield in field %}
-                        {{simple_subform(subfield)}}
-
-                        {% endfor %}
-                    </div>
-                    {% elif field.type == 'BooleanField' %}
-                    {{ field(class='form-check-input') }}
-                    {% elif field.type == "SelectField" or field.type == "SelectMultipleField" %}
-                    {{ field(class='form-select') }}
-                    {% elif field.type == 'SubmitField' %}
-                    {{ field(class='btn btn-light')}}
-                    {% else %}
-                    {{ field(class='form-control' + (' is-invalid' if field.errors else '')) }}
-                    {% endif %}
-
-                    {% if field.errors %}
-                    {% for error in field.errors %}
-                    <div class="invalid-feedback">{{ error }}</div>
-                    {% endfor %}
-                    {% endif %}
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</fieldset>
-{% endmacro %}
-
-
-{% macro simple_divform(form, is_reviewer=false, deletebtn=false) %}
+{% macro simple_divform(form, is_reviewer=false) %}
 <form method="post" class="container">
     <fieldset>
         {% for field in form %}
         <div id="{{ field.id }}" class="form-group">
-            {{ render_field(field, is_reviewer, deletebtn) }}
+            {{ render_field(field, is_reviewer) }}
         </div>
 
         {% endfor %}
@@ -111,9 +13,10 @@
 {% endmacro %}
 
 
-{% macro render_field(field, is_reviewer=false, deletebtn=false) %}
+{% macro render_field(field, is_reviewer=false) %}
 
 {% set is_required = " fw-bold" %}
+{% set ns = namespace(delete=true) %}
 
 {% if field.type == 'SubmitField' %}
 <div>
@@ -134,8 +37,13 @@
 {{field.label(class='form-label'~is_required)}}
 <div id="{{field.id}}" class="subform">
     {{descr(field)}}
+
+    {% if field.max_entries==1 %}
+    {% set ns.delete=false %}
+    {% endif %}
+
     {% for subfield in field %}
-    {{simple_divsubform(subfield, deletebtn=deletebtn)}}
+    {{simple_divsubform(subfield, deletebtn=ns.delete)}}
     {% endfor %}
     {{field}}
 </div>
@@ -144,7 +52,7 @@
 {{field.label(class='form-label'~is_required)}}
 <div id="{{field.id}}" class="subform">
     {{descr(field)}}
-    {{ simple_divsubform(field) }}
+    {{ simple_divsubform(field, deletebtn=false) }}
 </div>
 
 {% elif field.type == 'BooleanField' %}
@@ -184,13 +92,14 @@
 
         {% if form.type != "FormField" %}
         <div class="form-field">
-            {{render_field(form, deletebtn=deletebtn)}}
+            {{render_field(form)}}
         </div>
         {% else %}
 
         {% for field in form %}
         <div class="form-field">
-            {{render_field(field, deletebtn=deletebtn)}}
+            {{render_field(field)}}
+
         </div>
         {% endfor %}
 

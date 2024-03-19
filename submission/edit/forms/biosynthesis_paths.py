@@ -33,11 +33,12 @@ class PathForm(Form):
         description=Markup(
             "Define the steps in the biosynthetic path using their gene names."
             "<ul class='form-text text-muted'>"
-            "<li>Use commas to signify an unordered path, e.g. 'a,b,c', </li>"
-            "<li>or a greater-than to indicate ordered paths, e.g. 'a>b>c'. </li>"
-            "<li>To indicate a module encase in square brackets, e.g. '[d]'. </li>"
-            "<li>To indicate cooperation add a plus sign, e.g. 'a+b'. </li>"
-            "<li>Trans-AT can be written as '[d]+c'.</li>"
+            "<li>Use commas to signify an unordered path, e.g. 'exA,exB,exC', </li>"
+            "<li>or a greater-than to indicate ordered paths, e.g. 'exA>exB>exC'. </li>"
+            "<li>To indicate a module encase in square brackets, e.g. '[exD]'. </li>"
+            "<li>To indicate cooperation add a plus sign, e.g. 'exA+exB'. </li>"
+            "<li>To indicate two enzymes that can be interchanged add a pipe symbol, e.g. 'exE|exF'"
+            "<li>Trans-AT can be written as '[exD]+exC'.</li>"
             "</ul>"
         ),
         validators=[validators.InputRequired()],

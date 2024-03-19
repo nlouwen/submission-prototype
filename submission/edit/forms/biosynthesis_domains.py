@@ -48,7 +48,7 @@ class AdenylationDomain(Form):
         name = StringField("Name")
         proteinogenic = BooleanField("proteinogenic?")
         structure = StringField(
-            "structure (SMILES)", widget=StructureInput()
+            "Structure (SMILES)", widget=StructureInput()
         )  # TODO: standardize smiles input
 
     _type = HiddenField("adenylation")
@@ -57,7 +57,6 @@ class AdenylationDomain(Form):
     inactive = BooleanField("Inactive?")
     evidence = FieldList(
         FormField(SubtrateEvidenceForm),
-        min_entries=1,
         widget=FieldListAddBtn(label="Add additional evidence"),
     )
     precursor_biosynthesis = TagListField("Gene(s) involved in precursor biosynthesis")
@@ -137,7 +136,6 @@ class KetoreductaseDomain(Form):
     )
     evidence = FieldList(
         FormField(SubtrateEvidenceForm),
-        min_entries=1,
         widget=FieldListAddBtn(label="Add additional evidence"),
     )
 

@@ -20,6 +20,7 @@ from submission.utils.custom_widgets import (
     TextInputWithSuggestions,
     SelectDefault,
 )
+from submission.utils.custom_forms import StructureEvidenceForm
 
 
 class StructureSingle(Form):
@@ -30,34 +31,19 @@ class StructureSingle(Form):
         description="Synonyms for the compound, separated by commas.",
     )
     structure = StringField(  # TODO: crossreference chemical database, only if not in one enter SMILES, mass, formula manually
-        "SMILES representation *",
+        "SMILES representation",
         [
-            validators.InputRequired(),
+            validators.Optional(),
             validators.Regexp(regex=re.compile(r"^[\[\]a-zA-Z0-9\@()=\/\\#+.%*-]+$")),
         ],
         widget=StructureInput(),
         description="Mandatory for all structurally characterized compounds except for large ones such as most RiPPs and polysaccharides. Chemical structure entered as SMILES string, preferentially isomeric. This can be easily acquired with standard software such as ChemDraw, by, e.g., choosing 'Copy as SMILES'.",
     )
-    method = SelectField(  # TODO: add method+citation to 'evidence' formfield, allow multiple
-        "Method *",
-        choices=[
-            "NMR",
-            "Mass spectrometry",
-            "MS/MS",
-            "X-ray crystallography",
-            "Chemical derivatisation",
-            "Total synthesis",
-        ],
-        description="Technique used to elucidate/verify the structure",
-        widget=SelectDefault(),
-        validate_choice=False,
-        validators=[validators.InputRequired()],
-    )
-    references = TagListField(
-        "Citation(s) *",
-        description="Comma separated list of references on this compound",
-        widget=TextInputWithSuggestions(post_url="/edit/get_references"),
-        validators=[validators.InputRequired()],
+    evidence = FieldList(
+        FormField(StructureEvidenceForm),
+        description="Evidence linked to elucidation of this compound",
+        min_entries=1,
+        widget=FieldListAddBtn(label="Add additional evidence"),
     )
     formula = StringField("Molecular Formula")
     mass = FloatField(
@@ -72,6 +58,7 @@ class StructureSingle(Form):
             "Alkaloid": [
                 "Amination reaction-derived",
                 "Anthranilic acid-derived",
+                "Arginine-derived",
                 "Guanidine-derived",
                 "Histidine-derived",
                 "Lysine-derived",
@@ -125,7 +112,18 @@ class StructureSingle(Form):
                 "Lipopeptide",
                 "Macrocyclic",
             ],
+            "Carbohydrates": [
+                "Monosaccharide",
+                "Oligosaccharide",
+                "Polysaccharide",
+                "Nucleoside",
+                "Aminoglycoside",
+                "Liposaccharide",
+                "Glucosinolate",
+            ],
+            "Other": ["Lactone", "Ectoine", "Furan", "Phosphonate"],
         },
+        render_kw={"style": "height:200px"},
     )
     cyclic = BooleanField("Cyclic Compound?")
     moieties = TagListField(
