@@ -7,6 +7,8 @@ from wtforms import (
     SelectField,
     validators,
 )
+from markupsafe import Markup
+
 from submission.utils.custom_fields import TagListField, GeneIdField
 from submission.utils.custom_validators import RequiredIf
 from submission.utils.custom_widgets import (
@@ -92,6 +94,7 @@ class AnnotationForm(Form):
             widget=SelectDefault(),
             validate_choice=False,
             validators=[validators.InputRequired()],
+            description="The biological function of the gene product. If based on homology, please exclude it from this submission.",
         )
         details = StringField(
             "Details", description="Any additional information on this gene's function"
@@ -102,6 +105,7 @@ class AnnotationForm(Form):
             widget=FieldListAddBtn(
                 label="Add additional evidence",
             ),
+            description="Evidence describing this gene product function",
         )
         mutation_phenotype = FormField(
             MutationPhenotype, label="Mutation phenotype (Optional)"
@@ -154,11 +158,17 @@ class GeneAnnotationForm(Form):
         widget=FieldListAddBtn(
             label="Add additional gene",
         ),
+        description=Markup(
+            "Add extra genes that are <u>missing</u> from the GenBank entry"
+        ),
     )
     delete = FieldList(
         FormField(DeleteGeneForm),
         widget=FieldListAddBtn(
             label="Add gene to remove",
+        ),
+        description=Markup(
+            "Specify genes that fall within the locus but are <u>not</u> part of this BGC"
         ),
     )
     annotations = FieldList(
@@ -166,12 +176,16 @@ class GeneAnnotationForm(Form):
         widget=FieldListAddBtn(
             label="Add additional annotation",
         ),
+        description=Markup("Add functional gene annotations"),
     )
     domains = FieldList(
         FormField(DomainForm),
         widget=FieldListAddBtn(
             label="Add additional domain",
         ),
-        description="Supply location and substrate specificity for NRPS and PKS domains",  # TODO: only NRPS/PKS?
+        description=Markup(
+            "Supply location and substrate specificity for non-module domains. "
+            "For NRPS or PKS substrate specificity, refer to the 'Biosynthesis modules' section."
+        ),
     )
     submit = SubmitField("Submit")
