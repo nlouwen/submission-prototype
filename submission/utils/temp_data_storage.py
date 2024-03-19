@@ -35,12 +35,12 @@ class Storage:
         existing_data["Changelog"].append(
             {
                 "Edited_by": current_user.id,
-                "Edited_at": datetime.datetime.now(datetime.UTC).strftime(
+                "Edited_at": datetime.datetime.now(datetime.timezone.utc).strftime(
                     "%m/%d/%Y, %H:%M:%S"
                 ),
             }
         )
-        
+
         filename =  data_dir / f"{bgc_id}_data.json"
         with open(filename, "w") as outf:
             json.dump(existing_data, outf, sort_keys=True, indent=4)
