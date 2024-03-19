@@ -76,7 +76,7 @@ class SubtrateEvidenceForm(Form):
 
 class StructureEvidenceForm(Form):
     method = SelectField(
-        "Method",
+        "Method *",
         choices=[
             "NMR",
             "Mass spectrometry",
@@ -85,11 +85,16 @@ class StructureEvidenceForm(Form):
             "Chemical derivatisation",
             "Total synthesis",
         ],
+        description="Technique used to elucidate/verify the structure",
         widget=SelectDefault(),
         validate_choice=False,
+        validators=[validators.InputRequired()],
     )
     references = TagListField(
-        "Citation(s)", widget=TextInputWithSuggestions(post_url="/edit/get_references")
+        "Citation(s) *",
+        description="Comma separated list of references on this compound using this method",
+        widget=TextInputWithSuggestions(post_url="/edit/get_references"),
+        validators=[validators.InputRequired()],
     )
 
 
