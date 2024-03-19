@@ -50,7 +50,7 @@ def password_email() -> Union[str, response.Response]:
     form = UserEmailForm(request.form)
     if request.method == "POST" and form.validate():
         email = form.email.data
-        user = User.query.filter_by(email=email).first()
+        user = User.query.filter(User.email.ilike(email)).first()
 
         if not user:
             flash("Unknown email address")
