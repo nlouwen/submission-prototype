@@ -71,7 +71,7 @@ def edit_minimal(bgc_id: str) -> str | response.Response:
 
     if request.method == "POST" and form.validate():
         # TODO: save to database
-        Storage.save_data(bgc_id, "Minimal", request.form)
+        Storage.save_data(bgc_id, "Minimal", request.form, current_user)
         flash("Submitted minimal entry!")
         return redirect(url_for("edit.edit_bgc", bgc_id=bgc_id))
     return render_template(
@@ -105,7 +105,7 @@ def edit_structure(bgc_id: str) -> str | response.Response:
 
     if request.method == "POST" and form.validate():
         # TODO: save to db
-        Storage.save_data(bgc_id, "Structure", request.form)
+        Storage.save_data(bgc_id, "Structure", request.form, current_user)
         flash("Submitted structure information!")
         return redirect(url_for("edit.edit_bgc", bgc_id=bgc_id))
 
@@ -170,7 +170,7 @@ def edit_activity(bgc_id: str) -> str | response.Response:
         form = FormCollection.bioact(request.form)
     if request.method == "POST" and form.validate():
         # TODO: save to db
-        Storage.save_data(bgc_id, "Bio_activity", request.form)
+        Storage.save_data(bgc_id, "Bio_activity", request.form, current_user)
         flash("Submitted activity information!")
         return redirect(url_for("edit.edit_bgc", bgc_id=bgc_id))
 
@@ -264,7 +264,7 @@ def edit_biosynth_class(bgc_id: str, b_class: str) -> str | response.Response:
 
     if request.method == "POST" and form.validate():
         # TODO: save to db
-        Storage.save_data(bgc_id, f"BioSynth_{b_class}", request.form)
+        Storage.save_data(bgc_id, f"BioSynth_{b_class}", request.form, current_user)
         flash(f"Submitted {b_class} biosynthesis information!")
         return redirect(url_for("edit.edit_bgc", bgc_id=bgc_id))
 
@@ -300,7 +300,7 @@ def edit_biosynth_operons(bgc_id: str) -> str | response.Response:
 
     if request.method == "POST" and form.validate():
         # TODO: save to db
-        Storage.save_data(bgc_id, "Biosynth_operons", request.form)
+        Storage.save_data(bgc_id, "Biosynth_operons", request.form, current_user)
         flash("Submitted operon information!")
         return redirect(url_for("edit.edit_biosynth", bgc_id=bgc_id))
 
@@ -335,7 +335,7 @@ def edit_biosynth_paths(bgc_id: str) -> str | response.Response:
 
     if request.method == "POST" and form.validate():
         # TODO: save to db
-        Storage.save_data(bgc_id, "Biosynth_paths", request.form)
+        Storage.save_data(bgc_id, "Biosynth_paths", request.form, current_user)
         flash("Submitted biosynthetic path information!")
         return redirect(url_for("edit.edit_biosynth", bgc_id=bgc_id))
 
@@ -370,7 +370,7 @@ def edit_biosynth_modules(bgc_id: str) -> str | response.Response:
 
     if request.method == "POST" and form.validate():
         # TODO: save to db
-        Storage.save_data(bgc_id, "Biosynth_modules", request.form)
+        Storage.save_data(bgc_id, "Biosynth_modules", request.form, current_user)
         flash("Submitted biosynthetic module information!")
         return redirect(url_for("edit.edit_biosynth", bgc_id=bgc_id))
 
@@ -404,7 +404,7 @@ def edit_tailoring(bgc_id: str) -> str | response.Response:
         form = FormCollection.tailoring(request.form)
 
     if request.method == "POST" and form.validate():
-        Storage.save_data(bgc_id, "Tailoring", request.form)
+        Storage.save_data(bgc_id, "Tailoring", request.form, current_user)
         flash("Submitted tailoring information!")
         return redirect(url_for("edit.edit_bgc", bgc_id=bgc_id))
 
@@ -438,7 +438,7 @@ def edit_annotation(bgc_id: str) -> str | response.Response:
         form = FormCollection.annotation(request.form)
 
     if request.method == "POST" and form.validate():
-        Storage.save_data(bgc_id, "Annotation", request.form)
+        Storage.save_data(bgc_id, "Annotation", request.form, current_user)
         flash("Submitted annotation information!")
         return redirect(url_for("edit.edit_bgc", bgc_id=bgc_id))
 
