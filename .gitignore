@@ -2,4 +2,4 @@
 *.pyc
 .env
 instance/*
-*data.json
+data/*

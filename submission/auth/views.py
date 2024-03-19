@@ -25,7 +25,7 @@ def login_post() -> response.Response:
     password = request.form.get("password")
     remember = True if request.form.get("remember") else False
 
-    user: User = User.query.filter_by(email=email).first()
+    user: User = User.query.filter(User.email.ilike(email)).first()
 
     if not user or not user.check_password(password):
         flash("Please check your login details")
@@ -50,7 +50,7 @@ def password_email() -> Union[str, response.Response]:
     form = UserEmailForm(request.form)
     if request.method == "POST" and form.validate():
         email = form.email.data
-        user = User.query.filter_by(email=email).first()
+        user = User.query.filter(User.email.ilike(email)).first()
 
         if not user:
             flash("Unknown email address")

@@ -2,6 +2,7 @@
 
 import json
 from pathlib import Path
+import subprocess
 import datetime
 
 from flask import current_app
@@ -28,6 +29,7 @@ class Storage:
         existing_data = Storage.read_data(bgc_id)
 
         existing_data.update(data)
+
         if not existing_data.get("Changelog"):
             existing_data["Changelog"] = []
         existing_data["Changelog"].append(
@@ -38,9 +40,12 @@ class Storage:
                 ),
             }
         )
-
-        with open(data_dir / f"{bgc_id}_data.json", "w") as outf:
+        
+        filename =  data_dir / f"{bgc_id}_data.json"
+        with open(filename, "w") as outf:
             json.dump(existing_data, outf, sort_keys=True, indent=4)
+
+        subprocess.run(f"git add {filename} && git commit -m 'updating {filename.name}'", shell=True, cwd=data_dir)
 
     @staticmethod
     def read_data(bgc_id: str) -> dict:

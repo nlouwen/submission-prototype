@@ -210,3 +210,14 @@
 {% endif %}
 
 {% endmacro %}
+
+{% macro icon(name) -%}
+<svg
+    xmlns="http://www.w3.org/2000/svg"
+    height="1em"
+    width="1em"
+    fill="currentColor"
+>
+    <use xlink:href="/static/img/icons.svg#{{ name }}"></use>
+</svg>
+{%- endmacro %}
