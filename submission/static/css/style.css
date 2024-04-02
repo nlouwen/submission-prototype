@@ -35,6 +35,11 @@ body {
   text-decoration: underline;
 }
 
+.flashes {
+  width: 1024px;
+  margin-top: 20px;
+}
+
 .subform {
   padding-left: 25px;
   padding-right: 25px;
