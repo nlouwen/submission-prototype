@@ -99,6 +99,7 @@ class StructureSingle(Form):
                 "Hemiterpenoid",
                 "Higher terpenoid",
                 "Iridoid",
+                "Meroterpenoid",
                 "Monoterpenoid",
                 "Sesquiterpenoid",
                 "Steroid",
@@ -106,6 +107,7 @@ class StructureSingle(Form):
             "Peptide": [
                 "Beta-lactam",
                 "Depsipeptide",
+                "Diketopiperazine",
                 "Glycopeptide",
                 "Glycopeptidolipid",
                 "Linear",
