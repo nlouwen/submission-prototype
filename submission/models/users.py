@@ -90,3 +90,7 @@ class UserInfo(db.Model):
         token_bytes = randbytes(length)
 
         return base64.b32encode(token_bytes).decode("utf-8")
+
+    @staticmethod
+    def guess_call_name(name: str) -> str:
+        return name.split(" ")[0]

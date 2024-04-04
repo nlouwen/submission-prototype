@@ -21,6 +21,9 @@
         {% endblock %}
         {% if current_user and current_user.is_authenticated %}
         <ul class="user-menu">
+            {% if current_user.has_role('admin') %}
+            <li><a href="/admin">Admin</a></li>
+            {% endif %}
             <li><a href="/profile">{{ m.icon('user') | safe}} {{ current_user.info.call_name }}</a></li>
             <li><a href="/auth/logout">Log out</a></li>
         </ul>
