@@ -1,0 +1,18 @@
+<tr hx-trigger="cancel" class="editing" hx-get="{{url_for('admin.user', user_id=user.id)}}">
+    <td>{{user.info.name}}</td>
+    <td>{{form.email(class='form-control' + (' is-invalid' if form.email.errors else ''))}}</td>
+    <td>{{user.info.alias}}</td>
+    <td>{{ form.active(class='form-check-input' + (' is-invalid' if form.active.errors else '')) }}</td>
+    <td>
+        {{ form.roles(class='form-select' + (' is-invalid' if form.roles.errors else '')) }}
+    </td>
+    <td>
+        {{form.csrf_token}}
+        <button class="btn btn-danger" hx-get="{{url_for('admin.user', user_id=user.id)}}">
+            Cancel
+        </button>
+        <button class="btn btn-danger" hx-put="{{url_for('admin.user_edit', user_id=user.id)}}" hx-include="closest tr">
+            Save
+        </button>
+    </td>
+</tr>
