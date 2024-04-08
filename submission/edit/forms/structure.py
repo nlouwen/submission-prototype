@@ -123,6 +123,7 @@ class StructureSingle(Form):
                 "Liposaccharide",
                 "Glucosinolate",
             ],
+            "Glycolysis-derived": ["Butenolides", "γ-Butyrolactones", "Tetronic acids"],
             "Other": ["Lactone", "Ectoine", "Furan", "Phosphonate"],
         },
         render_kw={"style": "height:200px"},
