@@ -10,7 +10,7 @@ def auth_role(role):
             roles = role if isinstance(role, list) else [role]
             if all(not current_user.has_role(r) for r in roles):
                 flash("You don't have permissions to access this content!", "error")
-                return redirect(url_for("profile"))
+                return redirect(url_for("main.profile"))
             return fn(*args, **kwargs)
 
         return decorator
