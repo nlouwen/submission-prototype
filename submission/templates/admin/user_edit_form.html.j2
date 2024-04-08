@@ -1,6 +1,13 @@
 <tr hx-trigger="cancel" class="editing" hx-get="{{url_for('admin.user', user_id=user.id)}}">
     <td>{{user.info.name}}</td>
-    <td>{{form.email(class='form-control' + (' is-invalid' if form.email.errors else ''))}}</td>
+    <td>
+        {{form.email(class='form-control' + (' is-invalid' if form.email.errors else ''))}}
+        {% if form.email.errors %}
+        {% for error in form.email.errors %}
+        <div class="invalid-feedback">{{ error }}</div>
+        {% endfor %}
+        {% endif %}
+    </td>
     <td>{{user.info.alias}}</td>
     <td>{{ form.active(class='form-check-input' + (' is-invalid' if form.active.errors else '')) }}</td>
     <td>
