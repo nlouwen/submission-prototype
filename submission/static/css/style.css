@@ -1016,3 +1016,7 @@ body {
 .cite-me {
   margin-top: 1em;
 }
+
+.htmx-indicator {
+  opacity: 0;
+}
