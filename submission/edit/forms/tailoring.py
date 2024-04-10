@@ -171,14 +171,23 @@ class ValidatedReactionForm(Form):
         min_entries=1,
         widget=FieldListAddBtn(label="Add product (sub)structure"),
     )  # TODO: standardize smiles
-    isBalanced = BooleanField(
-        "Is the validated reaction balanced (i.e. stoichiometric complete)? *"
+    isBalanced = SelectField(
+        "Is the validated reaction balanced (i.e. stoichiometric complete)? *",
+        choices=(("yes", "Yes"), ("no", "No"), ("unknown", "Unknown")),
+        widget=SelectDefault(),
+        validators=[validators.InputRequired()],
     )
-    isAuthentic = BooleanField(
-        "Is this substrate-product pair authentic/experimentally verified (i.e. not substructures) *"
+    isAuthentic = SelectField(
+        "Is this substrate-product pair authentic/experimentally verified (i.e. not substructures) *",
+        choices=(("yes", "Yes"), ("no", "No"), ("unknown", "Unknown")),
+        widget=SelectDefault(),
+        validators=[validators.InputRequired()],
     )
-    isIntermediate = BooleanField(
-        "Is this validated reaction an intermediate step (i.e. not the final product)? *"
+    isIntermediate = SelectField(
+        "Is this validated reaction an intermediate step (i.e. not the final product)? *",
+        choices=(("yes", "Yes"), ("no", "No"), ("unknown", "Unknown")),
+        widget=SelectDefault(),
+        validators=[validators.InputRequired()],
     )
     evidence_val = FieldList(
         FormField(ReactionSmartsEvidenceForm),
