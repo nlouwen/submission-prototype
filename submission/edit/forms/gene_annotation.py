@@ -24,7 +24,7 @@ from submission.utils.custom_widgets import (
 from submission.utils.custom_forms import (
     SubtrateEvidenceForm,
     FunctionEvidenceForm,
-    LocationForm,
+    location_form_factory,
 )
 
 
@@ -33,7 +33,7 @@ class AddGeneForm(Form):
         "Gene identifier", description="The commonly used gene name (e.g. nisA)"
     )
     exons = FieldList(
-        FormField(LocationForm),
+        FormField(location_form_factory()),
         label="Exons *",
         description="Location of coding sequences (CDS). Please also include the stop codon in the coordinates",
         min_entries=1,
@@ -149,10 +149,10 @@ class DomainForm(Form):
         validators=[validators.InputRequired()],
     )
     location = FormField(
-        LocationForm,
+        location_form_factory(required=True),
         label="Domain location *",
         description="Amino acid coordinates within the protein",
-    )  # TODO: require location
+    )
     substrates = FieldList(
         FormField(SubtrateForm),
         widget=FieldListAddBtn(

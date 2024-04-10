@@ -14,7 +14,7 @@ from submission.utils.custom_fields import (
     TagListField,
     smiles_field_factory,
 )
-from submission.utils.custom_forms import LocationForm
+from submission.utils.custom_forms import location_form_factory
 from submission.utils.custom_widgets import (
     FieldListAddBtn,
     TextInputWithSuggestions,
@@ -47,7 +47,7 @@ class NRPSForm(Form):
 
     class ThioesteraseForm(Form):
         gene = GeneIdField()
-        location = FormField(LocationForm)
+        location = FormField(location_form_factory())
         subtype = SelectField(
             "Sub-type",
             choices=["Type I", "Type II"],
@@ -129,10 +129,10 @@ class RibosomalForm(Form):
             validators=[validators.InputRequired()],
         )
         leader_cleavage_location = FormField(
-            LocationForm, "Leader cleavage location (Optional)"
+            location_form_factory(), "Leader cleavage location (Optional)"
         )
         follower_cleavage_location = FormField(
-            LocationForm, "Follower cleavage location (Optional)"
+            location_form_factory(), "Follower cleavage location (Optional)"
         )
         crosslinks = FieldList(
             FormField(CrosslinkForm),

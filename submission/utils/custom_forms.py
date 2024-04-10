@@ -7,15 +7,30 @@ from .custom_fields import TagListField
 from .custom_widgets import StructureInput, TextInputWithSuggestions, SelectDefault
 
 
-class LocationForm(Form):
-    """Subform for location entry, use in combination with FormField"""
+def location_form_factory(required: bool = False):
+    """Create customized location form
 
-    start = IntegerField(
-        "Start", validators=[validators.Optional(), validators.NumberRange(min=1)]
-    )
-    end = IntegerField(
-        "End", validators=[validators.Optional(), validators.NumberRange(min=2)]
-    )
+    Args:
+        required (bool): flag to add the InputRequired validator
+
+    Returns:
+        LocationForm: customized location form
+    """
+
+    if required:
+        valids = [validators.InputRequired()]
+    else:
+        valids = [validators.Optional()]
+
+    class LocationForm(Form):
+        """Subform for location entry, use in combination with FormField"""
+
+        start = IntegerField(
+            "Start", validators=valids + [validators.NumberRange(min=1)]
+        )
+        end = IntegerField("End", validators=valids + [validators.NumberRange(min=2)])
+
+    return LocationForm
 
 
 class EvidenceForm(Form):

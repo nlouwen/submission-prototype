@@ -10,7 +10,7 @@ from wtforms import (
     SubmitField,
 )
 from submission.utils.custom_fields import TagListField
-from submission.utils.custom_forms import LocationForm, EvidenceForm
+from submission.utils.custom_forms import location_form_factory, EvidenceForm
 from submission.utils.custom_widgets import (
     FieldListAddBtn,
     TextInputIndicator,
@@ -44,7 +44,7 @@ class MinEntryForm(Form):
             # },
         )
         location = FormField(
-            LocationForm,
+            location_form_factory(),
             description="Start and end coordinates, may be left empty if gene cluster spans entire record.",
         )
         evidence = FieldList(
