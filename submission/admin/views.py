@@ -1,4 +1,6 @@
 from flask import request, render_template, redirect, url_for
+from sqlalchemy import or_
+
 
 from submission.admin import bp_admin
 from submission.auth import auth_role
@@ -12,10 +14,18 @@ def index() -> str:
     return render_template("admin/index.html.j2")
 
 
-@bp_admin.route("/users")
+@bp_admin.route("/users", methods=["GET"])
 def list_users() -> str:
     users = User.query.join(UserInfo).order_by(UserInfo.name).all()
     return render_template("admin/users.html.j2", users=users)
+
+@bp_admin.route("/users", methods=["POST"])
+def search_users() -> str:
+    search = request.form["search"]
+    users = User.query.join(UserInfo) \
+        .filter(or_(UserInfo.name.like(f"{search}%"), User.email.like(f"{search}%"))) \
+        .order_by(UserInfo.name).all()
+    return render_template("admin/user_search.html.j2", users=users)
 
 
 @bp_admin.route("/user/<user_id>", methods=["GET"])
