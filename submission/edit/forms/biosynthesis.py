@@ -1,12 +1,10 @@
 import re
 from wtforms import (
     Form,
-    Field,
     StringField,
     FieldList,
     FormField,
     SelectField,
-    HiddenField,
     IntegerField,
     SubmitField,
     validators,
@@ -14,8 +12,8 @@ from wtforms import (
 from submission.utils.custom_fields import (
     GeneIdField,
     TagListField,
+    smiles_field_factory,
 )
-
 from submission.utils.custom_forms import LocationForm
 from submission.utils.custom_widgets import (
     FieldListAddBtn,
@@ -226,14 +224,8 @@ class SaccharideForm(Form):
             widget=TextInputWithSuggestions(post_url="/edit/get_references"),
             validators=[validators.InputRequired()],
         )
-        specificity = StringField(
-            "Specificity (SMILES)",
-            [
-                validators.Optional(),
-                validators.Regexp(
-                    regex=re.compile(r"^[\[\]a-zA-Z0-9\@()=\/\\#+.%*-]+$")
-                ),
-            ],
+        specificity = smiles_field_factory(
+            label="Specificity (SMILES)", show_structure=False
         )
 
     class SubclusterForm(Form):
@@ -242,14 +234,8 @@ class SaccharideForm(Form):
             [ValidateTagListRegexp(r"^[^, ]*$")],
             description="Comma separated list of subcluster gene IDs",
         )
-        specificity = StringField(
-            "Specificity (SMILES)",
-            [
-                validators.Optional(),
-                validators.Regexp(
-                    regex=re.compile(r"^[\[\]a-zA-Z0-9\@()=\/\\#+.%*-]+$")
-                ),
-            ],
+        specificity = smiles_field_factory(
+            label="Specificity (SMILES)", show_structure=False
         )
         references = TagListField(
             "Citation(s)",

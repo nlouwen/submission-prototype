@@ -9,7 +9,11 @@ from wtforms import (
 )
 from markupsafe import Markup
 
-from submission.utils.custom_fields import TagListField, GeneIdField
+from submission.utils.custom_fields import (
+    TagListField,
+    GeneIdField,
+    smiles_field_factory,
+)
 from submission.utils.custom_validators import RequiredIf
 from submission.utils.custom_widgets import (
     FieldListAddBtn,
@@ -134,11 +138,9 @@ class DomainForm(Form):
                 label="Add additional evidence",
             ),
         )
-        structure = StringField(
-            "Substrate structure SMILES *",
-            widget=StructureInput(),
-            validators=[validators.InputRequired()],
-        )  # TODO: standardize smiles
+        structure = smiles_field_factory(
+            label="Substrate structure SMILES *", required=True
+        )
 
     gene_id = GeneIdField("Gene *", validators=[validators.InputRequired()])
     name = StringField(

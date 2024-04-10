@@ -8,13 +8,16 @@ from wtforms import (
     FieldList,
     validators,
 )
-from submission.utils.custom_fields import TagListField, GeneIdField
+from submission.utils.custom_fields import (
+    TagListField,
+    GeneIdField,
+    smiles_field_factory,
+)
 from submission.utils.custom_forms import LocationForm, SubtrateEvidenceForm
 from submission.utils.custom_widgets import (
     TextInputWithSuggestions,
     SelectDefault,
     FieldListAddBtn,
-    StructureInput,
 )
 
 
@@ -47,9 +50,7 @@ class AdenylationDomain(Form):
         # "required": ["name", "proteinogenic", "structure"]
         name = StringField("Name")
         proteinogenic = BooleanField("proteinogenic?")
-        structure = StringField(
-            "Structure (SMILES)", widget=StructureInput()
-        )  # TODO: standardize smiles input
+        structure = smiles_field_factory(label="Structure (SMILES)")
 
     _type = HiddenField("adenylation")
     gene = GeneIdField("Gene")
@@ -210,11 +211,7 @@ class ModificationDomainForm(Form):
 class MonomerForm(Form):
     # "required": ["evidence", "name", "structure"]
     name = StringField("Name *", validators=[validators.InputRequired()])
-    structure = StringField(
-        "Structure (SMILES) *",
-        widget=StructureInput(),
-        validators=[validators.InputRequired()],
-    )  # TODO: standardize smiles
+    structure = smiles_field_factory(label="Structure (SMILES)", required=True)
     evidence = FieldList(
         FormField(SubtrateEvidenceForm),
         min_entries=1,
@@ -230,9 +227,7 @@ class AcyltransferaseForm(Form):
             widget=SelectDefault(),
             validate_choice=False,
         )
-        structure = StringField(
-            "Structure (SMILES)", widget=StructureInput()
-        )  # TODO: standardize smiles
+        structure = smiles_field_factory(label="Structure (SMILES)")
         details = StringField("Details (Optional)")
 
     _type = HiddenField("acyltransferase")
