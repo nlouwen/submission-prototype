@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block body %}
+
+<div class="content">
+    Hello {{ current_user.info.name }}.<br />
+    The following options are available:
+    <ul>
+        <li><a href="{{url_for('admin.list_users')}}">List/edit users</a></li>
+        <li><a href="{{url_for('admin.user_create')}}">Add new user</a></li>
+    </ul>
+</div>
+{% endblock %}

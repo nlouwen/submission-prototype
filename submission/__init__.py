@@ -8,6 +8,7 @@ from submission.extensions import db, migrate, login_manager, mail
 from submission.main import bp_main
 from submission.edit import bp_edit
 from submission.auth import bp_auth
+from submission.admin import bp_admin
 from submission.models import User
 
 
@@ -82,4 +83,5 @@ def register_blueprints(app: Flask) -> Flask:
     app.register_blueprint(bp_main)
     app.register_blueprint(bp_edit)
     app.register_blueprint(bp_auth)
+    app.register_blueprint(bp_admin)
     return app

@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block body %}
+
+<div class="content">
+    <div class="row">
+        <div class="col-md-4">
+            <label for="search">Search:
+                <input type="search" name="search" id="search" placeholder="Begin typing to search users..."
+                    hx-post="{{url_for('admin.search_users')}}" hx-trigger="input changed delay:500ms, search"
+                    hx-target="#search-results" hx-indicator=".htmx-indicator">
+            </label>
+        </div>
+        <div class="col-md-4 htmx-indicator">Searching</div>
+        <div class="col-md-4">
+            <a class="btn btn-primary" href="{{url_for('admin.user_create')}}">Add user</a>
+        </div>
+    </div>
+    <table class="table table-striped table-condensed">
+        <thead>
+            <tr>
+                <td>Name</td>
+                <td>Email</td>
+                <td>Alias</td>
+                <td>Active</td>
+                <td>Roles</td>
+                <td>Edit</td>
+            </tr>
+        </thead>
+        <tbody id="search-results" hx-target="closest tr" hx-swap="outerHTML">
+            {% for user in users %}
+            {% include 'admin/user_list_line.html.j2' %}
+            {% endfor %}
+        </tbody>
+    </table>
+    <div id="form-container"></div>
+</div>
+{% endblock %}
