@@ -140,9 +140,16 @@ class DomainForm(Form):
             validators=[validators.InputRequired()],
         )  # TODO: standardize smiles
 
-    name = StringField("Domain name *", validators=[validators.InputRequired()])
+    gene_id = GeneIdField("Gene *", validators=[validators.InputRequired()])
+    name = StringField(
+        "Domain name *",
+        description='Follow the domain naming used in the main paper, otherwise simply number in order of appearance, e.g "1", "2"',
+        validators=[validators.InputRequired()],
+    )
     location = FormField(
-        LocationForm, label="Domain location *"
+        LocationForm,
+        label="Domain location *",
+        description="Amino acid coordinates within the protein",
     )  # TODO: require location
     substrates = FieldList(
         FormField(SubtrateForm),
