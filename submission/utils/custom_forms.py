@@ -84,6 +84,7 @@ class StructureEvidenceForm(Form):
             "X-ray crystallography",
             "Chemical derivatisation",
             "Total synthesis",
+            "Retention time match with authentic standard",
         ],
         description="Technique used to elucidate/verify the structure",
         widget=SelectDefault(),
