@@ -28,7 +28,7 @@ def login_post() -> response.Response:
     user: User = User.query.filter(User.email.ilike(email)).first()
 
     if not user or not user.check_password(password):
-        flash("Please check your login details")
+        flash("Please check your login details", "warning")
         return redirect(url_for("auth.login"))
 
     login_user(user, remember)
@@ -53,7 +53,7 @@ def password_email() -> Union[str, response.Response]:
         user = User.query.filter(User.email.ilike(email)).first()
 
         if not user:
-            flash("Unknown email address")
+            flash("Unknown email address", "warning")
             return redirect(url_for("auth.password_email"))
 
         token_id = Token.generate_token(user.id, "password_reset")
@@ -65,7 +65,7 @@ def password_email() -> Union[str, response.Response]:
                 body=f"Hello, click this link {current_app.config['BASE_URL']}/auth/reset/{token_id}",
             )
         )
-        flash(f"Please check your email")
+        flash("Please check your email")
         return redirect(url_for("auth.login"))
 
     return render_template("auth/pw_reset_request.html", form=form)

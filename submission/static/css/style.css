@@ -10,6 +10,13 @@ body {
   justify-content: space-between;
 }
 
+.edit-header {
+  margin: 5px 50px;
+  padding: 1px 15px 4px;
+  border-radius: 20px;
+  background-color: var(--bs-gray-500);
+}
+
 .user-menu {
   padding-left: 0;
   list-style: none;
@@ -33,6 +40,11 @@ body {
 
 .user-menu li a:hover {
   text-decoration: underline;
+}
+
+.flashes {
+  width: 1024px;
+  margin-top: 20px;
 }
 
 .subform {

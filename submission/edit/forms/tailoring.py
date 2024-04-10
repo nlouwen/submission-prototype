@@ -9,7 +9,7 @@ from wtforms import (
     IntegerField,
     validators,
 )
-from submission.utils.custom_fields import TagListField
+from submission.utils.custom_fields import TagListField, smiles_field_factory
 from submission.utils.custom_widgets import (
     FieldListAddBtn,
     StructureInput,
@@ -156,29 +156,32 @@ class ReactionSmartsForm(Form):
 
 
 class ValidatedReactionForm(Form):
-    substrate_substructure = StringField(
-        "Substrate (sub)structure (SMILES) *",
-        widget=StructureInput(),
-        validators=[validators.InputRequired()],
-    )  # TODO: standardize smiles
+    substrate_substructure = smiles_field_factory(
+        label="Substrate (sub)structure (SMILES) *", required=True
+    )
     product_substructure = FieldList(
-        StringField(
-            label="Product (sub)structure (SMILES) *",
-            widget=StructureInput(),
-            validators=[validators.InputRequired()],
-        ),
+        smiles_field_factory(label="Product (sub)structure (SMILES) *", required=True),
         label="Product (sub)structure(s)",
         min_entries=1,
         widget=FieldListAddBtn(label="Add product (sub)structure"),
-    )  # TODO: standardize smiles
-    isBalanced = BooleanField(
-        "Is the validated reaction balanced (i.e. stoichiometric complete)? *"
     )
-    isAuthentic = BooleanField(
-        "Is this substrate-product pair authentic/experimentally verified (i.e. not substructures) *"
+    isBalanced = SelectField(
+        "Is the validated reaction balanced (i.e. stoichiometric complete)? *",
+        choices=(("yes", "Yes"), ("no", "No"), ("unknown", "Unknown")),
+        widget=SelectDefault(),
+        validators=[validators.InputRequired()],
     )
-    isIntermediate = BooleanField(
-        "Is this validated reaction an intermediate step (i.e. not the final product)? *"
+    isAuthentic = SelectField(
+        "Is this substrate-product pair authentic/experimentally verified (i.e. not substructures) *",
+        choices=(("yes", "Yes"), ("no", "No"), ("unknown", "Unknown")),
+        widget=SelectDefault(),
+        validators=[validators.InputRequired()],
+    )
+    isIntermediate = SelectField(
+        "Is this validated reaction an intermediate step (i.e. not the final product)? *",
+        choices=(("yes", "Yes"), ("no", "No"), ("unknown", "Unknown")),
+        widget=SelectDefault(),
+        validators=[validators.InputRequired()],
     )
     evidence_val = FieldList(
         FormField(ReactionSmartsEvidenceForm),

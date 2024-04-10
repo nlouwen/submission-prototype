@@ -9,7 +9,11 @@ from wtforms import (
 )
 from markupsafe import Markup
 
-from submission.utils.custom_fields import TagListField, GeneIdField
+from submission.utils.custom_fields import (
+    TagListField,
+    GeneIdField,
+    smiles_field_factory,
+)
 from submission.utils.custom_validators import RequiredIf
 from submission.utils.custom_widgets import (
     FieldListAddBtn,
@@ -20,7 +24,7 @@ from submission.utils.custom_widgets import (
 from submission.utils.custom_forms import (
     SubtrateEvidenceForm,
     FunctionEvidenceForm,
-    LocationForm,
+    location_form_factory,
 )
 
 
@@ -29,7 +33,7 @@ class AddGeneForm(Form):
         "Gene identifier", description="The commonly used gene name (e.g. nisA)"
     )
     exons = FieldList(
-        FormField(LocationForm),
+        FormField(location_form_factory()),
         label="Exons *",
         description="Location of coding sequences (CDS). Please also include the stop codon in the coordinates",
         min_entries=1,
@@ -134,16 +138,21 @@ class DomainForm(Form):
                 label="Add additional evidence",
             ),
         )
-        structure = StringField(
-            "Substrate structure SMILES *",
-            widget=StructureInput(),
-            validators=[validators.InputRequired()],
-        )  # TODO: standardize smiles
+        structure = smiles_field_factory(
+            label="Substrate structure SMILES *", required=True
+        )
 
-    name = StringField("Domain name *", validators=[validators.InputRequired()])
+    gene_id = GeneIdField("Gene *", validators=[validators.InputRequired()])
+    name = StringField(
+        "Domain name *",
+        description='Follow the domain naming used in the main paper, otherwise simply number in order of appearance, e.g "1", "2"',
+        validators=[validators.InputRequired()],
+    )
     location = FormField(
-        LocationForm, label="Domain location *"
-    )  # TODO: require location
+        location_form_factory(required=True),
+        label="Domain location *",
+        description="Amino acid coordinates within the protein",
+    )
     substrates = FieldList(
         FormField(SubtrateForm),
         widget=FieldListAddBtn(

@@ -7,11 +7,13 @@ from wtforms import (
     SubmitField,
     validators,
 )
-from submission.utils.custom_fields import TagListField, GeneIdField
+from submission.utils.custom_fields import (
+    TagListField,
+    smiles_field_factory,
+)
 from submission.utils.custom_widgets import (
     TextInputWithSuggestions,
     FieldListAddBtn,
-    StructureInput,
 )
 
 from markupsafe import Markup
@@ -23,7 +25,7 @@ class ProductForm(Form):
         description="Name of the product produced by this path",
         validators=[validators.InputRequired()],
     )
-    structure = StringField("Structure (SMILES)", widget=StructureInput())
+    structure = smiles_field_factory(label="Structure (SMILES)")
     comment = StringField("Comment")
 
 

@@ -8,13 +8,16 @@ from wtforms import (
     FieldList,
     validators,
 )
-from submission.utils.custom_fields import TagListField, GeneIdField
-from submission.utils.custom_forms import LocationForm, SubtrateEvidenceForm
+from submission.utils.custom_fields import (
+    TagListField,
+    GeneIdField,
+    smiles_field_factory,
+)
+from submission.utils.custom_forms import location_form_factory, SubtrateEvidenceForm
 from submission.utils.custom_widgets import (
     TextInputWithSuggestions,
     SelectDefault,
     FieldListAddBtn,
-    StructureInput,
 )
 
 
@@ -22,7 +25,7 @@ class CondensationDomain(Form):
     # "required": ["type", "gene", "location"]
     _type = HiddenField("condensation")
     gene = GeneIdField("Gene")
-    location = FormField(LocationForm)
+    location = FormField(location_form_factory())
     subtype = SelectField(
         "Subtype",
         choices=[
@@ -47,13 +50,11 @@ class AdenylationDomain(Form):
         # "required": ["name", "proteinogenic", "structure"]
         name = StringField("Name")
         proteinogenic = BooleanField("proteinogenic?")
-        structure = StringField(
-            "Structure (SMILES)", widget=StructureInput()
-        )  # TODO: standardize smiles input
+        structure = smiles_field_factory(label="Structure (SMILES)")
 
     _type = HiddenField("adenylation")
     gene = GeneIdField("Gene")
-    location = FormField(LocationForm)
+    location = FormField(location_form_factory())
     inactive = BooleanField("Inactive?")
     evidence = FieldList(
         FormField(SubtrateEvidenceForm),
@@ -73,7 +74,7 @@ class CarrierDomain(Form):
         "Subtype", choices=["ACP", "PCP"], widget=SelectDefault(), validate_choice=False
     )
     gene = GeneIdField("Gene")
-    location = FormField(LocationForm)
+    location = FormField(location_form_factory())
     inactive = BooleanField("Inactive?")
     beta_branching = BooleanField("Beta-branching?")
     evidence = FieldList(
@@ -86,14 +87,14 @@ class CarrierDomain(Form):
 class AminotransferaseDomain(Form):
     _type = HiddenField("aminotransferase")
     gene = GeneIdField("Gene *", validators=[validators.InputRequired()])
-    location = FormField(LocationForm, label="Location *")  # TODO: require location
+    location = FormField(location_form_factory(required=True), label="Location *")
     inactive = BooleanField("Inactive?")
 
 
 class CyclaseDomain(Form):
     _type = HiddenField("cyclase")
     gene = GeneIdField("Gene *", validators=[validators.InputRequired()])
-    location = FormField(LocationForm, label="Location *")  # TODO: require location
+    location = FormField(location_form_factory(required=True), label="Location *")
     references = TagListField(
         "Citation(s)", widget=TextInputWithSuggestions(post_url="/edit/get_references")
     )
@@ -102,31 +103,31 @@ class CyclaseDomain(Form):
 class DehydrataseDomain(Form):
     _type = HiddenField("dehydratase")
     gene = GeneIdField("Gene *", validators=[validators.InputRequired()])
-    location = FormField(LocationForm, label="Location *")  # TODO: require location
+    location = FormField(location_form_factory(required=True), label="Location *")
 
 
 class EnoylreductaseDomain(Form):
     _type = HiddenField("enoylreductase")
     gene = GeneIdField("Gene *", validators=[validators.InputRequired()])
-    location = FormField(LocationForm, label="Location *")  # TODO: require location
+    location = FormField(location_form_factory(required=True), label="Location *")
 
 
 class EpimeraseDomain(Form):
     _type = HiddenField("epimerase")
     gene = GeneIdField("Gene *", validators=[validators.InputRequired()])
-    location = FormField(LocationForm, label="Location *")  # TODO: require location
+    location = FormField(location_form_factory(required=True), label="Location *")
 
 
 class HydroxylaseDomain(Form):
     _type = HiddenField("hydroxylase")
     gene = GeneIdField("Gene *", validators=[validators.InputRequired()])
-    location = FormField(LocationForm, label="Location *")  # TODO: require location
+    location = FormField(location_form_factory(required=True), label="Location *")
 
 
 class KetoreductaseDomain(Form):
     _type = HiddenField("ketoreductase")
     gene = GeneIdField("Gene *", validators=[validators.InputRequired()])
-    location = FormField(LocationForm, label="Location *")  # TODO: require location
+    location = FormField(location_form_factory(required=True), label="Location *")
     inactive = BooleanField("Inactive?")
     stereochemistry = SelectField(
         "Stereochemistry",
@@ -143,7 +144,7 @@ class KetoreductaseDomain(Form):
 class MethyltransferaseDomain(Form):
     _type = HiddenField("methyltransferase")
     gene = GeneIdField("Gene *", validators=[validators.InputRequired()])
-    location = FormField(LocationForm, label="Location *")  # TODO: require location
+    location = FormField(location_form_factory(required=True), label="Location *")
     subtype = SelectField(
         "Subtype",
         choices=["C", "N", "O", "other"],
@@ -158,13 +159,13 @@ class OtherDomain(Form):
     _type = HiddenField("other")
     subtype = StringField("Subtype *", validators=[validators.InputRequired()])
     gene = GeneIdField("Gene *", validators=[validators.InputRequired()])
-    location = FormField(LocationForm, label="Location *")  # TODO: require location
+    location = FormField(location_form_factory(required=True), label="Location *")
 
 
 class OxidaseDomain(Form):
     _type = HiddenField("oxidase")
     gene = GeneIdField("Gene *", validators=[validators.InputRequired()])
-    location = FormField(LocationForm, label="Location *")  # TODO: require location
+    location = FormField(location_form_factory(required=True), label="Location *")
 
 
 class ModificationDomainForm(Form):
@@ -210,11 +211,7 @@ class ModificationDomainForm(Form):
 class MonomerForm(Form):
     # "required": ["evidence", "name", "structure"]
     name = StringField("Name *", validators=[validators.InputRequired()])
-    structure = StringField(
-        "Structure (SMILES) *",
-        widget=StructureInput(),
-        validators=[validators.InputRequired()],
-    )  # TODO: standardize smiles
+    structure = smiles_field_factory(label="Structure (SMILES)", required=True)
     evidence = FieldList(
         FormField(SubtrateEvidenceForm),
         min_entries=1,
@@ -230,14 +227,12 @@ class AcyltransferaseForm(Form):
             widget=SelectDefault(),
             validate_choice=False,
         )
-        structure = StringField(
-            "Structure (SMILES)", widget=StructureInput()
-        )  # TODO: standardize smiles
+        structure = smiles_field_factory(label="Structure (SMILES)")
         details = StringField("Details (Optional)")
 
     _type = HiddenField("acyltransferase")
     gene = GeneIdField()
-    location = FormField(LocationForm)
+    location = FormField(location_form_factory())
     subtype = SelectField(
         choices=["cis-AT", "trans-AT"], widget=SelectDefault(), validate_choice=False
     )
