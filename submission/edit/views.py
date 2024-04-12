@@ -23,6 +23,7 @@ from submission.edit.forms.form_collection import FormCollection
 from submission.edit.forms.edit_select import EditSelectForm
 from submission.utils import Storage, draw_smiles_svg, ReferenceUtils
 from submission.utils.custom_validators import is_valid_bgc_id
+from submission.models import Entry
 
 
 @bp_edit.route("/<bgc_id>", methods=["GET", "POST"])
@@ -72,6 +73,7 @@ def edit_minimal(bgc_id: str) -> Union[str, response.Response]:
 
     if request.method == "POST" and form.validate():
         # TODO: save to database
+        Entry.save_minimal(bgc_id=bgc_id, data=form.data)
         Storage.save_data(bgc_id, "Minimal", request.form, current_user)
         flash("Submitted minimal entry!")
         return redirect(url_for("edit.edit_bgc", bgc_id=bgc_id))

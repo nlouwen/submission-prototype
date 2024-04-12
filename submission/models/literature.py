@@ -1,3 +1,6 @@
+from typing import Union
+
+from sqlalchemy import select, or_
 from sqlalchemy.orm import Mapped, mapped_column
 
 from submission.extensions import db
@@ -8,13 +11,19 @@ class Reference(db.Model):
     __tablename__ = "references"
     __table_args__ = {"schema": "edit"}
 
-    reference_id: Mapped[int] = mapped_column(autoincrement=True, primary_key=True)
+    id: Mapped[int] = mapped_column(autoincrement=True, primary_key=True)
     doi: Mapped[str] = mapped_column(nullable=True)
     pubmed: Mapped[str] = mapped_column(nullable=True)
     title: Mapped[str] = mapped_column(nullable=True)
     authors: Mapped[str] = mapped_column(nullable=True)
     year: Mapped[int] = mapped_column(nullable=True)
     journal: Mapped[str] = mapped_column(nullable=True)
+    entries = db.relationship(
+        "Entry",
+        secondary="edit.entry_references",
+        back_populates="references",
+        lazy="selectin",
+    )
 
     @property
     def identifier(self):
@@ -57,15 +66,15 @@ class Reference(db.Model):
         identifier = self.identifier if self.identifier else ""
         return f"{title} {self.short_authors()} {journal}, {year}. {identifier}"
 
-    @staticmethod
-    def load(reference: str):
+    @classmethod
+    def load(cls, reference: str):
         """Loads a reference into the reference table
 
         Args:
             reference (str): reference formatted as doi:10... | pubmed:73...
         """
         metadata = ReferenceUtils.get_reference_metadata(reference)
-        ref = Reference(
+        ref = cls(
             doi=metadata.get("doi"),
             pubmed=metadata.get("pmid"),
             title=metadata.get("title"),
@@ -75,3 +84,51 @@ class Reference(db.Model):
         )
         db.session.add(ref)
         db.session.commit()
+        return ref
+
+    @staticmethod
+    def load_missing(references: list[str]) -> list["Reference"]:
+        """Load missing references into database
+
+        Args:
+            references (list[str]): references to load
+
+        Returns:
+            list[Reference]: list of all references, either existing or newly loaded
+        """
+        refs = []
+        for reference in references:
+            ref = Reference.get(reference)
+            if ref is None:
+                ref = Reference.load(reference)
+            refs.append(ref)
+        return refs
+
+    @staticmethod
+    def get(reference: str) -> Union["Reference", None]:
+        """Get a reference object from the database based on identifier
+
+        Args:
+            reference (str): reference formatted as doi:10... | pubmed:77...
+
+        Returns:
+            Reference | None: reference database object or None if not exists
+        """
+        ident = reference.split(":", 1)[1]
+        return db.session.scalar(
+            select(Reference).where(
+                or_(Reference.doi == ident, Reference.pubmed == ident)
+            )
+        )
+
+
+class EntryReference(db.Model):
+    __tablename__ = "entry_references"
+    __table_args__ = {"schema": "edit"}
+
+    entry_id: Mapped[int] = mapped_column(
+        db.ForeignKey("edit.entries.id"), primary_key=True
+    )
+    reference_id: Mapped[int] = mapped_column(
+        db.ForeignKey("edit.references.id"), primary_key=True
+    )
