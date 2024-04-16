@@ -478,7 +478,16 @@ def add_field() -> str:
     i = 0
     while i + 2 < len(directions):
         subform, subform_idx = directions[i : i + 2]
-        curr = getattr(curr, subform)[int(subform_idx)]
+
+        # if fields were deleted, the index on the page will not match the actual index
+        page_idx = set()
+        base_field_name = "-".join(directions[: i + 1]) + "-"
+        for key in request.form.keys():
+            if key.startswith(base_field_name):
+                page_idx.add(key.replace(base_field_name, "").split("-", 1)[0])
+        actual_idx = sorted(page_idx).index(subform_idx)
+
+        curr = getattr(curr, subform)[int(actual_idx)]
         i += 2
 
     # until we reach the final field that issued the request
