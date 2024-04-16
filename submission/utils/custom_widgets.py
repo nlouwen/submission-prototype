@@ -131,7 +131,6 @@ class TextInputWithSuggestions(widgets.TextInput):
         }
 
     def __call__(self, field: Field, **kwargs: object) -> Markup:
-        obj = Markup("<div class='suggestions'>")
-        obj += super().__call__(field, **kwargs, **self.render_kw)
-        obj += Markup("<ul class='form-control'></ul></div>")
+        obj = super().__call__(field, **kwargs, **self.render_kw)
+        obj += Markup("<ul class='suggestions form-control' tabindex='1'></ul>")
         return obj
