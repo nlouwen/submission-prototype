@@ -38,6 +38,9 @@ class Reference(db.Model):
         else:
             return None
 
+    def __repr__(self):
+        return self.summarize(html=False)
+
     def short_authors(self):
         """Shorten the authors to the first et al."""
         if not self.authors:
@@ -58,12 +61,14 @@ class Reference(db.Model):
             others = ""
         return f"{names}{others}"
 
-    def summarize(self):
+    def summarize(self, html=True):
         """Generate a one-line summary of the reference"""
         title = self.title if self.title else ""
         journal = self.journal if self.journal else ""
         year = self.year if self.year else ""
         identifier = self.identifier if self.identifier else ""
+        if html:
+            return f"{title} {self.short_authors()} <i>{journal}</i>, <b>{year}</b>. {identifier}"
         return f"{title} {self.short_authors()} {journal}, {year}. {identifier}"
 
     @classmethod
@@ -91,7 +96,7 @@ class Reference(db.Model):
         """Load missing references into database
 
         Args:
-            references (list[str]): references to load
+            references (list[str]): references to load, fmt: 'doi:10..' | 'pubmed:77..'
 
         Returns:
             list[Reference]: list of all references, either existing or newly loaded
