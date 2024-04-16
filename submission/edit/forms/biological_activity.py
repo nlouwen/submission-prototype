@@ -18,7 +18,7 @@ from submission.utils.custom_widgets import (
     TextInputWithSuggestions,
 )
 from submission.utils.custom_fields import TagListField
-from submission.utils.custom_validators import RequiredIf
+from submission.utils.custom_validators import RequiredIf, ValidateCitations
 
 
 class AssayForm(Form):
@@ -149,7 +149,7 @@ class AssayForm(Form):
         "Citation(s) *",
         description="Comma separated list of references highlighted this activity. If references show different concentration, add them separately.",
         widget=TextInputWithSuggestions(post_url="/edit/get_references"),
-        validators=[validators.InputRequired()],
+        validators=[validators.InputRequired(), ValidateCitations()],
     )
     concentration = FormField(ConcentrationForm, label="Concentration (Optional)")
 

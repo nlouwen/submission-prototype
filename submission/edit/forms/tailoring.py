@@ -16,6 +16,7 @@ from submission.utils.custom_widgets import (
     SelectDefault,
     TextInputWithSuggestions,
 )
+from submission.utils.custom_validators import ValidateCitations
 
 
 class AuxEnzymeForm(Form):
@@ -41,6 +42,7 @@ class EnzymeForm(Form):
         "Citation(s) *",
         description="Comma separated references on the protein",
         widget=TextInputWithSuggestions(post_url="/edit/get_references"),
+        validators=[ValidateCitations()],
     )
     auxiliary_enzymes = FieldList(
         FormField(AuxEnzymeForm),
@@ -116,7 +118,7 @@ class ReactionSmartsEvidenceForm(Form):
     references = TagListField(
         "Citation(s) *",
         widget=TextInputWithSuggestions(post_url="/edit/get_references"),
-        validators=[validators.InputRequired()],
+        validators=[validators.InputRequired(), ValidateCitations()],
     )
 
 

@@ -18,6 +18,8 @@ class Reference(db.Model):
     authors: Mapped[str] = mapped_column(nullable=True)
     year: Mapped[int] = mapped_column(nullable=True)
     journal: Mapped[str] = mapped_column(nullable=True)
+    url: Mapped[str] = mapped_column(nullable=True)
+    patent: Mapped[str] = mapped_column(nullable=True)
     entries = db.relationship(
         "Entry",
         secondary="edit.entry_references",
@@ -27,7 +29,7 @@ class Reference(db.Model):
 
     @property
     def identifier(self):
-        """Access a reference identifier, prefers doi
+        """Access a reference identifier, prefers doi>pubmed>url>patent respectively
 
         If somehow no identifier is present, returns None
         """
@@ -35,6 +37,10 @@ class Reference(db.Model):
             return f"doi:{self.doi}"
         elif self.pubmed:
             return f"pubmed:{self.pubmed}"
+        elif self.url:
+            return f"url:{self.url}"
+        elif self.patent:
+            return f"patent:{self.patent}"
         else:
             return None
 
@@ -78,15 +84,22 @@ class Reference(db.Model):
         Args:
             reference (str): reference formatted as doi:10... | pubmed:73...
         """
-        metadata = ReferenceUtils.get_reference_metadata(reference)
-        ref = cls(
-            doi=metadata.get("doi"),
-            pubmed=metadata.get("pmid"),
-            title=metadata.get("title"),
-            authors=metadata.get("authors"),
-            year=metadata.get("year"),
-            journal=metadata.get("journal"),
-        )
+        if reference.startswith("doi:") or reference.startswith("pubmed:"):
+            metadata = ReferenceUtils.get_reference_metadata(reference)
+            ref = cls(
+                doi=metadata.get("doi"),
+                pubmed=metadata.get("pmid"),
+                title=metadata.get("title"),
+                authors=metadata.get("authors"),
+                year=metadata.get("year"),
+                journal=metadata.get("journal"),
+            )
+        elif reference.startswith("url"):
+            ref = cls(url=reference.split(":", 1)[1])
+        elif reference.startswith("patent"):
+            ref = cls(patent=reference.split(":", 1)[1])
+        else:
+            raise RuntimeError(f"Unexpected citation format: {reference}")
         db.session.add(ref)
         db.session.commit()
         return ref
@@ -119,12 +132,17 @@ class Reference(db.Model):
         Returns:
             Reference | None: reference database object or None if not exists
         """
-        ident = reference.split(":", 1)[1]
-        return db.session.scalar(
-            select(Reference).where(
-                or_(Reference.doi == ident, Reference.pubmed == ident)
-            )
-        )
+        id_type, ident = reference.split(":", 1)
+        if id_type == "doi":
+            return db.session.scalar(select(Reference).where(Reference.doi == ident))
+        elif id_type == "pubmed":
+            return db.session.scalar(select(Reference).where(Reference.pubmed == ident))
+        elif id_type == "url":
+            return db.session.scalar(select(Reference).where(Reference.url == ident))
+        elif id_type == "patent":
+            return db.session.scalar(select(Reference).where(Reference.patent == ident))
+        else:
+            raise RuntimeError(f"Unexpected reference type '{id_type}'")
 
 
 class EntryReference(db.Model):

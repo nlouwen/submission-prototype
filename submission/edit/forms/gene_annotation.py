@@ -14,7 +14,7 @@ from submission.utils.custom_fields import (
     GeneIdField,
     smiles_field_factory,
 )
-from submission.utils.custom_validators import RequiredIf
+from submission.utils.custom_validators import RequiredIf, ValidateCitations
 from submission.utils.custom_widgets import (
     FieldListAddBtn,
     SelectDefault,
@@ -77,7 +77,8 @@ class AnnotationForm(Form):
                     RequiredIf(
                         "phenotype",
                         message="This field is required when phenotype is filled.",
-                    )
+                    ),
+                    ValidateCitations(),
                 ],
             )
 

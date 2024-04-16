@@ -20,7 +20,7 @@ from submission.utils.custom_widgets import (
     TextInputWithSuggestions,
     SelectDefault,
 )
-from submission.utils.custom_validators import ValidateTagListRegexp
+from submission.utils.custom_validators import ValidateTagListRegexp, ValidateCitations
 
 
 class NRPSForm(Form):
@@ -43,6 +43,7 @@ class NRPSForm(Form):
         references = TagListField(
             "Citation(s)",
             widget=TextInputWithSuggestions(post_url="/edit/get_references"),
+            validators=[ValidateCitations()],
         )
 
     class ThioesteraseForm(Form):
@@ -222,7 +223,7 @@ class SaccharideForm(Form):
         references = TagListField(
             "Citation(s) *",
             widget=TextInputWithSuggestions(post_url="/edit/get_references"),
-            validators=[validators.InputRequired()],
+            validators=[validators.InputRequired(), ValidateCitations()],
         )
         specificity = smiles_field_factory(
             label="Specificity (SMILES)", show_structure=False
@@ -240,6 +241,7 @@ class SaccharideForm(Form):
         references = TagListField(
             "Citation(s)",
             widget=TextInputWithSuggestions(post_url="/edit/get_references"),
+            validators=[ValidateCitations()],
         )
 
     # TODO: sub-class enum

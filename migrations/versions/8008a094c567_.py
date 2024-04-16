@@ -29,6 +29,8 @@ def upgrade():
         sa.Column("authors", sa.String(), nullable=True),
         sa.Column("year", sa.Integer(), nullable=True),
         sa.Column("journal", sa.String(), nullable=True),
+        sa.Column("url", sa.String(), nullable=True),
+        sa.Column("patent", sa.String(), nullable=True),
         sa.PrimaryKeyConstraint("id"),
         schema="edit",
     )
