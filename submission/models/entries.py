@@ -1,6 +1,7 @@
-from typing import Any
+from typing import Any, Union
 
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy import select
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from submission.extensions import db
 from submission.models import Reference
@@ -13,7 +14,7 @@ class Entry(db.Model):
 
     id: Mapped[int] = mapped_column(autoincrement=True, primary_key=True)
     identifier: Mapped[str]
-    references = db.relationship(
+    references: Mapped[list["Reference"]] = relationship(
         "Reference",
         secondary="edit.entry_references",
         back_populates="entries",
@@ -32,6 +33,18 @@ class Entry(db.Model):
         db.session.commit()
         return entry
 
+    @staticmethod
+    def get(bgc_id: str) -> Union["Entry", None]:
+        """Get an entry from database based on identifier
+
+        Args:
+            bgc_id (str): BGC identifier
+
+        Returns:
+            Entry | None: entry database object or none if not exists
+        """
+        return db.session.scalar(select(Entry).where(Entry.identifier == bgc_id))
+
     # TODO: save all important data
     @staticmethod
     def save_minimal(bgc_id: str, data: dict[str, Any]):
@@ -43,16 +56,16 @@ class Entry(db.Model):
         """
         # if minimal is the first section submitted, no entry will exist in db yet
         # TODO: create entries separately and consistently over all sections
-        entry = Entry.query.filter(Entry.identifier == bgc_id).first()
-        if not entry:
+        entry = Entry.get(bgc_id=bgc_id)
+        if entry is None:
             entry = Entry.create(bgc_id=bgc_id)
 
-        refs = []
+        refs = set()
         for locus in data["loci"]:
             for evidence in locus["evidence"]:
-                refs.extend(evidence["references"])
+                refs.update(evidence["references"])
 
-        loaded_refs = Reference.load_missing(refs)
+        loaded_refs = Reference.load_missing(list(refs))
         entry.references = loaded_refs
 
         db.session.commit()
