@@ -232,7 +232,10 @@ class AcyltransferaseForm(Form):
             widget=SelectDefault(),
             validate_choice=False,
         )
-        structure = smiles_field_factory(label="Structure (SMILES)")
+        structure = smiles_field_factory(
+            label="Structure (SMILES)",
+            description="Please provide a substrate structure if you've selected 'other'.",
+        )
         details = StringField("Details (Optional)")
 
     _type = HiddenField("acyltransferase")
