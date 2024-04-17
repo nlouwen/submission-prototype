@@ -7,7 +7,7 @@ import re
 from pathlib import Path
 
 from submission import create_app
-from submission.models import Reference
+from submission.models import Reference, Entry
 
 
 def main():
@@ -36,7 +36,11 @@ def load_references(filename):
                 valid_refs.append(ref)
             else:
                 print(f"{filename}: Skipping invalid ref format: {ref}")
-        Reference.load_missing(valid_refs)
+        references = Reference.load_missing(valid_refs)
+
+        bgc_id = filename.stem.replace("_data", "")
+        entry = Entry.get_or_create(bgc_id=bgc_id)
+        entry.add_references(references)
 
 
 def valid_format(ref):
