@@ -85,7 +85,7 @@ class SubtrateEvidenceForm(Form):
     )
     references = TagListField(
         "Citation(s) *",
-        widget=TextInputWithSuggestions(post_url="/edit/get_references"),
+        widget=TextInputWithSuggestions(post_url="/edit/get_db_references"),
         validators=[validators.InputRequired(), ValidateCitations()],
     )
 
@@ -111,7 +111,7 @@ class StructureEvidenceForm(Form):
     references = TagListField(
         "Citation(s) *",
         description="Comma separated list of references on this compound using this method",
-        widget=TextInputWithSuggestions(post_url="/edit/get_references"),
+        widget=TextInputWithSuggestions(post_url="/edit/get_db_references"),
         validators=[validators.InputRequired(), ValidateCitations()],
     )
 
@@ -131,6 +131,6 @@ class FunctionEvidenceForm(Form):
     )
     references = TagListField(
         "Citation(s) *",
-        widget=TextInputWithSuggestions(post_url="/edit/get_references"),
+        widget=TextInputWithSuggestions(post_url="/edit/get_db_references"),
         validators=[validators.InputRequired(), ValidateCitations()],
     )

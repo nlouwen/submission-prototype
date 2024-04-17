@@ -42,7 +42,7 @@ class NRPSForm(Form):
         details = StringField("Details (Optional)")
         references = TagListField(
             "Citation(s)",
-            widget=TextInputWithSuggestions(post_url="/edit/get_references"),
+            widget=TextInputWithSuggestions(post_url="/edit/get_db_references"),
             validators=[ValidateCitations()],
         )
 
@@ -222,7 +222,7 @@ class SaccharideForm(Form):
         )
         references = TagListField(
             "Citation(s) *",
-            widget=TextInputWithSuggestions(post_url="/edit/get_references"),
+            widget=TextInputWithSuggestions(post_url="/edit/get_db_references"),
             validators=[validators.InputRequired(), ValidateCitations()],
         )
         specificity = smiles_field_factory(
@@ -240,7 +240,7 @@ class SaccharideForm(Form):
         )
         references = TagListField(
             "Citation(s)",
-            widget=TextInputWithSuggestions(post_url="/edit/get_references"),
+            widget=TextInputWithSuggestions(post_url="/edit/get_db_references"),
             validators=[ValidateCitations()],
         )
 

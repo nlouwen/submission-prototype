@@ -95,6 +95,7 @@ ul.suggestions li {
   opacity: 0;
   border-radius: var(--bs-border-radius);
   padding: 2px 10px 2px 10px;
+  border-bottom: dotted 1px var(--mibig-blue);
 }
 
 ul.suggestions li:hover {

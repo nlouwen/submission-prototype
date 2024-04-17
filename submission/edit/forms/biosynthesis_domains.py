@@ -42,7 +42,7 @@ class CondensationDomain(Form):
     )
     references = TagListField(
         "Citation(s)",
-        widget=TextInputWithSuggestions(post_url="/edit/get_references"),
+        widget=TextInputWithSuggestions(post_url="/edit/get_db_references"),
         validators=[ValidateCitations()],
     )
 
@@ -100,7 +100,7 @@ class CyclaseDomain(Form):
     location = FormField(location_form_factory(required=True), label="Location *")
     references = TagListField(
         "Citation(s)",
-        widget=TextInputWithSuggestions(post_url="/edit/get_references"),
+        widget=TextInputWithSuggestions(post_url="/edit/get_db_references"),
         validators=[ValidateCitations()],
     )
 

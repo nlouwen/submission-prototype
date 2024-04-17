@@ -72,7 +72,7 @@ class AnnotationForm(Form):
             details = StringField("Details")
             references = TagListField(
                 "Citation(s)",
-                widget=TextInputWithSuggestions(post_url="/edit/get_references"),
+                widget=TextInputWithSuggestions(post_url="/edit/get_db_references"),
                 validators=[
                     RequiredIf(
                         "phenotype",
