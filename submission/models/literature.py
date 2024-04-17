@@ -5,6 +5,7 @@ from sqlalchemy.orm import Mapped, mapped_column
 
 from submission.extensions import db
 from submission.utils import ReferenceUtils
+from submission.utils.custom_errors import ReferenceNotFound
 
 
 class Reference(db.Model):
@@ -88,6 +89,10 @@ class Reference(db.Model):
         """
         if reference.startswith("doi:") or reference.startswith("pubmed:"):
             metadata = ReferenceUtils.get_reference_metadata(reference)
+
+            if metadata.get("detail") == "Article not found":
+                raise ReferenceNotFound(reference)
+
             ref = cls(
                 doi=metadata.get("doi"),
                 pubmed=metadata.get("pmid"),
@@ -101,7 +106,7 @@ class Reference(db.Model):
         elif reference.startswith("patent"):
             ref = cls(patent=reference.split(":", 1)[1])
         else:
-            raise RuntimeError(f"Unexpected citation format: {reference}")
+            raise ReferenceNotFound(reference)
         db.session.add(ref)
         db.session.commit()
         return ref
