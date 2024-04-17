@@ -69,10 +69,12 @@ class Reference(db.Model):
 
     def summarize(self, html=True):
         """Generate a one-line summary of the reference"""
-        title = self.title if self.title else ""
-        journal = self.journal if self.journal else ""
-        year = self.year if self.year else ""
-        identifier = self.identifier if self.identifier else ""
+        if self.url or self.patent:
+            return self.identifier
+        title = self.title or ""
+        journal = self.journal or ""
+        year = self.year or ""
+        identifier = self.identifier or ""
         if html:
             return f"{title} {self.short_authors()} <i>{journal}</i>, <b>{year}</b>. {identifier}"
         return f"{title} {self.short_authors()} {journal}, {year}. {identifier}"
