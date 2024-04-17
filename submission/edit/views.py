@@ -518,6 +518,25 @@ def get_references() -> str:
     return Markup(options)
 
 
+@bp_edit.route("/get_db_references", methods=["POST"])
+def get_db_references() -> str:
+    bgc_id_match = re.search("edit/([^/]+)/", request.referrer)
+    if bgc_id_match is not None:
+        bgc_id = bgc_id_match.group(1)
+
+    li = (
+        lambda val, descr: f"<li id={val} hx-post='/edit/append_reference' hx-target='previous input' hx-swap='outerHTML' hx-trigger='mousedown'>{descr}</li>"
+    )
+    options = (
+        "<span class='text-muted form-text'>Known references for this entry:</span>"
+    )
+
+    if (entry := Entry.get(bgc_id)) is not None:
+        for ref in entry.references:
+            options += li(ref.identifier, ref.summarize())
+    return Markup(options)
+
+
 @bp_edit.route("/append_reference", methods=["POST"])
 def append_reference():
 
