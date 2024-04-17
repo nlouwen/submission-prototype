@@ -42,6 +42,7 @@ class Entry(db.Model):
         for ref in refs:
             if ref not in self.references:
                 self.references.append(ref)
+        db.session.commit()
 
     @staticmethod
     def get(bgc_id: str) -> Union["Entry", None]:
