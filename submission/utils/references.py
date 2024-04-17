@@ -32,13 +32,14 @@ class ReferenceUtils:
         """Collect metadata on reference from doi/PMID using liningtonlab's api
 
         Args:
-            reference (str): reference formatted as 'doi:10....' | 'PMID:73....'
+            reference (str): reference formatted as 'doi:10....' | 'pubmed:73....'
 
         Returns:
             dict[str, str]: mapping of reference metadata
         """
-        id_type, identifier = reference.split(":")
-        id_type = id_type.lower()
+        id_type, identifier = reference.split(":", 1)
+        if id_type == "pubmed":
+            id_type = "pmid"
         r = requests.post(
             f"https://litapi.liningtonlab.org/article/?{id_type}={identifier}"
         )

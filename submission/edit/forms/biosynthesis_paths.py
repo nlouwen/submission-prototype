@@ -15,6 +15,7 @@ from submission.utils.custom_widgets import (
     TextInputWithSuggestions,
     FieldListAddBtn,
 )
+from submission.utils.custom_validators import ValidateCitations
 
 from markupsafe import Markup
 
@@ -52,8 +53,8 @@ class PathForm(Form):
     )
     references = TagListField(
         "Citation(s) *",
-        widget=TextInputWithSuggestions(post_url="/edit/get_references"),
-        validators=[validators.InputRequired()],
+        widget=TextInputWithSuggestions(post_url="/edit/get_db_references"),
+        validators=[validators.InputRequired(), ValidateCitations()],
     )
     isSubcluster = BooleanField("Is this path carried out by a subcluster?")
     producesPrecursor = BooleanField("Does this path produce a precursor?")

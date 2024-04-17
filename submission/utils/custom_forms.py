@@ -5,6 +5,7 @@ from wtforms import Form, IntegerField, SelectField, validators
 
 from .custom_fields import TagListField
 from .custom_widgets import StructureInput, TextInputWithSuggestions, SelectDefault
+from .custom_validators import ValidateCitations
 
 
 def location_form_factory(required: bool = False):
@@ -50,9 +51,9 @@ class EvidenceForm(Form):
     )
     references = TagListField(
         "Citation(s) *",
-        [validators.InputRequired()],
+        [validators.InputRequired(), ValidateCitations()],
         description="Comma separated list of references. Accepted formats are: 'doi:10.1016/j.chembiol.2020.11.009', 'pubmed:33321099'",
-        widget=TextInputWithSuggestions(post_url="/edit/get_references"),
+        widget=TextInputWithSuggestions(post_url="/edit/get_db_references"),
     )
 
 
@@ -84,8 +85,8 @@ class SubtrateEvidenceForm(Form):
     )
     references = TagListField(
         "Citation(s) *",
-        widget=TextInputWithSuggestions(post_url="/edit/get_references"),
-        validators=[validators.InputRequired()],
+        widget=TextInputWithSuggestions(post_url="/edit/get_db_references"),
+        validators=[validators.InputRequired(), ValidateCitations()],
     )
 
 
@@ -110,8 +111,8 @@ class StructureEvidenceForm(Form):
     references = TagListField(
         "Citation(s) *",
         description="Comma separated list of references on this compound using this method",
-        widget=TextInputWithSuggestions(post_url="/edit/get_references"),
-        validators=[validators.InputRequired()],
+        widget=TextInputWithSuggestions(post_url="/edit/get_db_references"),
+        validators=[validators.InputRequired(), ValidateCitations()],
     )
 
 
@@ -130,6 +131,6 @@ class FunctionEvidenceForm(Form):
     )
     references = TagListField(
         "Citation(s) *",
-        widget=TextInputWithSuggestions(post_url="/edit/get_references"),
-        validators=[validators.InputRequired()],
+        widget=TextInputWithSuggestions(post_url="/edit/get_db_references"),
+        validators=[validators.InputRequired(), ValidateCitations()],
     )

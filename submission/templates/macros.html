@@ -86,7 +86,7 @@
 <fieldset>
     <div id="{{form.id}}" class="form-group subgroup">
         {% if deletebtn %}
-        <button class='btn btn-sm btn-danger' style='float: right' hx-delete='/delete' hx-target='closest fieldset'
+        <button class='btn btn-sm btn-danger btn-del' hx-delete='/delete' hx-target='closest fieldset'
             hx-swap='outerHTML'>&#x2715;</button>
         {% endif %}
 
@@ -121,12 +121,7 @@
 {% endmacro %}
 
 {% macro icon(name) -%}
-<svg
-    xmlns="http://www.w3.org/2000/svg"
-    height="1em"
-    width="1em"
-    fill="currentColor"
->
+<svg xmlns="http://www.w3.org/2000/svg" height="1em" width="1em" fill="currentColor">
     <use xlink:href="/static/img/icons.svg#{{ name }}"></use>
 </svg>
 {%- endmacro %}

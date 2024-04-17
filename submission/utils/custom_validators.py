@@ -9,14 +9,22 @@ from wtforms import ValidationError, validators
 
 # TODO: rework to validate if entered gene IDs fall in locus
 class ValidateTagListRegexp(object):
-    def __init__(self, regex, message="Invalid Gene ID(s)"):
+    def __init__(self, regex, message="Invalid Gene ID: "):
         self.regex = regex
         self.message = message
 
     def __call__(self, form, field):
-        for gene_id in field.data:
-            if not re.match(self.regex, gene_id):
-                raise ValidationError(self.message)
+        for member in field.data:
+            if not re.match(self.regex, member):
+                message = self.message + member
+                raise ValidationError(message)
+
+
+class ValidateCitations(ValidateTagListRegexp):
+    def __init__(self):
+        regex = r"^pubmed:(\d+)$|^doi:10\.\d{4,9}/[-\\._;()/:a-zA-Z0-9]+$|^patent:(.+)$|^url:https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)$"
+        message = "Invalid citation format: "
+        super().__init__(regex, message)
 
 
 def is_valid_bgc_id(bgc_id: str):

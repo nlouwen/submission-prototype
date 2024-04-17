@@ -19,6 +19,7 @@ from submission.utils.custom_widgets import (
     SelectDefault,
     FieldListAddBtn,
 )
+from submission.utils.custom_validators import ValidateCitations
 
 
 class CondensationDomain(Form):
@@ -40,7 +41,9 @@ class CondensationDomain(Form):
         validate_choice=False,
     )
     references = TagListField(
-        "Citation(s)", widget=TextInputWithSuggestions(post_url="/edit/get_references")
+        "Citation(s)",
+        widget=TextInputWithSuggestions(post_url="/edit/get_db_references"),
+        validators=[ValidateCitations()],
     )
 
 
@@ -96,7 +99,9 @@ class CyclaseDomain(Form):
     gene = GeneIdField("Gene *", validators=[validators.InputRequired()])
     location = FormField(location_form_factory(required=True), label="Location *")
     references = TagListField(
-        "Citation(s)", widget=TextInputWithSuggestions(post_url="/edit/get_references")
+        "Citation(s)",
+        widget=TextInputWithSuggestions(post_url="/edit/get_db_references"),
+        validators=[ValidateCitations()],
     )
 
 
@@ -227,7 +232,10 @@ class AcyltransferaseForm(Form):
             widget=SelectDefault(),
             validate_choice=False,
         )
-        structure = smiles_field_factory(label="Structure (SMILES)")
+        structure = smiles_field_factory(
+            label="Structure (SMILES)",
+            description="Please provide a substrate structure if you've selected 'other'.",
+        )
         details = StringField("Details (Optional)")
 
     _type = HiddenField("acyltransferase")
