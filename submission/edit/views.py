@@ -72,7 +72,6 @@ def edit_minimal(bgc_id: str) -> Union[str, response.Response]:
         form = FormCollection.minimal(request.form)
 
     if request.method == "POST" and form.validate():
-        # TODO: save to database
         Entry.save_minimal(bgc_id=bgc_id, data=form.data)
         Storage.save_data(bgc_id, "Minimal", request.form, current_user)
         flash("Submitted minimal entry!")
@@ -107,7 +106,7 @@ def edit_structure(bgc_id: str) -> Union[str, response.Response]:
         form = FormCollection.structure(request.form)
 
     if request.method == "POST" and form.validate():
-        # TODO: save to db
+        Entry.save_structure(bgc_id=bgc_id, data=form.data)
         Storage.save_data(bgc_id, "Structure", request.form, current_user)
         flash("Submitted structure information!")
         return redirect(url_for("edit.edit_bgc", bgc_id=bgc_id))
@@ -172,7 +171,7 @@ def edit_activity(bgc_id: str) -> Union[str, response.Response]:
     else:
         form = FormCollection.bioact(request.form)
     if request.method == "POST" and form.validate():
-        # TODO: save to db
+        Entry.save_activity(bgc_id=bgc_id, data=form.data)
         Storage.save_data(bgc_id, "Bio_activity", request.form, current_user)
         flash("Submitted activity information!")
         return redirect(url_for("edit.edit_bgc", bgc_id=bgc_id))
@@ -266,7 +265,7 @@ def edit_biosynth_class(bgc_id: str, b_class: str) -> Union[str, response.Respon
         form = getattr(FormCollection, b_class)(request.form)
 
     if request.method == "POST" and form.validate():
-        # TODO: save to db
+        Entry.save_biosynth(bgc_id=bgc_id, b_class=b_class, data=form.data)
         Storage.save_data(bgc_id, f"BioSynth_{b_class}", request.form, current_user)
         flash(f"Submitted {b_class} biosynthesis information!")
         return redirect(url_for("edit.edit_bgc", bgc_id=bgc_id))
@@ -337,7 +336,7 @@ def edit_biosynth_paths(bgc_id: str) -> Union[str, response.Response]:
         form = FormCollection.paths(request.form)
 
     if request.method == "POST" and form.validate():
-        # TODO: save to db
+        Entry.save_biosynth_paths(bgc_id=bgc_id, data=form.data)
         Storage.save_data(bgc_id, "Biosynth_paths", request.form, current_user)
         flash("Submitted biosynthetic path information!")
         return redirect(url_for("edit.edit_biosynth", bgc_id=bgc_id))
@@ -407,6 +406,7 @@ def edit_tailoring(bgc_id: str) -> Union[str, response.Response]:
         form = FormCollection.tailoring(request.form)
 
     if request.method == "POST" and form.validate():
+        Entry.save_tailoring(bgc_id=bgc_id, data=form.data)
         Storage.save_data(bgc_id, "Tailoring", request.form, current_user)
         flash("Submitted tailoring information!")
         return redirect(url_for("edit.edit_bgc", bgc_id=bgc_id))
@@ -441,6 +441,7 @@ def edit_annotation(bgc_id: str) -> Union[str, response.Response]:
         form = FormCollection.annotation(request.form)
 
     if request.method == "POST" and form.validate():
+        Entry.save_annotation(bgc_id=bgc_id, data=form.data)
         Storage.save_data(bgc_id, "Annotation", request.form, current_user)
         flash("Submitted annotation information!")
         return redirect(url_for("edit.edit_bgc", bgc_id=bgc_id))
@@ -485,9 +486,12 @@ def add_field() -> str:
         for key in request.form.keys():
             if key.startswith(base_field_name):
                 page_idx.add(key.replace(base_field_name, "").split("-", 1)[0])
-        actual_idx = sorted(page_idx).index(subform_idx)
+        if subform_idx in page_idx:
+            actual_idx = sorted(page_idx).index(subform_idx)
+        else:
+            actual_idx = int(subform_idx)
 
-        curr = getattr(curr, subform)[int(actual_idx)]
+        curr = getattr(curr, subform)[actual_idx]
         i += 2
 
     # until we reach the final field that issued the request
