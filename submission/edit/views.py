@@ -24,7 +24,7 @@ from submission.edit.forms.edit_select import EditSelectForm
 from submission.utils import Storage, draw_smiles_svg, ReferenceUtils
 from submission.utils.custom_validators import is_valid_bgc_id
 from submission.utils.custom_errors import ReferenceNotFound
-from submission.models import Entry
+from submission.models import Entry, NPAtlas
 
 
 @bp_edit.route("/<bgc_id>", methods=["GET", "POST"])
@@ -573,3 +573,44 @@ def append_reference():
     return Markup(
         f"<input class='form-control' {html_params(value=new_value, id=target, name=target)}>"
     )
+
+
+@bp_edit.route("/query_npatlas", methods=["POST"])
+def query_npatlas():
+    """Check if a compound name is present in the NPAtas table and prefill information
+
+    If no compound information is found, aborts the request.
+    """
+    trigger = request.headers.get("Hx-Trigger")
+    compound = request.form.get(trigger)
+    base = trigger.rpartition("-")[0]
+
+    # if compound present in NPAtlas, prefill relevant data
+    if (npa_entry := NPAtlas.get(compound)) is not None:
+        relevant_data = MultiDict(
+            [(k, v) for k, v in request.form.items() if k.startswith(base)]
+        )
+
+        relevant_data.setlist(f"{base}-structure", [npa_entry.compound_smiles])
+        relevant_data.setlist(f"{base}-formula", [npa_entry.compound_molecular_formula])
+        relevant_data.setlist(f"{base}-mass", [npa_entry.compound_accurate_mass])
+
+        db_field = f"{base}-db_cross"
+        npaid = f"npatlas:{npa_entry.npaid}"
+        # taglistfield data is given as ['"data1", "data2", "data3"']
+        if not (current_db_cross := relevant_data.getlist(db_field)[0]):
+            relevant_data.setlist(db_field, [npaid])
+        elif npaid not in current_db_cross:
+            relevant_data.setlist(db_field, [f'{current_db_cross}, "{npaid}"'])
+
+        form = FormCollection.structure(relevant_data)
+        form.structures[0]._fields["name"].render_kw["hx-trigger"] = "change"
+        return render_template_string(
+            """{% import 'macros.html' as m %}
+            <span class="form-text text-muted fst-italic">{{message}}</span>
+            {{m.simple_divsubform(field, deletebtn=true)}}""",
+            field=form.structures[0],
+            message=f"{compound} information filled from NPAtlas",
+        )
+    else:
+        abort(404, "not present in npatlas")

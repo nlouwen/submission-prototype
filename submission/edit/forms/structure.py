@@ -18,7 +18,16 @@ from submission.utils.custom_forms import StructureEvidenceForm
 
 
 class StructureSingle(Form):
-    name = StringField("Compound Name *", [validators.InputRequired()])
+    name = StringField(
+        "Compound Name *",
+        [validators.InputRequired()],
+        render_kw={
+            "hx-post": "/edit/query_npatlas",
+            "hx-target": "closest fieldset",
+            "hx-swap": "outerHTML",
+            "hx-trigger": "load, change",
+        },
+    )
     synonyms = TagListField(
         "Synonyms",
         [validators.Optional()],
