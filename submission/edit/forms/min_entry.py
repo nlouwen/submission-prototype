@@ -6,6 +6,7 @@ from wtforms import (
     SelectField,
     SelectMultipleField,
     FormField,
+    BooleanField,
     validators,
     SubmitField,
 )
@@ -88,6 +89,10 @@ class MinEntryForm(Form):
         validators=[validators.InputRequired()],
     )
     taxonomy = FormField(TaxonomyForm)
+    embargo = BooleanField(
+        description="Please embargo my gene cluster information, pending publication of the results. "
+        "For newly characterized gene clusters only. Please notify us upon publication so that the embargo can be lifted."
+    )
     comments = StringField("Additional comments")
 
     submit = SubmitField("Submit")

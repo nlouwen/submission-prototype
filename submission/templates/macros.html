@@ -58,8 +58,8 @@
 {% elif field.type == 'BooleanField' %}
 <div class="form-check">
     {{field.label(class='form-label'~is_required)}}
-    {{descr(field)}}
     {{ field(class='form-check-input' + (' is-invalid' if field.errors else '')) }}
+    {{descr(field)}}
 </div>
 
 {% elif field.type == "SelectField" or field.type == "SelectMultipleField" %}
