@@ -1,6 +1,8 @@
 from typing import Union
+from pathlib import Path
+from csv import DictReader
 
-from sqlalchemy import select
+from sqlalchemy import select, inspect
 from sqlalchemy.orm import Mapped, mapped_column
 
 from submission.extensions import db
@@ -35,3 +37,18 @@ class NPAtlas(db.Model):
         return db.session.scalar(
             select(NPAtlas).where(NPAtlas.compound_names == compound)
         )
+
+    @staticmethod
+    def from_tsv_dump(filepath: Path) -> None:
+        """Fill the NPAtlas table from a tsv dump file
+
+        Args:
+            filepath (Path): path to the tsv dump file
+        """
+        properties = inspect(NPAtlas).attrs
+        with open(filepath) as inf:
+            data = DictReader(inf, dialect="excel-tab")
+            for row in data:
+                npa_entry = NPAtlas(**{k: v for k, v in row.items() if k in properties})
+                db.session.add(npa_entry)
+        db.session.commit()
