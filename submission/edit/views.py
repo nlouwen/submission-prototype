@@ -587,13 +587,14 @@ def query_npatlas():
 
     # if compound present in NPAtlas, prefill relevant data
     if (npa_entry := NPAtlas.get(compound)) is not None:
+        # if entry exists, only overwrite npatlas data, keep the rest
         relevant_data = MultiDict(
             [(k, v) for k, v in request.form.items() if k.startswith(base)]
         )
 
         relevant_data.setlist(f"{base}-structure", [npa_entry.compound_smiles])
         relevant_data.setlist(f"{base}-formula", [npa_entry.compound_molecular_formula])
-        relevant_data.setlist(f"{base}-mass", [npa_entry.compound_accurate_mass])
+        relevant_data.setlist(f"{base}-mass", [str(npa_entry.compound_accurate_mass)])
 
         db_field = f"{base}-db_cross"
         npaid = f"npatlas:{npa_entry.npaid}"
@@ -604,13 +605,17 @@ def query_npatlas():
             relevant_data.setlist(db_field, [f'{current_db_cross}, "{npaid}"'])
 
         form = FormCollection.structure(relevant_data)
+        # prevent infinite loops by removing the load trigger.
+        # NOTE: changing the form instance also modifies the constructor, revert the
+        # change after rendering response
         form.structures[0]._fields["name"].render_kw["hx-trigger"] = "change"
-        return render_template_string(
+        resp = render_template_string(
             """{% import 'macros.html' as m %}
-            <span class="form-text text-muted fst-italic">{{message}}</span>
-            {{m.simple_divsubform(field, deletebtn=true)}}""",
+            {{m.simple_divsubform(field, deletebtn=true, message=message)}}""",
             field=form.structures[0],
             message=f"{compound} information filled from NPAtlas",
         )
+        form.structures[0]._fields["name"].render_kw["hx-trigger"] = "load, change"
+        return resp
     else:
         abort(404, "not present in npatlas")

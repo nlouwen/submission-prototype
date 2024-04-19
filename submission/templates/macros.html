@@ -82,9 +82,13 @@
 {% endif %}
 {% endmacro %}
 
-{% macro simple_divsubform(form, deletebtn=false) %}
+{% macro simple_divsubform(form, deletebtn=false, message=false) %}
 <fieldset>
     <div id="{{form.id}}" class="form-group subgroup">
+        {% if message %}
+        <span class="form-text text-muted fst-italic">{{icon("pen") | safe}} {{message}}</span>
+        {% endif %}
+
         {% if deletebtn %}
         <button class='btn btn-sm btn-danger btn-del' hx-delete='/delete' hx-target='closest fieldset'
             hx-swap='outerHTML'>&#x2715;</button>
