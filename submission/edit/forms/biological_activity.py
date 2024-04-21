@@ -6,15 +6,17 @@ from wtforms import (
     BooleanField,
     FloatField,
     SelectField,
-    SelectMultipleField,
     FieldList,
     FormField,
     SubmitField,
     validators,
 )
+from markupsafe import Markup
+
 from submission.utils.custom_widgets import (
     FieldListAddBtn,
     SelectDefault,
+    SubmitIndicator,
     TextInputWithSuggestions,
 )
 from submission.utils.custom_fields import TagListField
@@ -25,7 +27,10 @@ class AssayForm(Form):
     class ConcentrationForm(Form):
         concentration = FloatField(
             "Concentration",
-            description="Concentration at which the activity is observed",
+            description=Markup(
+                "Please add the <u>lowest</u> concentration at which the activity was observed. "
+                "If it was not observed, add the <u>highest</u> concentration tested."
+            ),
             validators=[validators.Optional()],
         )
         # TODO: expand units
@@ -151,6 +156,13 @@ class AssayForm(Form):
         widget=TextInputWithSuggestions(post_url="/edit/get_db_references"),
         validators=[validators.InputRequired(), ValidateCitations()],
     )
+    obeserved = BooleanField(
+        "Observed",
+        description=Markup(
+            "Untick if this activity was tested for <u>but not observed</u>"
+        ),
+        render_kw={"checked": True},
+    )
     concentration = FormField(ConcentrationForm, label="Concentration (Optional)")
 
 
@@ -172,4 +184,4 @@ class BioActivityMultiple(Form):
             label="Add compound",
         ),
     )
-    submit = SubmitField("Submit")
+    submit = SubmitField("Submit", widget=SubmitIndicator())

@@ -1,6 +1,6 @@
 """ Collection of custom widget classes used throughout the submission system """
 
-from typing import Optional
+from typing import Any, Optional
 
 from flask import url_for
 from wtforms import Field, SelectFieldBase, widgets
@@ -42,24 +42,23 @@ class FieldListAddBtn(widgets.SubmitInput):
         )
 
 
-class MultiTextInput(widgets.TextInput):
-    def __init__(
-        self, input_type: Optional[str] = None, number: int = 1, render_kw: list[dict] = []
-    ) -> None:
+class ProductInputSearch(widgets.TextInput):
+    def __init__(self, input_type=None) -> None:
         super().__init__(input_type)
-        self.number = number
-        self.render_kw = render_kw
 
     def __call__(self, field: Field, **kwargs: object) -> Markup:
-        kwargs.setdefault("id", field.id)
-        kwargs.setdefault("type", self.input_type)
-
-        inputs = Markup("<div>")
-        for field_idx in range(self.number):
-            render_kw = self.render_kw[field_idx]
-            inputs += Markup("<input %s>" % self.html_params(**render_kw, **kwargs))
-        inputs += Markup("</div>")
-        return inputs
+        obj = super().__call__(field, **kwargs)
+        obj += Markup(
+            "<p class='form-text text-muted' style='margin-bottom:0'>Or search for known product(s):"
+            "<br>Click on any search result to add it to the product input.</p>"
+            "<input id='prod-search' name='prod-search' type='search' class='form-control products' "
+            "placeholder='Search for known compound names or NPAtlas IDs' "
+            "hx-post='/edit/query_product_name' hx-trigger='input changed delay:500ms, search' "
+            "hx-target='#search-results' hx-swap='innerHTML'>"
+            "<div class='table-container'><table id='search-results' class='table "
+            "table-sm table-striped result-table table-hover'></table></div>"
+        )
+        return obj
 
 
 class SelectDefault(widgets.Select):
@@ -134,3 +133,15 @@ class TextInputWithSuggestions(widgets.TextInput):
         obj = super().__call__(field, **kwargs, **self.render_kw)
         obj += Markup("<ul class='suggestions form-control' tabindex='1'></ul>")
         return obj
+
+
+class SubmitIndicator(widgets.SubmitInput):
+    def __init__(self, input_type=None) -> None:
+        super().__init__(input_type)
+
+    def __call__(self, *args: Any, **kwds: Any) -> Any:
+        spinner = Markup(
+            f'<img id="sub-spin" class="htmx-indicator" src="{url_for("static", filename="img/wifi-fade.svg")}" />'
+        )
+        kwds.setdefault("hx-on:click", "htmx.addClass('#sub-spin', 'htmx-request')")
+        return super().__call__(*args, **kwds) + spinner

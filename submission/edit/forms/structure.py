@@ -13,12 +13,22 @@ from wtforms import (
 from submission.utils.custom_fields import TagListField, smiles_field_factory
 from submission.utils.custom_widgets import (
     FieldListAddBtn,
+    SubmitIndicator,
 )
 from submission.utils.custom_forms import StructureEvidenceForm
 
 
 class StructureSingle(Form):
-    name = StringField("Compound Name *", [validators.InputRequired()])
+    name = StringField(
+        "Compound Name *",
+        [validators.InputRequired()],
+        render_kw={
+            "hx-post": "/edit/query_npatlas",
+            "hx-target": "closest fieldset",
+            "hx-swap": "outerHTML",
+            "hx-trigger": "load, change",
+        },
+    )
     synonyms = TagListField(
         "Synonyms",
         [validators.Optional()],
@@ -139,4 +149,4 @@ class StructureMultiple(Form):
             label="Add additional compound",
         ),
     )
-    submit = SubmitField("Submit")
+    submit = SubmitField("Submit", widget=SubmitIndicator())

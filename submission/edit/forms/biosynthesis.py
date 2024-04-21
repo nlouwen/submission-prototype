@@ -17,6 +17,7 @@ from submission.utils.custom_fields import (
 from submission.utils.custom_forms import location_form_factory
 from submission.utils.custom_widgets import (
     FieldListAddBtn,
+    SubmitIndicator,
     TextInputWithSuggestions,
     SelectDefault,
 )
@@ -77,7 +78,7 @@ class NRPSForm(Form):
             label="Add additional thioesterase",
         ),
     )
-    submit = SubmitField("Submit")
+    submit = SubmitField("Submit", widget=SubmitIndicator())
 
 
 class PKSForm(Form):
@@ -102,7 +103,7 @@ class PKSForm(Form):
     starter_unit = None  # TODO: add to schema
     ketide_length = IntegerField("Ketide length", [validators.NumberRange(min=0)])
     iterative = None  # TODO: add to schema
-    submit = SubmitField("Submit")
+    submit = SubmitField("Submit", widget=SubmitIndicator())
 
 
 class RibosomalForm(Form):
@@ -202,7 +203,7 @@ class RibosomalForm(Form):
         description="Note: if the precursor gene is not detected in the genbank entry, please remember to add it in the 'gene annotation' section of the submission system.",
     )
     details = StringField("Details")
-    submit = SubmitField("Submit")
+    submit = SubmitField("Submit", widget=SubmitIndicator())
 
 
 class SaccharideForm(Form):
@@ -262,7 +263,7 @@ class SaccharideForm(Form):
             label="Add additional subcluster",
         ),
     )
-    submit = SubmitField("Submit")
+    submit = SubmitField("Submit", widget=SubmitIndicator())
 
 
 class TerpeneForm(Form):
@@ -293,7 +294,7 @@ class TerpeneForm(Form):
         widget=SelectDefault(),
         validate_choice=False,
     )
-    submit = SubmitField("Submit")
+    submit = SubmitField("Submit", widget=SubmitIndicator())
 
 
 class OtherForm(Form):
@@ -305,7 +306,7 @@ class OtherForm(Form):
         validators=[validators.InputRequired()],
     )
     details = StringField("Details")
-    submit = SubmitField("Submit")
+    submit = SubmitField("Submit", widget=SubmitIndicator())
 
 
 class BioClassesCollection:
@@ -329,4 +330,4 @@ class OperonMultipleForm(Form):
     operons = FieldList(
         FormField(OperonForm), widget=FieldListAddBtn(label="Add additional operon")
     )
-    submit = SubmitField("Submit")
+    submit = SubmitField("Submit", widget=SubmitIndicator())

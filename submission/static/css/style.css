@@ -110,6 +110,16 @@ input:focus+ul.suggestions li {
   opacity: 1;
 }
 
+.table-container {
+  overflow: scroll;
+  max-height: 350px;
+  margin: 5px;
+}
+
+.result-table th {
+  width: 50%;
+}
+
 /* start colour definitions for secondary metabolite types */
 .pks {
   background-color: sandybrown;

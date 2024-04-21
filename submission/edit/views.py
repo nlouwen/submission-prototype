@@ -3,6 +3,7 @@ import csv
 from pathlib import Path
 from typing import Union
 
+from sqlalchemy import select, or_
 from flask import (
     abort,
     render_template,
@@ -18,13 +19,14 @@ from werkzeug.wrappers import response
 from wtforms.widgets import html_params
 from markupsafe import Markup
 
+from submission.extensions import db
 from submission.edit import bp_edit
 from submission.edit.forms.form_collection import FormCollection
 from submission.edit.forms.edit_select import EditSelectForm
 from submission.utils import Storage, draw_smiles_svg, ReferenceUtils
 from submission.utils.custom_validators import is_valid_bgc_id
 from submission.utils.custom_errors import ReferenceNotFound
-from submission.models import Entry
+from submission.models import Entry, NPAtlas
 
 
 @bp_edit.route("/<bgc_id>", methods=["GET", "POST"])
@@ -572,4 +574,108 @@ def append_reference():
     new_value = ReferenceUtils.append_ref(current_val, new_ref)
     return Markup(
         f"<input class='form-control' {html_params(value=new_value, id=target, name=target)}>"
+    )
+
+
+@bp_edit.route("/query_npatlas", methods=["POST"])
+def query_npatlas():
+    """Check if a compound name is present in the NPAtas table and prefill information
+
+    If no compound information is found, aborts the request.
+    """
+    trigger = request.headers.get("Hx-Trigger")
+    compound = request.form.get(trigger)
+    base = trigger.rpartition("-")[0]
+
+    # if compound present in NPAtlas, prefill relevant data
+    if (npa_entry := NPAtlas.get(compound)) is not None:
+        # if entry exists, only overwrite npatlas data, keep the rest
+        relevant_data = MultiDict(
+            [(k, v) for k, v in request.form.items() if k.startswith(base)]
+        )
+
+        relevant_data.setlist(f"{base}-structure", [npa_entry.compound_smiles])
+        relevant_data.setlist(f"{base}-formula", [npa_entry.compound_molecular_formula])
+        relevant_data.setlist(f"{base}-mass", [str(npa_entry.compound_accurate_mass)])
+
+        db_field = f"{base}-db_cross"
+        npaid = f"npatlas:{npa_entry.npaid}"
+        # taglistfield data is given as ['"data1", "data2", "data3"']
+        if not (current_db_cross := relevant_data.getlist(db_field)[0]):
+            relevant_data.setlist(db_field, [npaid])
+        elif npaid not in current_db_cross:
+            relevant_data.setlist(db_field, [f'{current_db_cross}, "{npaid}"'])
+
+        form = FormCollection.structure(relevant_data)
+        # prevent infinite loops by removing the load trigger.
+        # NOTE: changing the form instance also modifies the constructor, revert the
+        # change after rendering response
+        form.structures[0]._fields["name"].render_kw["hx-trigger"] = "change"
+        resp = render_template_string(
+            """{% import 'macros.html' as m %}
+            {{m.simple_divsubform(field, deletebtn=true, message=message)}}""",
+            field=form.structures[0],
+            message=f"{compound} information filled from NPAtlas",
+        )
+        form.structures[0]._fields["name"].render_kw["hx-trigger"] = "load, change"
+        return resp
+    else:
+        abort(404, "not present in npatlas")
+
+
+@bp_edit.route("/query_product_name", methods=["POST"])
+def query_product():
+
+    search_val = request.form.get("prod-search")
+    if not search_val:
+        return ""
+    matching_compounds = db.session.scalars(
+        select(NPAtlas).where(
+            or_(
+                NPAtlas.compound_names.startswith(search_val),
+                NPAtlas.npaid.startswith(search_val),
+            )
+        )
+    )
+    result = [(res.compound_names, res.npaid) for res in matching_compounds]
+    if not result:
+        return Markup("<p class='form-text'><i>No matches found in NPAtlas</i></p>")
+
+    row_kw = {
+        "hx-post": "/edit/append_product",
+        "hx-target": "previous #products",
+        "hx-swap": "outerHTML",
+    }
+
+    row = (
+        lambda name, idx: f"<tr {html_params(id=idx, **row_kw)}><td>{name}</td><td>{idx}</td></tr>"
+    )
+    return Markup(
+        f"""<thead>
+                  <tr>
+                  <th>Compound Name</th>
+                  <th>NPAtlas ID</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  {"".join([row(n, i) for n,i in result])}
+                  <tr></tr>
+                  </tbody>
+                  """
+    )
+
+
+@bp_edit.route("/append_product", methods=["POST"])
+def append_product():
+    target = request.headers.get("Hx-Target")
+    current = request.form.get(target)
+    added_idx = request.headers.get("Hx-Trigger")
+    entry = db.session.scalar(select(NPAtlas).where(NPAtlas.npaid == added_idx))
+
+    if not current:
+        new = f'"{entry.compound_names}"'
+    else:
+        new = current + f', "{entry.compound_names}"'
+    return Markup(
+        f"<input class='form-control' {html_params(value=new, id=target, name=target)}>"
     )

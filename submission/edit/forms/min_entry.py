@@ -6,6 +6,7 @@ from wtforms import (
     SelectField,
     SelectMultipleField,
     FormField,
+    BooleanField,
     validators,
     SubmitField,
 )
@@ -14,7 +15,9 @@ from submission.utils.custom_forms import location_form_factory, EvidenceForm
 from submission.utils.custom_widgets import (
     FieldListAddBtn,
     TextInputIndicator,
+    SubmitIndicator,
     SelectDefault,
+    ProductInputSearch,
 )
 
 
@@ -77,6 +80,7 @@ class MinEntryForm(Form):
         "Product(s) *",
         [validators.InputRequired()],
         description='Comma separated list of produced compounds. To enter a compound name containing a comma, encase in double quotes, e.g. "8,9-dihydrolactimidomycin"',
+        widget=ProductInputSearch(),
     )
 
     completeness = SelectField(
@@ -88,6 +92,10 @@ class MinEntryForm(Form):
         validators=[validators.InputRequired()],
     )
     taxonomy = FormField(TaxonomyForm)
+    embargo = BooleanField(
+        description="Please embargo my gene cluster information, pending publication of the results. "
+        "For newly characterized gene clusters only. Please notify us upon publication so that the embargo can be lifted."
+    )
     comments = StringField("Additional comments")
 
-    submit = SubmitField("Submit")
+    submit = SubmitField("Submit", widget=SubmitIndicator())

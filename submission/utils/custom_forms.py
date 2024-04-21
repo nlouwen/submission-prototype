@@ -44,6 +44,7 @@ class EvidenceForm(Form):
             "Knock-out studies",
             "Gene expression correlated with compound production",
             "Correlation of genomic and metabolomic data",
+            "Synthetic-bioinformatic natural product (syn-BNP)",
             "Homology-based prediction",
         ],
         widget=SelectDefault(),

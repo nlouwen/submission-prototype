@@ -13,6 +13,7 @@ from wtforms import (
 from submission.utils.custom_fields import TagListField
 from submission.utils.custom_widgets import (
     FieldListAddBtn,
+    SubmitIndicator,
 )
 from submission.edit.forms.biosynthesis_domains import (
     CondensationDomain,
@@ -261,4 +262,4 @@ class ModulesForm(Form):
     other = FieldList(
         FormField(OtherForm), widget=FieldListAddBtn(label="Add additional module")
     )
-    submit = SubmitField("Submit")
+    submit = SubmitField("Submit", widget=SubmitIndicator())
