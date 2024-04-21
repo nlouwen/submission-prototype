@@ -13,6 +13,7 @@ from wtforms import (
 from submission.utils.custom_fields import TagListField, smiles_field_factory
 from submission.utils.custom_widgets import (
     FieldListAddBtn,
+    SubmitIndicator,
 )
 from submission.utils.custom_forms import StructureEvidenceForm
 
@@ -148,4 +149,4 @@ class StructureMultiple(Form):
             label="Add additional compound",
         ),
     )
-    submit = SubmitField("Submit")
+    submit = SubmitField("Submit", widget=SubmitIndicator())

@@ -1,6 +1,6 @@
 """ Collection of custom widget classes used throughout the submission system """
 
-from typing import Optional
+from typing import Any, Optional
 
 from flask import url_for
 from wtforms import Field, SelectFieldBase, widgets
@@ -133,3 +133,15 @@ class TextInputWithSuggestions(widgets.TextInput):
         obj = super().__call__(field, **kwargs, **self.render_kw)
         obj += Markup("<ul class='suggestions form-control' tabindex='1'></ul>")
         return obj
+
+
+class SubmitIndicator(widgets.SubmitInput):
+    def __init__(self, input_type=None) -> None:
+        super().__init__(input_type)
+
+    def __call__(self, *args: Any, **kwds: Any) -> Any:
+        spinner = Markup(
+            f'<img id="sub-spin" class="htmx-indicator" src="{url_for("static", filename="img/wifi-fade.svg")}" />'
+        )
+        kwds.setdefault("hx-on:click", "htmx.addClass('#sub-spin', 'htmx-request')")
+        return super().__call__(*args, **kwds) + spinner

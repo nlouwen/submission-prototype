@@ -19,6 +19,7 @@ from submission.utils.custom_widgets import (
     FieldListAddBtn,
     SelectDefault,
     StructureInput,
+    SubmitIndicator,
     TextInputWithSuggestions,
 )
 from submission.utils.custom_forms import (
@@ -198,4 +199,4 @@ class GeneAnnotationForm(Form):
             "For NRPS or PKS substrate specificity, refer to the 'Biosynthesis modules' section."
         ),
     )
-    submit = SubmitField("Submit")
+    submit = SubmitField("Submit", widget=SubmitIndicator())

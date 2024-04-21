@@ -14,6 +14,7 @@ from submission.utils.custom_widgets import (
     FieldListAddBtn,
     StructureInput,
     SelectDefault,
+    SubmitIndicator,
     TextInputWithSuggestions,
 )
 from submission.utils.custom_validators import ValidateCitations
@@ -255,4 +256,4 @@ class TailoringMultipleForm(Form):
             label="Add enzyme",
         ),
     )
-    submit = SubmitField("Submit")
+    submit = SubmitField("Submit", widget=SubmitIndicator())

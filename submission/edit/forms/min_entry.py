@@ -15,6 +15,7 @@ from submission.utils.custom_forms import location_form_factory, EvidenceForm
 from submission.utils.custom_widgets import (
     FieldListAddBtn,
     TextInputIndicator,
+    SubmitIndicator,
     SelectDefault,
     ProductInputSearch,
 )
@@ -97,4 +98,4 @@ class MinEntryForm(Form):
     )
     comments = StringField("Additional comments")
 
-    submit = SubmitField("Submit")
+    submit = SubmitField("Submit", widget=SubmitIndicator())

@@ -16,6 +16,7 @@ from markupsafe import Markup
 from submission.utils.custom_widgets import (
     FieldListAddBtn,
     SelectDefault,
+    SubmitIndicator,
     TextInputWithSuggestions,
 )
 from submission.utils.custom_fields import TagListField
@@ -183,4 +184,4 @@ class BioActivityMultiple(Form):
             label="Add compound",
         ),
     )
-    submit = SubmitField("Submit")
+    submit = SubmitField("Submit", widget=SubmitIndicator())

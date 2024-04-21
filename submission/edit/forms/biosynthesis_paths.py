@@ -12,6 +12,7 @@ from submission.utils.custom_fields import (
     smiles_field_factory,
 )
 from submission.utils.custom_widgets import (
+    SubmitIndicator,
     TextInputWithSuggestions,
     FieldListAddBtn,
 )
@@ -66,4 +67,4 @@ class PathMultipleForm(Form):
         min_entries=1,
         widget=FieldListAddBtn(label="Add additional path"),
     )
-    submit = SubmitField("Submit")
+    submit = SubmitField("Submit", widget=SubmitIndicator())
