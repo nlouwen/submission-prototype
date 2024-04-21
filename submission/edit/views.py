@@ -3,6 +3,7 @@ import csv
 from pathlib import Path
 from typing import Union
 
+from sqlalchemy import select, or_
 from flask import (
     abort,
     render_template,
@@ -18,6 +19,7 @@ from werkzeug.wrappers import response
 from wtforms.widgets import html_params
 from markupsafe import Markup
 
+from submission.extensions import db
 from submission.edit import bp_edit
 from submission.edit.forms.form_collection import FormCollection
 from submission.edit.forms.edit_select import EditSelectForm
@@ -619,3 +621,61 @@ def query_npatlas():
         return resp
     else:
         abort(404, "not present in npatlas")
+
+
+@bp_edit.route("/query_product_name", methods=["POST"])
+def query_product():
+
+    search_val = request.form.get("prod-search")
+    if not search_val:
+        return ""
+    matching_compounds = db.session.scalars(
+        select(NPAtlas).where(
+            or_(
+                NPAtlas.compound_names.startswith(search_val),
+                NPAtlas.npaid.startswith(search_val),
+            )
+        )
+    )
+    result = [(res.compound_names, res.npaid) for res in matching_compounds]
+    if not result:
+        return Markup("<p class='form-text'><i>No matches found in NPAtlas</i></p>")
+
+    row_kw = {
+        "hx-post": "/edit/append_product",
+        "hx-target": "previous #products",
+        "hx-swap": "outerHTML",
+    }
+
+    row = (
+        lambda name, idx: f"<tr {html_params(id=idx, **row_kw)}><td>{name}</td><td>{idx}</td></tr>"
+    )
+    return Markup(
+        f"""<thead>
+                  <tr>
+                  <th>Compound Name</th>
+                  <th>NPAtlas ID</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  {"".join([row(n, i) for n,i in result])}
+                  <tr></tr>
+                  </tbody>
+                  """
+    )
+
+
+@bp_edit.route("/append_product", methods=["POST"])
+def append_product():
+    target = request.headers.get("Hx-Target")
+    current = request.form.get(target)
+    added_idx = request.headers.get("Hx-Trigger")
+    entry = db.session.scalar(select(NPAtlas).where(NPAtlas.npaid == added_idx))
+
+    if not current:
+        new = f'"{entry.compound_names}"'
+    else:
+        new = current + f', "{entry.compound_names}"'
+    return Markup(
+        f"<input class='form-control' {html_params(value=new, id=target, name=target)}>"
+    )

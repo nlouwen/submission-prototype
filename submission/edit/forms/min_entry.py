@@ -16,6 +16,7 @@ from submission.utils.custom_widgets import (
     FieldListAddBtn,
     TextInputIndicator,
     SelectDefault,
+    ProductInputSearch,
 )
 
 
@@ -78,6 +79,7 @@ class MinEntryForm(Form):
         "Product(s) *",
         [validators.InputRequired()],
         description='Comma separated list of produced compounds. To enter a compound name containing a comma, encase in double quotes, e.g. "8,9-dihydrolactimidomycin"',
+        widget=ProductInputSearch(),
     )
 
     completeness = SelectField(
