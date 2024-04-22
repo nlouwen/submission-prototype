@@ -607,6 +607,7 @@ def query_npatlas():
             relevant_data.setlist(db_field, [f'{current_db_cross}, "{npaid}"'])
 
         form = FormCollection.structure(relevant_data)
+        form.validate()
         # prevent infinite loops by removing the load trigger.
         # NOTE: changing the form instance also modifies the constructor, revert the
         # change after rendering response
