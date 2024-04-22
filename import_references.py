@@ -7,7 +7,9 @@ import re
 from pathlib import Path
 
 from submission import create_app
+from submission.extensions import db
 from submission.models import Reference, Entry
+from submission.utils.custom_errors import ReferenceNotFound
 
 
 def main():
@@ -15,6 +17,7 @@ def main():
     with app.app_context():
         for filepath in Path("data").glob("*.json"):
             load_references(filepath)
+        load_pending()
 
 
 def load_references(filename):
@@ -36,7 +39,10 @@ def load_references(filename):
                 valid_refs.append(ref)
             else:
                 print(f"{filename}: Skipping invalid ref format: {ref}")
-        references = Reference.load_missing(valid_refs)
+        try:
+            references = Reference.load_missing(valid_refs)
+        except ReferenceNotFound as e:
+            raise Exception(str(filename) + ": " + str(e))
 
         bgc_id = filename.stem.replace("_data", "")
         entry = Entry.get_or_create(bgc_id=bgc_id)
@@ -48,6 +54,14 @@ def valid_format(ref):
     if re.match(regex, ref):
         return True
     return False
+
+
+def load_pending():
+    """Load the 'pending' keyword reference"""
+    if not Reference.get("doi:pending"):
+        ref = Reference(doi="pending")
+        db.session.add(ref)
+        db.session.commit()
 
 
 if __name__ == "__main__":

@@ -70,6 +70,8 @@ class Reference(db.Model):
 
     def summarize(self, html=True):
         """Generate a one-line summary of the reference"""
+        if self.doi == "pending":
+            return "Pending Publication Placeholder"
         if self.url or self.patent:
             return self.identifier
         title = self.title or ""

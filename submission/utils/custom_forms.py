@@ -1,6 +1,6 @@
 """ Collection of custom form classes used throughout the submission system """
 
-from flask import url_for
+from markupsafe import Markup
 from wtforms import Form, IntegerField, SelectField, validators
 
 from .custom_fields import TagListField
@@ -53,7 +53,12 @@ class EvidenceForm(Form):
     references = TagListField(
         "Citation(s) *",
         [validators.InputRequired(), ValidateCitations()],
-        description="Comma separated list of references. Accepted formats are: 'doi:10.1016/j.chembiol.2020.11.009', 'pubmed:33321099'",
+        description=Markup(
+            "Comma separated list of references. Accepted formats are (in order of preference):<br>"
+            "'doi:10.1016/j.chembiol.2020.11.009', 'pubmed:33321099', 'patent:US7070980B2', "
+            "'url:https://example.com'.<br>If no publication "
+            "is available <u>yet</u>, please use 'doi:pending'."
+        ),
         widget=TextInputWithSuggestions(post_url="/edit/get_db_references"),
     )
 
