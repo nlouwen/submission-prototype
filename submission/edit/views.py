@@ -633,8 +633,8 @@ def query_product():
     matching_compounds = db.session.scalars(
         select(NPAtlas).where(
             or_(
-                NPAtlas.compound_names.startswith(search_val),
-                NPAtlas.npaid.startswith(search_val),
+                NPAtlas.compound_names.istartswith(search_val),
+                NPAtlas.npaid.istartswith(search_val),
             )
         )
     )
