@@ -186,10 +186,11 @@ class Entry(db.Model):
         refs = set()
         if enzymes := data.get("enzymes"):
             for enzyme in enzymes:
-                refs.update(enzyme["enzyme"]["references"])
+                refs.update(enzyme["enzyme"][0]["references"])
                 if reactions := enzyme.get("reactions"):
-                    for evidence in reactions["reaction_smarts"]["evidence_sm"]:
-                        refs.update(evidence["references"])
+                    for reaction in reactions:
+                        for evidence in reaction["reaction_smarts"][0]["evidence_sm"]:
+                            refs.update(evidence["references"])
 
         loaded_refs = Reference.load_missing(list(refs))
         entry.add_references(loaded_refs)
