@@ -144,4 +144,8 @@ class SubmitIndicator(widgets.SubmitInput):
             f'<img id="sub-spin" class="htmx-indicator" src="{url_for("static", filename="img/wifi-fade.svg")}" />'
         )
         kwds.setdefault("hx-on:click", "htmx.addClass('#sub-spin', 'htmx-request')")
+        # if a required field is empty, page is not reloaded so deactivate the spinner
+        kwds.setdefault(
+            "hx-on:focusout", "htmx.removeClass('#sub-spin', 'htmx-request')"
+        )
         return super().__call__(*args, **kwds) + spinner
