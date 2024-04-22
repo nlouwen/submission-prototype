@@ -17,7 +17,11 @@ from submission.utils.custom_widgets import (
     SubmitIndicator,
     TextInputWithSuggestions,
 )
-from submission.utils.custom_validators import ValidateCitations
+from submission.utils.custom_validators import (
+    ValidateCitations,
+    ValidateEnzymeCross,
+    ValidateReactionCross,
+)
 
 
 class AuxEnzymeForm(Form):
@@ -26,8 +30,10 @@ class AuxEnzymeForm(Form):
         "Description", description="Brief description of function."
     )
     databaseIds = TagListField(
-        "Database cross-reference", description="Uniprot or GenBank ID of protein"
-    )  # TODO: db id regexp
+        "Database cross-reference",
+        description='Comma separated Uniprot (e.g. "uniprot:Q9X2V8") and/or GenBank ID (e.g. "genpept:AAD28495.1") of protein',
+        validators=[validators.Optional(), ValidateEnzymeCross()],
+    )
 
 
 class EnzymeForm(Form):
@@ -37,8 +43,10 @@ class EnzymeForm(Form):
         "Description", description="Brief description of the enzyme function."
     )
     databaseIds = TagListField(
-        "Database cross-reference *", description="Uniprot or GenBank ID of protein"
-    )  # TODO: db id regexp
+        "Database cross-reference *",
+        description='Comma separated Uniprot (e.g. "uniprot:Q9X2V8") and/or GenBank ID (e.g. "genpept:AAD28495.1") of protein',
+        validators=[validators.InputRequired(), ValidateEnzymeCross()],
+    )
     references = TagListField(
         "Citation(s) *",
         description="Comma separated references on the protein",
@@ -155,6 +163,7 @@ class ReactionSmartsForm(Form):
     databaseIds = TagListField(
         "Cross-reference",
         description='Comma separated cross-references to other databases: Rhea (e.g. "rhea:32647"), MITE (e.g. "MITE0000001"), EC number (e.g. "EC 2.1.1.254")',
+        validators=[validators.Optional(), ValidateReactionCross()],
     )
 
 
@@ -198,6 +207,7 @@ class ValidatedReactionForm(Form):
     databaseIds = TagListField(
         "Cross-reference",
         description='Comma separated cross-references to other databases: Rhea (e.g. "rhea:32647"), MITE (e.g. "MITE0000001"), EC number (e.g. "EC 2.1.1.254")',
+        validators=[validators.Optional(), ValidateReactionCross()],
     )
 
 

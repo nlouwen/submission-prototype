@@ -27,6 +27,27 @@ class ValidateCitations(ValidateTagListRegexp):
         super().__init__(regex, message)
 
 
+class ValidateStructureCross(ValidateTagListRegexp):
+    def __init__(self):
+        regex = r"^pubchem:(\d+)$|^chebi:(\d+)$|^chembl:CHEMBL(\d+)$|^chemspider:(\d+)$|^npatlas:NPA(\d+)$|^lotus:Q(\d+)$|^gnps:MSV(\d+)$|^cyanometdb:CyanoMetDB_(\d{4,4})$"
+        message = "Invalid cross-reference format: "
+        super().__init__(regex, message)
+
+
+class ValidateEnzymeCross(ValidateTagListRegexp):
+    def __init__(self):
+        regex = r"^uniprot:[A-Z0-9]+$|^genpept:[A-Z]{3}[0-9]{5,7}\.[0-9]+$"
+        message = "Invalid cross-reference format: "
+        super().__init__(regex, message)
+
+
+class ValidateReactionCross(ValidateTagListRegexp):
+    def __init__(self):
+        regex = r"^rhea:(\d+)$|^MITE(\d{7,7})$|^EC [0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$"
+        message = "Invalid cross-reference format: "
+        super().__init__(regex, message)
+
+
 def is_valid_bgc_id(bgc_id: str):
     valid_ids = [f"BGC{num:0>7}" for num in range(1, 3000)]
     if bgc_id in valid_ids:
@@ -56,6 +77,3 @@ class RequiredIf(validators.InputRequired):
             raise Exception(f"no field named {self.other_field_name} in form")
         if bool(other_field.data):
             super(RequiredIf, self).__call__(form, field)
-
-
-# TODO: db cross validator

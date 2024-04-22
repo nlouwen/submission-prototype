@@ -16,6 +16,7 @@ from submission.utils.custom_widgets import (
     SubmitIndicator,
 )
 from submission.utils.custom_forms import StructureEvidenceForm
+from submission.utils.custom_validators import ValidateStructureCross
 
 
 class StructureSingle(Form):
@@ -34,7 +35,7 @@ class StructureSingle(Form):
         [validators.Optional()],
         description="Synonyms for the compound, separated by commas.",
     )
-    structure = smiles_field_factory(  # TODO: crossreference chemical database, only if not in one enter SMILES, mass, formula manually
+    structure = smiles_field_factory(
         label="SMILES representation",
         description="Mandatory for all structurally characterized compounds except for large ones such as most RiPPs and polysaccharides. Chemical structure entered as SMILES string, preferentially isomeric. This can be easily acquired with standard software such as ChemDraw, by, e.g., choosing 'Copy as SMILES'.",
     )
@@ -137,8 +138,8 @@ class StructureSingle(Form):
         "Database cross-reference(s)",
         description="Comma separated list of database cross-references for this compound. Accepted formats: "
         "pubchem:3081434, chebi:29016, chembl:CHEMBL414130, chemspider:6082, npatlas:NPA004746, lotus:Q27102265, gnps:MSV000087858 and cyanometdb:CyanoMetDB_0002",
-        validators=[validators.Optional()],
-    )  # TODO: validate input
+        validators=[validators.Optional(), ValidateStructureCross()],
+    )
 
 
 class StructureMultiple(Form):
