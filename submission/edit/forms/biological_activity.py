@@ -28,8 +28,8 @@ class AssayForm(Form):
         concentration = FloatField(
             "Concentration",
             description=Markup(
-                "Please add the <u>lowest</u> concentration at which the activity was observed. "
-                "If it was not observed, add the <u>highest</u> concentration tested."
+                "If activity was observed, state the lowest effective concentration.<br>"
+                "If activity was <u>not</u> observed, state the highest tested concentration."
             ),
             validators=[validators.Optional()],
         )
