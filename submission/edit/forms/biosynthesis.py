@@ -161,6 +161,7 @@ class RibosomalForm(Form):
             "Dikaritin",
             "Epipeptide",
             "Glycocin",
+            "Graspeptide",
             "Guanidinotide",
             "Head-to-tail cyclized peptide",
             "Lanthipeptide",
