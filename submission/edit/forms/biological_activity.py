@@ -161,7 +161,7 @@ class AssayForm(Form):
         description=Markup(
             "Untick if this activity was tested for <u>but not observed</u>"
         ),
-        render_kw={"checked": True},
+        default="checked",
     )
     concentration = FormField(ConcentrationForm, label="Concentration (Optional)")
 
