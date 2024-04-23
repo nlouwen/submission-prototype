@@ -43,6 +43,8 @@ class ReferenceUtils:
         r = requests.post(
             f"https://litapi.liningtonlab.org/article/?{id_type}={identifier}"
         )
+        if r.status_code != 200:
+            return {}
         return r.json()
 
     @staticmethod
