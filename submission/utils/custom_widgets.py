@@ -15,7 +15,7 @@ class StringFieldAddBtn(widgets.TextInput):
 
     def __call__(self, field, **kwargs):
         orig = super(StringFieldAddBtn, self).__call__(field, **kwargs)
-        add_btn = f"<button class='btn btn-light' {self.html_params(**self.render_kw)}>{self.label}</button>"
+        add_btn = f"<button class='btn btn-light' type='button' {self.html_params(**self.render_kw)}>{self.label}</button>"
         return orig + Markup(add_btn)
 
 
@@ -38,7 +38,7 @@ class FieldListAddBtn(widgets.SubmitInput):
         kwargs.setdefault("id", field.id)
         kwargs.setdefault("type", self.input_type)
         return Markup(
-            f"<button class='btn btn-light' {self.html_params(**kwargs, **self.render_kw)}>{self.label}</button>"
+            f"<button class='btn btn-light' type='button' {self.html_params(**kwargs, **self.render_kw)}>{self.label}</button>"
         )
 
 
