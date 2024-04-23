@@ -275,6 +275,7 @@ class TerpeneForm(Form):
             "Hemiterpene",
             "Monoterpene",
             "Sesquiterpene",
+            "Sesterterpene",
             "Triterpene",
         ],
         widget=SelectDefault(),
