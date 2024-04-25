@@ -4,6 +4,7 @@ import re
 from pathlib import Path
 
 from flask import current_app
+from rdkit import Chem
 from wtforms import ValidationError, validators
 
 
@@ -77,3 +78,9 @@ class RequiredIf(validators.InputRequired):
             raise Exception(f"no field named {self.other_field_name} in form")
         if bool(other_field.data):
             super(RequiredIf, self).__call__(form, field)
+
+
+def validate_smiles(form, field):
+    mol = Chem.MolFromSmiles(field.data)
+    if mol is None:
+        raise ValidationError("Invalid SMILES")

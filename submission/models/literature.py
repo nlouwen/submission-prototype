@@ -92,7 +92,7 @@ class Reference(db.Model):
         if reference.startswith("doi:") or reference.startswith("pubmed:"):
             metadata = ReferenceUtils.get_reference_metadata(reference)
 
-            if metadata.get("detail") == "Article not found":
+            if not metadata or metadata.get("detail") == "Article not found":
                 raise ReferenceNotFound(reference)
 
             ref = cls(

@@ -4,6 +4,7 @@ import csv
 from wtforms import Field, StringField, SelectMultipleField, validators, widgets
 from typing import Any, Optional
 
+from submission.utils.custom_validators import validate_smiles
 from submission.utils.custom_widgets import StructureInput
 
 
@@ -78,9 +79,7 @@ def smiles_field_factory(
         description = "SMILES representation of the structure, preferentially isomeric"
 
     default_validators = [
-        validators.Regexp(
-            r"^[\[\]a-zA-Z0-9\@()=\/\\#+.%*-]+$", message="Invalid SMILES"
-        )
+        validate_smiles,
     ]
     if required:
         default_validators.append(validators.InputRequired())
