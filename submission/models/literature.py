@@ -1,10 +1,10 @@
-from typing import Union
+from typing import Literal, Optional, Union
 
-from sqlalchemy import select, or_
+import requests
+from sqlalchemy import select
 from sqlalchemy.orm import Mapped, mapped_column
 
 from submission.extensions import db
-from submission.utils import ReferenceUtils
 from submission.utils.custom_errors import ReferenceNotFound
 
 
@@ -75,6 +75,8 @@ class Reference(db.Model):
         if self.url or self.patent:
             return self.identifier
         title = self.title or ""
+        if not title.endswith("."):
+            title += "."
         journal = self.journal or ""
         year = self.year or ""
         identifier = self.identifier or ""
@@ -90,7 +92,13 @@ class Reference(db.Model):
             reference (str): reference formatted as doi:10... | pubmed:73...
         """
         if reference.startswith("doi:") or reference.startswith("pubmed:"):
-            metadata = ReferenceUtils.get_reference_metadata(reference)
+            # distinguish Biorxiv and Chemrxiv dois
+            if reference.startswith("doi:10.1101/"):
+                metadata = Reference.get_biorxiv_metadata(reference)
+            elif reference.startswith("doi:10.26434/"):
+                metadata = Reference.get_chemrxiv_metadata(reference)
+            else:
+                metadata = Reference.get_reference_metadata(reference)
 
             if not metadata or metadata.get("detail") == "Article not found":
                 raise ReferenceNotFound(reference)
@@ -152,6 +160,108 @@ class Reference(db.Model):
             return db.session.scalar(select(Reference).where(Reference.patent == ident))
         else:
             raise RuntimeError(f"Unexpected reference type '{id_type}'")
+
+    @staticmethod
+    def get_reference_metadata(reference: str) -> dict[str, Optional[str]]:
+        """Collect metadata on reference from doi/PMID using liningtonlab's api
+
+        Args:
+            reference (str): reference formatted as 'doi:10....' | 'pubmed:73....'
+
+        Returns:
+            dict[str, str]: mapping of reference metadata
+        """
+        id_type, identifier = reference.split(":", 1)
+        if id_type == "pubmed":
+            id_type = "pmid"
+        r = requests.post(
+            f"https://litapi.liningtonlab.org/article/?{id_type}={identifier}"
+        )
+        if r.status_code != 200:
+            return {}
+        return r.json()
+
+    @staticmethod
+    def get_biorxiv_metadata(reference: str) -> dict[str, Optional[str]]:
+        """Collect metadata for Biorxiv references using Biorxiv API
+
+        Args:
+            reference (str): reference formatted as doi:10.1101/...
+
+        Returns:
+            dict[str, str]: mapping of reference metadata
+        """
+
+        def post_biorxiv_server(
+            server: Literal["biorxiv", "medrxiv"], identifier: str
+        ) -> dict[str, Optional[str]]:
+            """POST request to biorxiv api
+
+            Args:
+                server (str): server to query, biorxiv or medrxiv
+                identifier (str): doi identifier, starts with 10.1101/
+
+            Returns:
+                dict[str, str]: mapping of reference metadata if reference was found
+            """
+            r = requests.post(f"https://api.biorxiv.org/details/{server}/{identifier}")
+            if r.status_code != 200:
+                return {}
+
+            raw: dict = r.json()
+            if raw["messages"][0]["status"] != "ok":
+                return {}
+            else:
+                # take the latest version of reference
+                mapping: dict = raw["collection"][-1]
+                mapping["year"] = (
+                    d.split("-", 1)[0] if (d := mapping.get("date")) else None
+                )
+                mapping["journal"] = mapping.get("server")
+                return mapping
+
+        identifier = reference.split(":", 1)[1]
+        mapping = post_biorxiv_server("biorxiv", identifier)
+        if not mapping:
+            # try medrxiv to be sure
+            mapping = post_biorxiv_server("medrxiv", identifier)
+        return mapping
+
+    @staticmethod
+    def get_chemrxiv_metadata(reference: str) -> dict[str, Optional[str]]:
+        """Collect metadata for Chemrxiv references using the Chemrxiv API
+
+        Args:
+            reference (str): reference formatted as doi:10.26434/...
+
+        Returns:
+            dict[str, str]: mapping of reference metadata
+        """
+        identifier = reference.split(":", 1)[1]
+        r = requests.get(
+            f"https://chemrxiv.org/engage/chemrxiv/public-api/v1/items/doi/{identifier}"
+        )
+        # not found returns 404 status code
+        if r.status_code != 200:
+            return {}
+
+        raw: dict = r.json()
+        if pub_d := raw.get("publishedDate"):
+            year = pub_d.split("-")[0]
+        else:
+            year = None
+
+        mapping = {
+            "doi": raw.get("doi"),
+            "title": raw.get("title"),
+            "authors": "; ".join(
+                f'{author.get("lastName")}, {author.get("firstName")}'
+                for author in raw["authors"]
+            ),
+            "year": year,
+            "journal": "chemrxiv",
+        }
+        return mapping
 
 
 class EntryReference(db.Model):

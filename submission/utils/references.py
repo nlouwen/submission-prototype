@@ -1,7 +1,6 @@
 """ Class to handle reference standardization """
 
 import csv
-import requests
 
 from .temp_data_storage import Storage
 
@@ -26,26 +25,6 @@ class ReferenceUtils:
                 if field_name.endswith("references") and field_value:
                     refs.update(next(csv.reader([field_value], skipinitialspace=True)))
         return refs
-
-    @staticmethod
-    def get_reference_metadata(reference: str) -> dict[str, str]:
-        """Collect metadata on reference from doi/PMID using liningtonlab's api
-
-        Args:
-            reference (str): reference formatted as 'doi:10....' | 'pubmed:73....'
-
-        Returns:
-            dict[str, str]: mapping of reference metadata
-        """
-        id_type, identifier = reference.split(":", 1)
-        if id_type == "pubmed":
-            id_type = "pmid"
-        r = requests.post(
-            f"https://litapi.liningtonlab.org/article/?{id_type}={identifier}"
-        )
-        if r.status_code != 200:
-            return {}
-        return r.json()
 
     @staticmethod
     def append_ref(current: str, new_ref: str) -> str:
