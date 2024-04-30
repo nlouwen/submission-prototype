@@ -3,8 +3,8 @@
 from markupsafe import Markup
 from wtforms import Form, IntegerField, SelectField, validators
 
-from .custom_fields import TagListField
-from .custom_widgets import StructureInput, TextInputWithSuggestions, SelectDefault
+from .custom_fields import ReferenceField
+from .custom_widgets import TextInputWithSuggestions, SelectDefault
 from .custom_validators import ValidateCitations
 
 
@@ -50,7 +50,7 @@ class EvidenceForm(Form):
         widget=SelectDefault(),
         validators=[validators.InputRequired()],
     )
-    references = TagListField(
+    references = ReferenceField(
         "Citation(s) *",
         [validators.InputRequired(), ValidateCitations()],
         description=Markup(
@@ -89,7 +89,7 @@ class SubtrateEvidenceForm(Form):
         validate_choice=False,
         validators=[validators.InputRequired()],
     )
-    references = TagListField(
+    references = ReferenceField(
         "Citation(s) *",
         widget=TextInputWithSuggestions(post_url="/edit/get_db_references"),
         validators=[validators.InputRequired(), ValidateCitations()],
@@ -114,7 +114,7 @@ class StructureEvidenceForm(Form):
         validate_choice=False,
         validators=[validators.InputRequired()],
     )
-    references = TagListField(
+    references = ReferenceField(
         "Citation(s) *",
         description="Comma separated list of references on this compound using this method",
         widget=TextInputWithSuggestions(post_url="/edit/get_db_references"),
@@ -135,7 +135,7 @@ class FunctionEvidenceForm(Form):
         validate_choice=False,
         validators=[validators.InputRequired()],
     )
-    references = TagListField(
+    references = ReferenceField(
         "Citation(s) *",
         widget=TextInputWithSuggestions(post_url="/edit/get_db_references"),
         validators=[validators.InputRequired(), ValidateCitations()],

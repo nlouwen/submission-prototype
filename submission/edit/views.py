@@ -23,7 +23,7 @@ from submission.extensions import db
 from submission.edit import bp_edit
 from submission.edit.forms.form_collection import FormCollection
 from submission.edit.forms.edit_select import EditSelectForm
-from submission.utils import Storage, draw_smiles_svg, ReferenceUtils
+from submission.utils import Storage, draw_smiles_svg
 from submission.utils.custom_validators import is_valid_bgc_id
 from submission.utils.custom_errors import ReferenceNotFound
 from submission.models import Entry, NPAtlas
@@ -528,25 +528,13 @@ def add_field() -> str:
     )
 
 
-@bp_edit.route("/get_references", methods=["POST"])
-def get_references() -> str:
-    bgc_id_match = re.search("edit/([^/]+)/", request.referrer)
-    if bgc_id_match is not None:
-        bgc_id = bgc_id_match.group(1)
-
-    li = (
-        lambda val: f"<li id={val} hx-post='/edit/append_reference' hx-target='previous input' hx-swap='outerHTML' hx-trigger='mousedown'>{val}</li>"
-    )
-    options = (
-        "<span class='text-muted form-text'>Known references for this entry:</span>"
-    )
-    for ref in ReferenceUtils.collect_references(bgc_id):
-        options += li(ref)
-    return Markup(options)
-
-
 @bp_edit.route("/get_db_references", methods=["POST"])
 def get_db_references() -> str:
+    """Collect references connected to an entry and format into html list of suggestions
+
+    Returns:
+        str: HTML list of references
+    """
     bgc_id_match = re.search("edit/([^/]+)/", request.referrer)
     if bgc_id_match is not None:
         bgc_id = bgc_id_match.group(1)
@@ -565,15 +553,24 @@ def get_db_references() -> str:
 
 
 @bp_edit.route("/append_reference", methods=["POST"])
-def append_reference():
+def append_reference() -> str:
+    """Append a reference to an existing input
 
+    Returns:
+        str: a new html input element with an added reference
+    """
     target = request.headers.get("Hx-Target")
-    current_val = request.values.get(target)
+    current = request.values.get(target)
     new_ref = request.headers.get("Hx-Trigger")
 
-    new_value = ReferenceUtils.append_ref(current_val, new_ref)
+    if not current:
+        current = f'"{new_ref}"'
+    else:
+        current_refs = set(next(csv.reader([current], skipinitialspace=True)))
+        if new_ref not in current_refs:
+            current += f', "{new_ref}"'
     return Markup(
-        f"<input class='form-control' {html_params(value=new_value, id=target, name=target)}>"
+        f"<input class='form-control' {html_params(value=current, id=target, name=target)}>"
     )
 
 

@@ -10,7 +10,7 @@ from wtforms import (
 from markupsafe import Markup
 
 from submission.utils.custom_fields import (
-    TagListField,
+    ReferenceField,
     GeneIdField,
     smiles_field_factory,
 )
@@ -71,7 +71,7 @@ class AnnotationForm(Form):
                 "Phenotype", description="Observed phenotype upon mutation."
             )
             details = StringField("Details")
-            references = TagListField(
+            references = ReferenceField(
                 "Citation(s)",
                 widget=TextInputWithSuggestions(post_url="/edit/get_db_references"),
                 validators=[
