@@ -670,10 +670,15 @@ def append_product():
     added_idx = request.headers.get("Hx-Trigger")
     entry = db.session.scalar(select(NPAtlas).where(NPAtlas.npaid == added_idx))
 
-    if not current:
-        new = f'"{entry.compound_names}"'
+    if '"' in entry.compound_names:
+        shown_name = entry.compound_names
     else:
-        new = current + f', "{entry.compound_names}"'
+        shown_name = f'"{entry.compound_names}"'
+
+    if not current:
+        new = shown_name
+    else:
+        new = current + f", {shown_name}"
     return Markup(
         f"<input class='form-control' {html_params(value=new, id=target, name=target)}>"
     )

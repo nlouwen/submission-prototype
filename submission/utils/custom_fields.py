@@ -37,7 +37,13 @@ class TagListField(Field):
     def _value(self):
         """convert list of tags into comma separated string"""
         if self.data:
-            return '"%s"' % '", "'.join(self.data)
+            data_string = ""
+            for tag in self.data:
+                if '"' in tag:
+                    data_string += f", {tag}"
+                else:
+                    data_string += f', "{tag}"'
+            return data_string[2:]
         else:
             return ""
 
