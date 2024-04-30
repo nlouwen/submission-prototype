@@ -9,6 +9,7 @@ from wtforms import (
     validators,
 )
 from submission.utils.custom_fields import (
+    ReferenceField,
     TagListField,
     GeneIdField,
     smiles_field_factory,
@@ -40,7 +41,7 @@ class CondensationDomain(Form):
         widget=SelectDefault(),
         validate_choice=False,
     )
-    references = TagListField(
+    references = ReferenceField(
         "Citation(s)",
         widget=TextInputWithSuggestions(post_url="/edit/get_db_references"),
         validators=[ValidateCitations()],
@@ -98,7 +99,7 @@ class CyclaseDomain(Form):
     _type = HiddenField("cyclase")
     gene = GeneIdField("Gene *", validators=[validators.InputRequired()])
     location = FormField(location_form_factory(required=True), label="Location *")
-    references = TagListField(
+    references = ReferenceField(
         "Citation(s)",
         widget=TextInputWithSuggestions(post_url="/edit/get_db_references"),
         validators=[ValidateCitations()],

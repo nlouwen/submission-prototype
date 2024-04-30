@@ -19,7 +19,7 @@ from submission.utils.custom_widgets import (
     SubmitIndicator,
     TextInputWithSuggestions,
 )
-from submission.utils.custom_fields import TagListField
+from submission.utils.custom_fields import ReferenceField
 from submission.utils.custom_validators import RequiredIf, ValidateCitations
 
 
@@ -150,7 +150,7 @@ class AssayForm(Form):
         validate_choice=False,
         validators=[validators.InputRequired()],
     )
-    references = TagListField(
+    references = ReferenceField(
         "Citation(s) *",
         description="Comma separated list of references highlighted this activity. If references show different concentration, add them separately.",
         widget=TextInputWithSuggestions(post_url="/edit/get_db_references"),

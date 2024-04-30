@@ -8,7 +8,7 @@ from wtforms import (
     validators,
 )
 from submission.utils.custom_fields import (
-    TagListField,
+    ReferenceField,
     smiles_field_factory,
 )
 from submission.utils.custom_widgets import (
@@ -52,7 +52,7 @@ class PathForm(Form):
         min_entries=1,
         widget=FieldListAddBtn(label="Add additional product"),
     )
-    references = TagListField(
+    references = ReferenceField(
         "Citation(s) *",
         widget=TextInputWithSuggestions(post_url="/edit/get_db_references"),
         validators=[validators.InputRequired(), ValidateCitations()],
