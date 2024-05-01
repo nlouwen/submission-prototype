@@ -605,20 +605,37 @@ def query_npatlas():
 
         form = FormCollection.structure(relevant_data)
         form.validate()
-        # prevent infinite loops by removing the load trigger.
-        # NOTE: changing the form instance also modifies the constructor, revert the
-        # change after rendering response
-        form.structures[0]._fields["name"].render_kw["hx-trigger"] = "change"
-        resp = render_template_string(
+        return render_template_string(
             """{% import 'macros.html' as m %}
             {{m.simple_divsubform(field, deletebtn=true, message=message)}}""",
             field=form.structures[0],
             message=f"{compound} information filled from NPAtlas",
         )
-        form.structures[0]._fields["name"].render_kw["hx-trigger"] = "load, change"
-        return resp
     else:
         abort(404, "not present in npatlas")
+
+
+@bp_edit.route("/render_npatlas_button", methods=["POST"])
+def render_npatlas_button() -> str:
+    """Render a prefill button iff the entered compound is present in NPAtlas"""
+    field_id = request.headers.get("Hx-Trigger")
+    compound = request.form.get(field_id) or ""
+
+    if NPAtlas.get(compound):
+        render_kw = {
+            "id": field_id,
+            "name": field_id,
+            "hx-post": "/edit/query_npatlas",
+            "hx-target": "closest fieldset",
+            "hx-swap": "outerHTML",
+            "hx-trigger": "click",
+        }
+        add_btn = Markup(
+            "<span class='fst-italic'>This compound is present in NPAtlas </span>"
+            f"<button class='btn btn-light btn-sm form-text' {html_params(**render_kw)}>Fetch information</button>"
+        )
+        return add_btn
+    return ""
 
 
 @bp_edit.route("/query_product_name", methods=["POST"])

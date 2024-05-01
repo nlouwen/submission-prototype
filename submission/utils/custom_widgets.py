@@ -19,6 +19,16 @@ class StringFieldAddBtn(widgets.TextInput):
         return orig + Markup(add_btn)
 
 
+class StringFieldAddDiv(widgets.TextInput):
+    def __init__(self, input_type=None) -> None:
+        super().__init__(input_type)
+
+    def __call__(self, field: Field, **kwargs: object) -> Markup:
+        return super().__call__(field, **kwargs) + Markup(
+            "<div class='string-div'></div>"
+        )
+
+
 class FieldListAddBtn(widgets.SubmitInput):
     def __init__(
         self,

@@ -13,6 +13,7 @@ from wtforms import (
 from submission.utils.custom_fields import TagListField, smiles_field_factory
 from submission.utils.custom_widgets import (
     FieldListAddBtn,
+    StringFieldAddDiv,
     SubmitIndicator,
 )
 from submission.utils.custom_forms import StructureEvidenceForm
@@ -23,10 +24,10 @@ class StructureSingle(Form):
     name = StringField(
         "Compound Name *",
         [validators.InputRequired()],
+        widget=StringFieldAddDiv(),
         render_kw={
-            "hx-post": "/edit/query_npatlas",
-            "hx-target": "closest fieldset",
-            "hx-swap": "outerHTML",
+            "hx-post": "/edit/render_npatlas_button",
+            "hx-target": "next div",
             "hx-trigger": "load, change",
         },
     )
