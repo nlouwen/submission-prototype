@@ -11,6 +11,7 @@ from wtforms import (
 )
 from submission.utils.custom_fields import (
     GeneIdField,
+    ReferenceField,
     TagListField,
     smiles_field_factory,
 )
@@ -41,7 +42,7 @@ class NRPSForm(Form):
             validate_choice=False,
         )
         details = StringField("Details (Optional)")
-        references = TagListField(
+        references = ReferenceField(
             "Citation(s)",
             widget=TextInputWithSuggestions(post_url="/edit/get_db_references"),
             validators=[ValidateCitations()],
@@ -222,7 +223,7 @@ class SaccharideForm(Form):
             validate_choice=False,
             validators=[validators.InputRequired()],
         )
-        references = TagListField(
+        references = ReferenceField(
             "Citation(s) *",
             widget=TextInputWithSuggestions(post_url="/edit/get_db_references"),
             validators=[validators.InputRequired(), ValidateCitations()],
@@ -240,7 +241,7 @@ class SaccharideForm(Form):
         specificity = smiles_field_factory(
             label="Specificity (SMILES)", show_structure=False
         )
-        references = TagListField(
+        references = ReferenceField(
             "Citation(s)",
             widget=TextInputWithSuggestions(post_url="/edit/get_db_references"),
             validators=[ValidateCitations()],
