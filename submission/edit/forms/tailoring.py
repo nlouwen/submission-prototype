@@ -9,7 +9,11 @@ from wtforms import (
     IntegerField,
     validators,
 )
-from submission.utils.custom_fields import TagListField, smiles_field_factory
+from submission.utils.custom_fields import (
+    ReferenceField,
+    TagListField,
+    smiles_field_factory,
+)
 from submission.utils.custom_widgets import (
     FieldListAddBtn,
     StructureInput,
@@ -47,7 +51,7 @@ class EnzymeForm(Form):
         description='Comma separated Uniprot (e.g. "uniprot:Q9X2V8") and/or GenBank ID (e.g. "genpept:AAD28495.1") of protein',
         validators=[validators.InputRequired(), ValidateEnzymeCross()],
     )
-    references = TagListField(
+    references = ReferenceField(
         "Citation(s) *",
         description="Comma separated references on the protein",
         widget=TextInputWithSuggestions(post_url="/edit/get_db_references"),
@@ -124,7 +128,7 @@ class ReactionSmartsEvidenceForm(Form):
         validate_choice=False,
         validators=[validators.InputRequired()],
     )
-    references = TagListField(
+    references = ReferenceField(
         "Citation(s) *",
         widget=TextInputWithSuggestions(post_url="/edit/get_db_references"),
         validators=[validators.InputRequired(), ValidateCitations()],
