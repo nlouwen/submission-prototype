@@ -25,6 +25,7 @@ from submission.utils.custom_validators import (
     ValidateCitations,
     ValidateEnzymeCross,
     ValidateReactionCross,
+    validate_smarts,
 )
 
 
@@ -138,7 +139,15 @@ class ReactionSmartsEvidenceForm(Form):
 class ReactionSmartsForm(Form):
     reactionSMARTS = StringField(
         "SMARTS *",
-        validators=[validators.InputRequired(), validators.Regexp(r"^.+>>.+$")],
+        widget=StructureInput(
+            render_kw={
+                "hx-post": "/edit/render_smarts",
+                "hx-trigger": "change, load",
+                "hx-swap": "innerHTML",
+                "hx-target": "next .struct",
+            }
+        ),
+        validators=[validators.InputRequired(), validate_smarts],
         description="The reaction SMARTS or reaction CXSMARTS string",
     )
     isIterative = BooleanField("Iterative? (modifying all possible substructures)")

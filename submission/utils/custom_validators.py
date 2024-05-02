@@ -5,6 +5,7 @@ from pathlib import Path
 
 from flask import current_app
 from rdkit import Chem
+from rdkit.Chem import AllChem
 from wtforms import ValidationError, validators
 
 
@@ -81,6 +82,23 @@ class RequiredIf(validators.InputRequired):
 
 
 def validate_smiles(form, field):
+    """Simple SMILES validation through rdkit, accepts SMILES/CXSMILES
+
+    Raises:
+        ValidationError: on invalid SMILES
+    """
     mol = Chem.MolFromSmiles(field.data)
     if mol is None:
         raise ValidationError("Invalid SMILES")
+
+
+def validate_smarts(form, field):
+    """Simple SMARTS validation through rdkit, accepts SMARTS/CXSMARTS
+
+    Raises:
+        ValidationError: on invalid SMARTS
+    """
+    try:
+        AllChem.ReactionFromSmarts(field.data)
+    except ValueError:
+        raise ValidationError("Invalid SMARTS")

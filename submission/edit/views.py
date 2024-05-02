@@ -23,7 +23,7 @@ from submission.extensions import db
 from submission.edit import bp_edit
 from submission.edit.forms.form_collection import FormCollection
 from submission.edit.forms.edit_select import EditSelectForm
-from submission.utils import Storage, draw_smiles_svg
+from submission.utils import Storage, draw_smiles_svg, draw_smarts_svg
 from submission.utils.custom_validators import is_valid_bgc_id
 from submission.utils.custom_errors import ReferenceNotFound
 from submission.models import Entry, NPAtlas
@@ -437,6 +437,17 @@ def edit_tailoring(bgc_id: str) -> Union[str, response.Response]:
         form=form,
         is_reviewer=current_user.has_role("reviewer"),
     )
+
+
+@bp_edit.route("/render_smarts", methods=["POST"])
+def render_smarts() -> Union[str, response.Response]:
+    origin = request.headers["Hx-Trigger-Name"]
+    smarts_string = request.form.get(origin)
+
+    if smarts_string is None or not (smarts := smarts_string.strip()):
+        return ""
+
+    return draw_smarts_svg(smarts)
 
 
 @bp_edit.route("/<bgc_id>/annotation", methods=["GET", "POST"])
