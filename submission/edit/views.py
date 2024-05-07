@@ -23,7 +23,6 @@ from submission.extensions import db
 from submission.edit import bp_edit
 from submission.edit.forms.form_collection import FormCollection
 from submission.edit.forms.edit_select import EditSelectForm
-from submission.edit.forms.biosynthesis_domains import AdenylationDomain
 from submission.utils import Storage, draw_smiles_svg, draw_smarts_svg
 from submission.utils.custom_validators import is_valid_bgc_id
 from submission.utils.custom_errors import ReferenceNotFound
@@ -150,6 +149,7 @@ def edit_structure(bgc_id: str) -> Union[str, response.Response]:
 
 
 @bp_edit.route("/render_smiles", methods=["POST"])
+@login_required
 def render_smiles() -> Union[str, response.Response]:
     origin = request.headers["Hx-Trigger-Name"]
     smiles_string = request.form.get(origin)
@@ -233,6 +233,7 @@ def edit_biosynth(bgc_id: str) -> str:
 
 
 @bp_edit.route("/class_buttons/<bgc_id>", methods=["POST"])
+@login_required
 def class_buttons(bgc_id: str) -> str:
     """Obtain buttons linking to relevant biosynthetic classes for this BGC
 
@@ -441,6 +442,7 @@ def edit_tailoring(bgc_id: str) -> Union[str, response.Response]:
 
 
 @bp_edit.route("/render_smarts", methods=["POST"])
+@login_required
 def render_smarts() -> Union[str, response.Response]:
     origin = request.headers["Hx-Trigger-Name"]
     smarts_string = request.form.get(origin)
@@ -490,6 +492,7 @@ def edit_annotation(bgc_id: str) -> Union[str, response.Response]:
 
 
 @bp_edit.route("/add_field", methods=["POST"])
+@login_required
 def add_field() -> str:
     """Render an additional field as a subform
 
@@ -541,6 +544,7 @@ def add_field() -> str:
 
 
 @bp_edit.route("/get_db_references", methods=["POST"])
+@login_required
 def get_db_references() -> str:
     """Collect references connected to an entry and format into html list of suggestions
 
@@ -565,6 +569,7 @@ def get_db_references() -> str:
 
 
 @bp_edit.route("/append_reference", methods=["POST"])
+@login_required
 def append_reference() -> str:
     """Append a reference to an existing input
 
@@ -587,6 +592,7 @@ def append_reference() -> str:
 
 
 @bp_edit.route("/query_npatlas", methods=["POST"])
+@login_required
 def query_npatlas():
     """Check if a compound name is present in the NPAtas table and prefill information
 
@@ -628,6 +634,7 @@ def query_npatlas():
 
 
 @bp_edit.route("/render_npatlas_button", methods=["POST"])
+@login_required
 def render_npatlas_button() -> str:
     """Render a prefill button iff the entered compound is present in NPAtlas"""
     field_id = request.headers.get("Hx-Trigger")
@@ -651,6 +658,7 @@ def render_npatlas_button() -> str:
 
 
 @bp_edit.route("/query_product_name", methods=["POST"])
+@login_required
 def query_product():
 
     search_val = request.form.get("prod-search")
@@ -693,6 +701,7 @@ def query_product():
 
 
 @bp_edit.route("/append_product", methods=["POST"])
+@login_required
 def append_product():
     target = request.headers.get("Hx-Target")
     current = request.form.get(target)
@@ -714,11 +723,12 @@ def append_product():
 
 
 @bp_edit.route("/query_substrates", methods=["POST"])
+@login_required
 def query_substrates() -> str:
     """Fetch a list of substrate options from the database
 
     Returns:
-        str: _description_
+        str: collection of html list options
     """
     trigger = request.headers.get("Hx-Trigger")
     search_val = request.form.get(trigger)
@@ -730,10 +740,11 @@ def query_substrates() -> str:
     options = "<span class='text-muted form-text'>Common substrates:</span>"
     for substrate in Substrate.isearch(search_val):
         options += li(substrate.id, substrate.summarize())
-    return options
+    return Markup(options)
 
 
 @bp_edit.route("/fill_substrate/<idx>", methods=["POST"])
+@login_required
 def fill_substrate(idx: int) -> str:
     """Fill substrate information into form section
 
