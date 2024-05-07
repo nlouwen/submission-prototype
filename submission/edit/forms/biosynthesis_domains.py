@@ -52,7 +52,13 @@ class AdenylationDomain(Form):
     # "required": ["type", "gene", "location"],
     class SubstateForm(Form):
         # "required": ["name", "proteinogenic", "structure"]
-        name = StringField("Name")
+        name = StringField(
+            "Name",
+            widget=TextInputWithSuggestions(
+                post_url="/edit/query_substrates",
+                trigger="input changed delay:500ms, search, load",
+            ),
+        )
         proteinogenic = BooleanField("proteinogenic?")
         structure = smiles_field_factory(label="Structure (SMILES)")
 

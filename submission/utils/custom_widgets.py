@@ -129,12 +129,12 @@ class StructureInput(widgets.TextInput):
 
 class TextInputWithSuggestions(widgets.TextInput):
     def __init__(
-        self, input_type: Optional[str] = None, post_url: Optional[str] = None
+        self, post_url: str, input_type: Optional[str] = None, trigger: str = "load"
     ) -> None:
         super().__init__(input_type)
         self.render_kw = {
             "hx-post": post_url,
-            "hx-trigger": "load",
+            "hx-trigger": trigger,
             "hx-target": "next ul",
             "hx-swap": "innerHTML",
         }

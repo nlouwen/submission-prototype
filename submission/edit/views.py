@@ -23,10 +23,11 @@ from submission.extensions import db
 from submission.edit import bp_edit
 from submission.edit.forms.form_collection import FormCollection
 from submission.edit.forms.edit_select import EditSelectForm
+from submission.edit.forms.biosynthesis_domains import AdenylationDomain
 from submission.utils import Storage, draw_smiles_svg, draw_smarts_svg
 from submission.utils.custom_validators import is_valid_bgc_id
 from submission.utils.custom_errors import ReferenceNotFound
-from submission.models import Entry, NPAtlas
+from submission.models import Entry, NPAtlas, Substrate
 
 
 @bp_edit.route("/<bgc_id>", methods=["GET", "POST"])
@@ -710,3 +711,57 @@ def append_product():
     return Markup(
         f"<input class='form-control' {html_params(value=new, id=target, name=target)}>"
     )
+
+
+@bp_edit.route("/query_substrates", methods=["POST"])
+def query_substrates() -> str:
+    """Fetch a list of substrate options from the database
+
+    Returns:
+        str: _description_
+    """
+    trigger = request.headers.get("Hx-Trigger")
+    search_val = request.form.get(trigger)
+
+    li = (
+        lambda idx, descr: f"<li id={trigger} hx-post='/edit/fill_substrate/{idx}' hx-target='closest fieldset' hx-swap='outerHTML'>{descr}</li>"
+    )
+
+    options = "<span class='text-muted form-text'>Common substrates:</span>"
+    for substrate in Substrate.isearch(search_val):
+        options += li(substrate.id, substrate.summarize())
+    return options
+
+
+@bp_edit.route("/fill_substrate/<idx>", methods=["POST"])
+def fill_substrate(idx: int) -> str:
+    """Fill substrate information into form section
+
+    Args:
+        idx (str): db id of substrate entry
+
+    Returns:
+        str: rendered fieldset containing substrate information
+    """
+    trigger = request.headers.get("Hx-Trigger")
+    base = trigger.rpartition("-")[0]
+
+    if substrate := db.session.scalar(select(Substrate).where(Substrate.id == idx)):
+        data = MultiDict(
+            [
+                (f"{base}-name", substrate.identifier),
+                (f"{base}-structure", substrate.structure),
+                (f"{base}-proteinogenic", substrate.proteinogenic),
+            ]
+        )
+        form = FormCollection.modules(data)
+
+        # both NPRS 1 and 6 have the same adenylation/substrate forms
+        nrps_type = base.partition("-")[0]
+        return render_template_string(
+            """{% import 'macros.html' as m %}
+                {{m.simple_divsubform(field, deletebtn=true)}}""",
+            field=getattr(form, nrps_type)[0].a_domain[0].substrates[0],
+        )
+    else:
+        abort(404, "substrate not found!")
