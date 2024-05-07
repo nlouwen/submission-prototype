@@ -46,7 +46,7 @@ class AddGeneForm(Form):
         "Strand *",
         choices=[1, -1],
         widget=SelectDefault(),
-        description="The directionality of the CDS. '1' indicates forward directionality, '-1' indicates reverse diretionality",
+        description="The directionality of the CDS. '1' indicates forward directionality, '-1' indicates reverse directionality",
         validate_choice=False,
         validators=[validators.InputRequired()],
     )
