@@ -26,7 +26,7 @@ from submission.edit.forms.edit_select import EditSelectForm
 from submission.utils import Storage, draw_smiles_svg, draw_smarts_svg
 from submission.utils.custom_validators import is_valid_bgc_id
 from submission.utils.custom_errors import ReferenceNotFound
-from submission.models import Entry, NPAtlas
+from submission.models import Entry, NPAtlas, Substrate
 
 
 @bp_edit.route("/<bgc_id>", methods=["GET", "POST"])
@@ -149,6 +149,7 @@ def edit_structure(bgc_id: str) -> Union[str, response.Response]:
 
 
 @bp_edit.route("/render_smiles", methods=["POST"])
+@login_required
 def render_smiles() -> Union[str, response.Response]:
     origin = request.headers["Hx-Trigger-Name"]
     smiles_string = request.form.get(origin)
@@ -232,6 +233,7 @@ def edit_biosynth(bgc_id: str) -> str:
 
 
 @bp_edit.route("/class_buttons/<bgc_id>", methods=["POST"])
+@login_required
 def class_buttons(bgc_id: str) -> str:
     """Obtain buttons linking to relevant biosynthetic classes for this BGC
 
@@ -440,6 +442,7 @@ def edit_tailoring(bgc_id: str) -> Union[str, response.Response]:
 
 
 @bp_edit.route("/render_smarts", methods=["POST"])
+@login_required
 def render_smarts() -> Union[str, response.Response]:
     origin = request.headers["Hx-Trigger-Name"]
     smarts_string = request.form.get(origin)
@@ -489,6 +492,7 @@ def edit_annotation(bgc_id: str) -> Union[str, response.Response]:
 
 
 @bp_edit.route("/add_field", methods=["POST"])
+@login_required
 def add_field() -> str:
     """Render an additional field as a subform
 
@@ -540,6 +544,7 @@ def add_field() -> str:
 
 
 @bp_edit.route("/get_db_references", methods=["POST"])
+@login_required
 def get_db_references() -> str:
     """Collect references connected to an entry and format into html list of suggestions
 
@@ -564,6 +569,7 @@ def get_db_references() -> str:
 
 
 @bp_edit.route("/append_reference", methods=["POST"])
+@login_required
 def append_reference() -> str:
     """Append a reference to an existing input
 
@@ -586,6 +592,7 @@ def append_reference() -> str:
 
 
 @bp_edit.route("/query_npatlas", methods=["POST"])
+@login_required
 def query_npatlas():
     """Check if a compound name is present in the NPAtas table and prefill information
 
@@ -627,6 +634,7 @@ def query_npatlas():
 
 
 @bp_edit.route("/render_npatlas_button", methods=["POST"])
+@login_required
 def render_npatlas_button() -> str:
     """Render a prefill button iff the entered compound is present in NPAtlas"""
     field_id = request.headers.get("Hx-Trigger")
@@ -650,6 +658,7 @@ def render_npatlas_button() -> str:
 
 
 @bp_edit.route("/query_product_name", methods=["POST"])
+@login_required
 def query_product():
 
     search_val = request.form.get("prod-search")
@@ -692,6 +701,7 @@ def query_product():
 
 
 @bp_edit.route("/append_product", methods=["POST"])
+@login_required
 def append_product():
     target = request.headers.get("Hx-Target")
     current = request.form.get(target)
@@ -710,3 +720,59 @@ def append_product():
     return Markup(
         f"<input class='form-control' {html_params(value=new, id=target, name=target)}>"
     )
+
+
+@bp_edit.route("/query_substrates", methods=["POST"])
+@login_required
+def query_substrates() -> str:
+    """Fetch a list of substrate options from the database
+
+    Returns:
+        str: collection of html list options
+    """
+    trigger = request.headers.get("Hx-Trigger")
+    search_val = request.form.get(trigger)
+
+    li = (
+        lambda idx, descr: f"<li id={trigger} hx-post='/edit/fill_substrate/{idx}' hx-target='closest fieldset' hx-swap='outerHTML'>{descr}</li>"
+    )
+
+    options = "<span class='text-muted form-text'>Common substrates:</span>"
+    for substrate in Substrate.isearch(search_val):
+        options += li(substrate.id, substrate.summarize())
+    return Markup(options)
+
+
+@bp_edit.route("/fill_substrate/<idx>", methods=["POST"])
+@login_required
+def fill_substrate(idx: int) -> str:
+    """Fill substrate information into form section
+
+    Args:
+        idx (str): db id of substrate entry
+
+    Returns:
+        str: rendered fieldset containing substrate information
+    """
+    trigger = request.headers.get("Hx-Trigger")
+    base = trigger.rpartition("-")[0]
+
+    if substrate := db.session.scalar(select(Substrate).where(Substrate.id == idx)):
+        data = MultiDict(
+            [
+                (f"{base}-name", substrate.identifier),
+                (f"{base}-structure", substrate.structure),
+                (f"{base}-proteinogenic", substrate.proteinogenic),
+            ]
+        )
+        form = FormCollection.modules(data)
+
+        # both NPRS 1 and 6 have the same adenylation/substrate forms
+        nrps_type = base.partition("-")[0]
+        return render_template_string(
+            """{% import 'macros.html' as m %}
+                {{m.simple_divsubform(field, deletebtn=true)}}""",
+            field=getattr(form, nrps_type)[0].a_domain[0].substrates[0],
+        )
+    else:
+        abort(404, "substrate not found!")

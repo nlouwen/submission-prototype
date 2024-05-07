@@ -88,6 +88,8 @@ ul.suggestions {
   position: absolute;
   width: auto;
   z-index: 2;
+  overflow: scroll;
+  max-height: 350px;
 }
 
 ul.suggestions li {
