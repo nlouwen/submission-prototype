@@ -11,4 +11,7 @@
     <h4>What would you like to edit?</h4>
     {{ macros.simple_divform(form) }}
 </div>
+<div class="container">
+    <a href="{{ url_for('main.index') }}"><button class="btn btn-outline-secondary">Back to entry selection</button></a>
+</div>
 {% endblock %}

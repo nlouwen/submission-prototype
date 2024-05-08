@@ -14,7 +14,8 @@
     {{ macros.simple_divform(form, is_reviewer=is_reviewer, reviewed=reviewed) }}
 </div>
 <div class="container">
-    <a href="{{ url_for('edit.edit_biosynth', bgc_id=bgc_id) }}"><button class="btn btn-outline-secondary">Back to
+    <a href="{{ url_for('edit.edit_biosynth', bgc_id=bgc_id) }}"><button id="back-btn"
+            class="btn btn-outline-secondary">Back to
             Biosynthesis overview</button></a>
 </div>
 {% endblock %}

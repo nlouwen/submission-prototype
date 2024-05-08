@@ -49,3 +49,22 @@
     {%- endwith %}
     {% block body -%}{%- endblock %}
 </body>
+
+<script>
+    let form = document.querySelector("form");
+    let btn = document.querySelector("#back-btn");
+
+    if (form && btn) {
+        Array.from(form).forEach(el => el.dataset.origValue = el.value);
+        function formHasChanges(form) {
+            return Array.from(form).some(el => !'origValue' in el.dataset || el.dataset.origValue !== String(el.value));
+        }
+        btn.addEventListener("click", function (event) {
+            if (formHasChanges(form)) {
+                if (!confirm("Any unsubmitted data will be lost!")) {
+                    event.preventDefault()
+                }
+            }
+        })
+    }
+</script>
