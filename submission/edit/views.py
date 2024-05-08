@@ -292,7 +292,7 @@ def edit_biosynth_class(bgc_id: str, b_class: str) -> Union[str, response.Respon
             Entry.save_biosynth(bgc_id=bgc_id, b_class=b_class, data=form.data)
             Storage.save_data(bgc_id, f"BioSynth_{b_class}", request.form, current_user)
             flash(f"Submitted {b_class} biosynthesis information!")
-            return redirect(url_for("edit.edit_bgc", bgc_id=bgc_id))
+            return redirect(url_for("edit.edit_biosynth", bgc_id=bgc_id))
         except ReferenceNotFound as e:
             flash(str(e), "error")
 
