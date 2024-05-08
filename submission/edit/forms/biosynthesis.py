@@ -102,7 +102,9 @@ class PKSForm(Form):
         description="Comma separated list of PKS cyclase gene IDs.",
     )
     starter_unit = None  # TODO: add to schema
-    ketide_length = IntegerField("Ketide length", [validators.NumberRange(min=0)])
+    ketide_length = IntegerField(
+        "Ketide length", [validators.Optional(), validators.NumberRange(min=0)]
+    )
     iterative = None  # TODO: add to schema
     submit = SubmitField("Submit", widget=SubmitIndicator())
 
