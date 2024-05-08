@@ -68,11 +68,13 @@ def edit_minimal(bgc_id: str) -> Union[str, response.Response]:
 
     # try to fill data from existing entry
     if not request.form:
-        form = FormCollection.minimal(
-            MultiDict(Storage.read_data(bgc_id).get("Minimal"))
-        )
+        data: MultiDict = MultiDict(Storage.read_data(bgc_id).get("Minimal"))
+        form = FormCollection.minimal(data)
+        reviewed = data.get("reviewed")
     else:
         form = FormCollection.minimal(request.form)
+        # do not prefill reviewed checkbox on failed post
+        reviewed = False
 
     if request.method == "POST" and form.validate():
         try:
@@ -87,6 +89,7 @@ def edit_minimal(bgc_id: str) -> Union[str, response.Response]:
         form=form,
         bgc_id=bgc_id,
         is_reviewer=current_user.has_role("reviewer"),
+        reviewed=reviewed,
     )
 
 
@@ -105,11 +108,12 @@ def edit_structure(bgc_id: str) -> Union[str, response.Response]:
         return abort(403, "Invalid existing entry!")
 
     if not request.form:
-        form = FormCollection.structure(
-            MultiDict(Storage.read_data(bgc_id).get("Structure"))
-        )
+        data: MultiDict = MultiDict(Storage.read_data(bgc_id).get("Structure"))
+        form = FormCollection.structure(data)
+        reviewed = data.get("reviewed")
     else:
         form = FormCollection.structure(request.form)
+        reviewed = False
 
     if request.method == "POST" and form.validate():
         try:
@@ -145,6 +149,7 @@ def edit_structure(bgc_id: str) -> Union[str, response.Response]:
         form=form,
         bgc_id=bgc_id,
         is_reviewer=current_user.has_role("reviewer"),
+        reviewed=reviewed,
     )
 
 
@@ -175,11 +180,12 @@ def edit_activity(bgc_id: str) -> Union[str, response.Response]:
         return abort(403, "Invalid existing entry!")
 
     if not request.form:
-        form = FormCollection.bioact(
-            MultiDict(Storage.read_data(bgc_id).get("Bio_activity"))
-        )
+        data: MultiDict = MultiDict(Storage.read_data(bgc_id).get("Bio_activity"))
+        form = FormCollection.bioact(data)
+        reviewed = data.get("reviewed")
     else:
         form = FormCollection.bioact(request.form)
+        reviewed = False
     if request.method == "POST" and form.validate():
         try:
             Entry.save_activity(bgc_id=bgc_id, data=form.data)
@@ -212,6 +218,7 @@ def edit_activity(bgc_id: str) -> Union[str, response.Response]:
         bgc_id=bgc_id,
         form=form,
         is_reviewer=current_user.has_role("reviewer"),
+        reviewed=reviewed,
     )
 
 
@@ -271,11 +278,14 @@ def edit_biosynth_class(bgc_id: str, b_class: str) -> Union[str, response.Respon
         return abort(403, "Invalid existing entry!")
 
     if not request.form:
-        form = getattr(FormCollection, b_class)(
-            MultiDict(Storage.read_data(bgc_id).get(f"BioSynth_{b_class}"))
+        data: MultiDict = MultiDict(
+            Storage.read_data(bgc_id).get(f"BioSynth_{b_class}")
         )
+        form = getattr(FormCollection, b_class)(data)
+        reviewed = data.get("reviewed")
     else:
         form = getattr(FormCollection, b_class)(request.form)
+        reviewed = False
 
     if request.method == "POST" and form.validate():
         try:
@@ -292,6 +302,7 @@ def edit_biosynth_class(bgc_id: str, b_class: str) -> Union[str, response.Respon
         b_class=b_class,
         bgc_id=bgc_id,
         is_reviewer=current_user.has_role("reviewer"),
+        reviewed=reviewed,
     )
 
 
@@ -310,11 +321,12 @@ def edit_biosynth_operons(bgc_id: str) -> Union[str, response.Response]:
         return abort(403, "Invalid existing entry!")
 
     if not request.form:
-        form = FormCollection.operons(
-            MultiDict(Storage.read_data(bgc_id).get("Biosynth_operons"))
-        )
+        data: MultiDict = MultiDict(Storage.read_data(bgc_id).get("Biosynth_operons"))
+        form = FormCollection.operons(data)
+        reviewed = data.get("reviewed")
     else:
         form = FormCollection.operons(request.form)
+        reviewed = False
 
     if request.method == "POST" and form.validate():
         # TODO: save to db
@@ -327,6 +339,7 @@ def edit_biosynth_operons(bgc_id: str) -> Union[str, response.Response]:
         bgc_id=bgc_id,
         form=form,
         is_reviewer=current_user.has_role("reviewer"),
+        reviewed=reviewed,
     )
 
 
@@ -345,11 +358,12 @@ def edit_biosynth_paths(bgc_id: str) -> Union[str, response.Response]:
         return abort(403, "Invalid existing entry!")
 
     if not request.form:
-        form = FormCollection.paths(
-            MultiDict(Storage.read_data(bgc_id).get("Biosynth_paths"))
-        )
+        data: MultiDict = MultiDict(Storage.read_data(bgc_id).get("Biosynth_paths"))
+        form = FormCollection.paths(data)
+        reviewed = data.get("reviewed")
     else:
         form = FormCollection.paths(request.form)
+        reviewed = False
 
     if request.method == "POST" and form.validate():
         try:
@@ -365,6 +379,7 @@ def edit_biosynth_paths(bgc_id: str) -> Union[str, response.Response]:
         bgc_id=bgc_id,
         form=form,
         is_reviewer=current_user.has_role("reviewer"),
+        reviewed=reviewed,
     )
 
 
@@ -383,11 +398,12 @@ def edit_biosynth_modules(bgc_id: str) -> Union[str, response.Response]:
         return abort(403, "Invalid existing entry!")
 
     if not request.form:
-        form = FormCollection.modules(
-            MultiDict(Storage.read_data(bgc_id).get("Biosynth_modules"))
-        )
+        data: MultiDict = MultiDict(Storage.read_data(bgc_id).get("Biosynth_modules"))
+        form = FormCollection.modules(data)
+        reviewed = data.get("reviewed")
     else:
         form = FormCollection.modules(request.form)
+        reviewed = False
 
     if request.method == "POST" and form.validate():
         # TODO: save to db
@@ -400,6 +416,7 @@ def edit_biosynth_modules(bgc_id: str) -> Union[str, response.Response]:
         bgc_id=bgc_id,
         form=form,
         is_reviewer=current_user.has_role("reviewer"),
+        reviewed=reviewed,
     )
 
 
@@ -418,11 +435,12 @@ def edit_tailoring(bgc_id: str) -> Union[str, response.Response]:
         return abort(403, "Invalid existing entry!")
 
     if not request.form:
-        form = FormCollection.tailoring(
-            MultiDict(Storage.read_data(bgc_id).get("Tailoring"))
-        )
+        data: MultiDict = MultiDict(Storage.read_data(bgc_id).get("Tailoring"))
+        form = FormCollection.tailoring(data)
+        reviewed = data.get("reviewed")
     else:
         form = FormCollection.tailoring(request.form)
+        reviewed = False
 
     if request.method == "POST" and form.validate():
         try:
@@ -438,6 +456,7 @@ def edit_tailoring(bgc_id: str) -> Union[str, response.Response]:
         bgc_id=bgc_id,
         form=form,
         is_reviewer=current_user.has_role("reviewer"),
+        reviewed=reviewed,
     )
 
 
@@ -468,11 +487,12 @@ def edit_annotation(bgc_id: str) -> Union[str, response.Response]:
         return abort(403, "Invalid existing entry!")
 
     if not request.form:
-        form = FormCollection.annotation(
-            MultiDict(Storage.read_data(bgc_id).get("Annotation"))
-        )
+        data: MultiDict = MultiDict(Storage.read_data(bgc_id).get("Annotation"))
+        form = FormCollection.annotation(data)
+        reviewed = data.get("reviewed")
     else:
         form = FormCollection.annotation(request.form)
+        reviewed = False
 
     if request.method == "POST" and form.validate():
         try:
@@ -488,6 +508,7 @@ def edit_annotation(bgc_id: str) -> Union[str, response.Response]:
         bgc_id=bgc_id,
         form=form,
         is_reviewer=current_user.has_role("reviewer"),
+        reviewed=reviewed,
     )
 
 
