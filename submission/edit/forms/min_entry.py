@@ -75,6 +75,7 @@ class MinEntryForm(Form):
         "and polyketide synthases should be both 'NRPS' and 'PKS', while a BGC with both a polyketide "
         "synthase and a glycosyltransferase would be 'PKS' and 'Saccharide'.",
         validators=[validators.InputRequired()],
+        render_kw={"size": "6"},
     )
     products = TagListField(
         "Product(s) *",
