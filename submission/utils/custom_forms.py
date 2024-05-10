@@ -107,7 +107,7 @@ class StructureEvidenceForm(Form):
             "Chemical derivatisation",
             "Total synthesis",
             "MicroED",
-            "Retention time match with authentic standard",
+            "Experimental values match with authentic standard",
         ],
         description="Technique used to elucidate/verify the structure",
         widget=SelectDefault(),
