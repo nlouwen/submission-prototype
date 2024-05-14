@@ -81,6 +81,16 @@ class RequiredIf(validators.InputRequired):
             super(RequiredIf, self).__call__(form, field)
 
 
+class ValidateSingleInput(validators.Regexp):
+    def __init__(
+        self,
+        regex: str = r"^[^\s,]+$",
+        flags: int = 0,
+        message: str = "Please only provide one value (no spaces or commas allowed!)",
+    ) -> None:
+        super().__init__(regex, flags, message)
+
+
 def validate_smiles(form, field):
     """Simple SMILES validation through rdkit, accepts SMILES/CXSMILES
 

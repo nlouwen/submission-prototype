@@ -19,6 +19,7 @@ from submission.utils.custom_widgets import (
     SelectDefault,
     ProductInputSearch,
 )
+from submission.utils.custom_validators import ValidateSingleInput
 
 
 class MinEntryForm(Form):
@@ -35,7 +36,7 @@ class MinEntryForm(Form):
 
         genome = StringField(
             "Genome identifier *",
-            [validators.InputRequired()],
+            [validators.InputRequired(), ValidateSingleInput()],
             widget=TextInputIndicator(),
             description="E.g., AL645882. Only use GenBank accessions, not RefSeq accessions or GI numbers.",
             # render_kw={

@@ -17,7 +17,10 @@ from submission.utils.custom_widgets import (
     SubmitIndicator,
 )
 from submission.utils.custom_forms import StructureEvidenceForm
-from submission.utils.custom_validators import ValidateStructureCross
+from submission.utils.custom_validators import (
+    ValidateStructureCross,
+    ValidateSingleInput,
+)
 
 
 class StructureSingle(Form):
@@ -46,7 +49,9 @@ class StructureSingle(Form):
         min_entries=1,
         widget=FieldListAddBtn(label="Add additional evidence"),
     )
-    formula = StringField("Molecular Formula")
+    formula = StringField(
+        "Molecular Formula", validators=[validators.Optional(), ValidateSingleInput()]
+    )
     mass = FloatField(
         "Molecular mass",
         [validators.Optional(), validators.NumberRange(min=0)],
