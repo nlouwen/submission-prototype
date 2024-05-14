@@ -1,4 +1,4 @@
-import re
+from markupsafe import Markup
 from wtforms import (
     Form,
     StringField,
@@ -115,6 +115,9 @@ class RibosomalForm(Form):
             from_loc = IntegerField(
                 "From",
                 validators=[validators.Optional(), validators.NumberRange(min=1)],
+                description=Markup(
+                    "Amino acid coordinates of a crosslink <u>within</u> the core, i.e. the start of the core sequence is coordinate 1."
+                ),
             )
             to_loc = IntegerField(
                 "To", validators=[validators.Optional(), validators.NumberRange(min=2)]
@@ -134,10 +137,19 @@ class RibosomalForm(Form):
             validators=[validators.InputRequired()],
         )
         leader_cleavage_location = FormField(
-            location_form_factory(), "Leader cleavage location (Optional)"
+            location_form_factory(),
+            "Leader cleavage location (Optional)",
+            description=Markup(
+                "Cleavage site in amino acid coordinates, where cleavage occurs immediately after <i>end</i>. "
+                "(e.g. if cleavage occurs between aa 23 and 24, both start and end of cleavage should be 23.)"
+            ),
         )
         follower_cleavage_location = FormField(
-            location_form_factory(), "Follower cleavage location (Optional)"
+            location_form_factory(),
+            "Follower cleavage location (Optional)",
+            description=Markup(
+                "Cleavage site in amino acid coordinates, where cleavage occurs immediately after <i>end</i>. "
+            ),
         )
         crosslinks = FieldList(
             FormField(CrosslinkForm),
