@@ -135,6 +135,8 @@ class StructureSingle(Form):
         render_kw={"style": "height:200px"},
     )
     cyclic = BooleanField("Cyclic Compound?")
+    intermediate = BooleanField("Pathway intermediate?")
+    shunt_product = BooleanField("Shunt product?")
     moieties = TagListField(
         "Moieties",
         description="Comma separated list of characteristic and/or noteworthy chemical moieties found in compound.",
