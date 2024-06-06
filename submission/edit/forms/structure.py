@@ -108,6 +108,7 @@ class StructureSingle(Form):
                 "Meroterpenoid",
                 "Monoterpenoid",
                 "Sesquiterpenoid",
+                "Sesterterpenoid",
                 "Steroid",
             ],
             "Peptide": [
